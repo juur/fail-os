@@ -1,0 +1,2073 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+A	ahci.c	/^	int A:1;$/;"	m	struct:CommandHeader	file:
+ACMD	ahci.c	/^	uint8	ACMD[16];$/;"	m	struct:CommandTable	file:
+ACPISDTHeader	acpi.h	/^struct ACPISDTHeader {$/;"	s
+ADD_NO_FCS	pcnet.h	/^	uint8 ADD_NO_FCS:1;	\/\/ 29$/;"	m	struct:pcnet_tx_16
+ADD_NO_FCS	pcnet.h	/^	uint8 ADD_NO_FCS:1;	\/\/ 29$/;"	m	struct:pcnet_tx_32
+AF_INET	ip.h	49;"	d
+AF_INET	task2.c	4;"	d	file:
+ALPE	ahci.c	/^	uint8 ALPE:1;$/;"	m	struct:_PxCMD	file:
+APICbar	init.c	/^} __attribute__((packed)) APICbar;$/;"	t	typeref:union:__anon14	file:
+APSTE	ahci.c	/^	uint8 APSTE:1;$/;"	m	struct:_PxCMD	file:
+ARP_REPLY	arp.h	34;"	d
+ARP_REQUEST	arp.h	33;"	d
+ASMOBJS	Makefile	/^ASMOBJS=mboot.o mboot_hdr.o intr.o$/;"	m
+ASP	ahci.c	/^	uint8 ASP:1;$/;"	m	struct:_PxCMD	file:
+ATAPI	ahci.c	/^	uint8 ATAPI:1;$/;"	m	struct:_PxCMD	file:
+B	ahci.c	/^	int B:1;$/;"	m	struct:CommandHeader	file:
+BCD_BIN	cpu.c	164;"	d	file:
+BCNT	pcnet.h	/^	uint16 BCNT:12;		\/\/ 00 - 11$/;"	m	struct:pcnet_rx_16
+BCNT	pcnet.h	/^	uint16 BCNT:12;		\/\/ 00 - 11$/;"	m	struct:pcnet_rx_32
+BCNT	pcnet.h	/^	uint16 BCNT:12;		\/\/ 00 - 11$/;"	m	struct:pcnet_tx_16
+BCNT	pcnet.h	/^	uint16 BCNT:12;		\/\/ 00 - 11$/;"	m	struct:pcnet_tx_32
+BCR2_ASEL	pcnet.h	178;"	d
+BCR2_INTLEVEL	pcnet.h	179;"	d
+BDP	pcnet.h	10;"	d
+BIG_PAGE_SIZE	proc.h	10;"	d
+BIO_BIGBUF	block.c	28;"	d	file:
+BIO_BIGSEC	block.c	30;"	d	file:
+BIO_CLEAN	block.c	29;"	d	file:
+BIO_DONE	block.c	31;"	d	file:
+BIO_ERROR	block.c	32;"	d	file:
+BIO_READ	block.c	26;"	d	file:
+BIO_WRITE	block.c	27;"	d	file:
+BIT_INDEX	klibc.h	28;"	d
+BIT_OFFSET	klibc.h	29;"	d
+BMIC_PRI	ide.h	22;"	d
+BMIC_SEC	ide.h	25;"	d
+BMIDTP_PRI	ide.h	24;"	d
+BMIDTP_SEC	ide.h	27;"	d
+BMIS_PRI	ide.h	23;"	d
+BMIS_SEC	ide.h	26;"	d
+BOCH	ahci.c	/^struct BOCH {$/;"	s	file:
+BOHC	ahci.c	/^	uint32	BOHC;$/;"	m	struct:GHC	file:
+BUFF	pcnet.h	/^	uint8 BUFF:1;		\/\/ 26$/;"	m	struct:pcnet_rx_16
+BUFF	pcnet.h	/^	uint8 BUFF:1;		\/\/ 26$/;"	m	struct:pcnet_rx_32
+BUFF	pcnet.h	/^	uint8 BUFF:1;		\/\/ 31$/;"	m	struct:pcnet_tx_16
+BUFF	pcnet.h	/^	uint8 BUFF:1;		\/\/ 31$/;"	m	struct:pcnet_tx_32
+BUSY_STAT	ide.h	60;"	d
+C	ahci.c	/^	int C:1;$/;"	m	struct:CommandHeader	file:
+CAP	ahci.c	/^	} CAP;$/;"	m	struct:GHC	typeref:union:GHC::__anon8	file:
+CAP2	ahci.c	/^	uint32	CAP2;$/;"	m	struct:GHC	file:
+CAP2_BOH	ahci.c	137;"	d	file:
+CC	Makefile	/^CC=@gcc$/;"	m
+CCCS	ahci.c	/^	int	CCCS:1;$/;"	m	struct:_CAP	file:
+CCC_CTL	ahci.c	/^	uint32	CCC_CTL;$/;"	m	struct:GHC	file:
+CCC_PORTS	ahci.c	/^	uint32	CCC_PORTS;$/;"	m	struct:GHC	file:
+CCS	ahci.c	/^	uint8 CCS:5;$/;"	m	struct:_PxCMD	file:
+CFIS	ahci.c	/^	uint8	CFIS[64];$/;"	m	struct:CommandTable	file:
+CFL	ahci.c	/^	int	CFL:4;$/;"	m	struct:CommandHeader	file:
+CFLAGS	Makefile	/^CFLAGS=-m64 -ffreestanding -nostdlib -nodefaultlibs -nostdinc -fno-stack-protector -std=c99 -g -Wall -Wno-packed-bitfield-compat$/;"	m
+CHECK_FLAG	mboot.h	48;"	d
+CLO	ahci.c	/^	uint8 CLO:1;$/;"	m	struct:_PxCMD	file:
+CLONE_TASK	proc.h	92;"	d
+CLOSED	tcp.h	57;"	d
+CLOSE_WAIT	tcp.h	66;"	d
+CLOSING	tcp.h	64;"	d
+CMD_CYL_HI	ide.h	47;"	d
+CMD_CYL_LOW	ide.h	46;"	d
+CMD_DATA	ide.h	42;"	d
+CMD_ERR_FEAT	ide.h	43;"	d
+CMD_HEAD	ide.h	48;"	d
+CMD_SEC_CNT	ide.h	44;"	d
+CMD_SEC_NUM	ide.h	45;"	d
+CMD_STAT_CMD	ide.h	49;"	d
+COBJS	Makefile	/^COBJS=tcp.o arp.o acpi.o pcnet.o ahci.o ide.o eth.o ip.o slip.o net.o ppp.o cpu.o frame.o mem.o init.o klibc.o dev.o page.o proc.o syscall.o pci.o block.o ram.o file.o ramfs.o end.o$/;"	m
+COM1	dev.h	8;"	d
+COM2	dev.h	9;"	d
+COM3	dev.h	10;"	d
+COM4	dev.h	11;"	d
+CON_BUFF	dev.h	98;"	d
+CON_BUFFER_SIZE	dev.h	68;"	d
+CON_MAJOR	dev.h	66;"	d
+CON_MINOR	dev.h	67;"	d
+CON_STATUS	ide.h	51;"	d
+CPD	ahci.c	/^	uint8 CPD:1;$/;"	m	struct:_PxCMD	file:
+CPS	ahci.c	/^	uint8 CPS:1;$/;"	m	struct:_PxCMD	file:
+CPUE_BP	cpu.h	29;"	d
+CPUE_BR	cpu.h	31;"	d
+CPUE_DB	cpu.h	27;"	d
+CPUE_DE	cpu.h	26;"	d
+CPUE_DF	cpu.h	34;"	d
+CPUE_GP	cpu.h	38;"	d
+CPUE_NM	cpu.h	33;"	d
+CPUE_NMI	cpu.h	28;"	d
+CPUE_NP	cpu.h	36;"	d
+CPUE_OF	cpu.h	30;"	d
+CPUE_PF	cpu.h	39;"	d
+CPUE_SS	cpu.h	37;"	d
+CPUE_TS	cpu.h	35;"	d
+CPUE_UD	cpu.h	32;"	d
+CPUID_1GBPG	init.c	492;"	d	file:
+CR	ahci.c	/^	uint8 CR:1;$/;"	m	struct:_PxCMD	file:
+CR0_PG	mboot.S	/^CR0_PG		equ	31$/;"	d
+CR4_PAE	mboot.S	/^CR4_PAE		equ	5$/;"	d
+CRC	pcnet.h	/^	uint8 CRC:1;		\/\/ 27$/;"	m	struct:pcnet_rx_16
+CRC	pcnet.h	/^	uint8 CRC:1;		\/\/ 27$/;"	m	struct:pcnet_rx_32
+CSR0_IDON	pcnet.h	145;"	d
+CSR0_IENA	pcnet.h	143;"	d
+CSR0_INIT	pcnet.h	137;"	d
+CSR0_INTR	pcnet.h	144;"	d
+CSR0_RINT	pcnet.h	146;"	d
+CSR0_RXON	pcnet.h	142;"	d
+CSR0_STOP	pcnet.h	139;"	d
+CSR0_STRT	pcnet.h	138;"	d
+CSR0_TDMD	pcnet.h	140;"	d
+CSR0_TXON	pcnet.h	141;"	d
+CSR15_PROMISC	pcnet.h	173;"	d
+CSR15_mode	pcnet.h	/^struct CSR15_mode {$/;"	s
+CSR3_ALL_INTS	pcnet.h	154;"	d
+CSR3_BABLM	pcnet.h	148;"	d
+CSR3_IDONM	pcnet.h	153;"	d
+CSR3_MERRM	pcnet.h	150;"	d
+CSR3_MISSM	pcnet.h	149;"	d
+CSR3_RINTM	pcnet.h	151;"	d
+CSR3_TINTM	pcnet.h	152;"	d
+CSR4_ALL_INTS	pcnet.h	164;"	d
+CSR4_APAD_XMIT	pcnet.h	158;"	d
+CSR4_ASTRP_RCV	pcnet.h	159;"	d
+CSR4_DMA_PLUSA	pcnet.h	157;"	d
+CSR4_DPOLL	pcnet.h	156;"	d
+CSR4_JABM	pcnet.h	163;"	d
+CSR4_MFCOM	pcnet.h	160;"	d
+CSR4_RCVCCOM	pcnet.h	161;"	d
+CSR4_TXSTRTM	pcnet.h	162;"	d
+CSR58_PCNET_PCII	pcnet.h	176;"	d
+CSR58_SSIZE32	pcnet.h	175;"	d
+CSR5_ALL_INTS	pcnet.h	171;"	d
+CSR5_EXDINTE	pcnet.h	169;"	d
+CSR5_LTINTE	pcnet.h	166;"	d
+CSR5_MPINTE	pcnet.h	170;"	d
+CSR5_SINTE	pcnet.h	167;"	d
+CSR5_SLPINTE	pcnet.h	168;"	d
+CTBA	ahci.c	/^	struct CommandTable *CTBA; \/\/ 06-00 reserved$/;"	m	struct:CommandHeader	typeref:struct:CommandHeader::CommandTable	file:
+Checksum	acpi.h	/^	uint8 Checksum;$/;"	m	struct:ACPISDTHeader
+Checksum	acpi.h	/^	uint8 Checksum;$/;"	m	struct:RSDPDescriptor20
+CommandHeader	ahci.c	/^struct CommandHeader {$/;"	s	file:
+CommandTable	ahci.c	/^struct CommandTable {$/;"	s	file:
+CreatorID	acpi.h	/^	uint32 CreatorID;$/;"	m	struct:ACPISDTHeader
+CreatorRevision	acpi.h	/^	uint32 CreatorRevision;$/;"	m	struct:ACPISDTHeader
+DAPC	pcnet.h	/^	uint8 DAPC:1;$/;"	m	struct:CSR15_mode
+DATA	mboot_hdr.S	/^DATA		equ data_end$/;"	d
+DBA	ahci.c	/^	uint64	DBA;$/;"	m	struct:PRDT	file:
+DBC	ahci.c	/^	uint32	DBC:22;$/;"	m	struct:PRDT	file:
+DEF	pcnet.h	/^	uint8 DEF:1;		\/\/ 26$/;"	m	struct:pcnet_tx_16
+DEF	pcnet.h	/^	uint8 DEF:1;		\/\/ 26$/;"	m	struct:pcnet_tx_32
+DESC_LEN	mem.h	11;"	d
+DEV_BLOCK	dev.h	59;"	d
+DEV_CHAR	dev.h	60;"	d
+DEV_ETH	dev.h	64;"	d
+DEV_FS	dev.h	61;"	d
+DEV_ID	dev.h	76;"	d
+DEV_MAJOR	dev.h	77;"	d
+DEV_MINOR	dev.h	78;"	d
+DEV_NET	dev.h	62;"	d
+DEV_NULL	dev.h	58;"	d
+DEV_PROTO	dev.h	63;"	d
+DLAE	ahci.c	/^	uint8 DLAE:1;$/;"	m	struct:_PxCMD	file:
+DLINKTST	pcnet.h	/^	uint8 DLINKTST:1;$/;"	m	struct:CSR15_mode
+DRCVBC	pcnet.h	/^	uint8 DRCVBC:1;$/;"	m	struct:CSR15_mode
+DRCVPA	pcnet.h	/^	uint8 DRCVPA:1;$/;"	m	struct:CSR15_mode
+DRE_COUNT	pcnet.h	12;"	d
+DRQ_STAT	ide.h	56;"	d
+DRTY	pcnet.h	/^	uint8 DRTY:1;$/;"	m	struct:CSR15_mode
+DRX	pcnet.h	/^	uint8 DRX:1;$/;"	m	struct:CSR15_mode
+DTX	pcnet.h	/^	uint8 DTX:1;$/;"	m	struct:CSR15_mode
+DXMTFCS	pcnet.h	/^	uint8 DXMTFCS:1;$/;"	m	struct:CSR15_mode
+E2BIG	klibc.h	63;"	d
+E2BIG	libc.h	33;"	d
+EACCES	klibc.h	69;"	d
+EACCES	libc.h	39;"	d
+EAGAIN	klibc.h	67;"	d
+EAGAIN	libc.h	37;"	d
+EBADF	klibc.h	65;"	d
+EBADF	libc.h	35;"	d
+EBUSY	klibc.h	72;"	d
+EBUSY	libc.h	42;"	d
+ECC_STAT	ide.h	55;"	d
+ECHILD	klibc.h	66;"	d
+ECHILD	libc.h	36;"	d
+EDOM	klibc.h	89;"	d
+EDOM	libc.h	59;"	d
+EEXIST	klibc.h	73;"	d
+EEXIST	libc.h	43;"	d
+EFAULT	klibc.h	70;"	d
+EFAULT	libc.h	40;"	d
+EFBIG	klibc.h	83;"	d
+EFBIG	libc.h	53;"	d
+EFER_LME	mboot.S	/^EFER_LME	equ	8$/;"	d
+EFER_SCE	mboot.S	/^EFER_SCE	equ	0$/;"	d
+EINTR	klibc.h	60;"	d
+EINTR	libc.h	30;"	d
+EINVAL	klibc.h	78;"	d
+EINVAL	libc.h	48;"	d
+EIO	klibc.h	61;"	d
+EIO	libc.h	31;"	d
+EISDIR	klibc.h	77;"	d
+EISDIR	libc.h	47;"	d
+ELFCLASS32	elf64.h	33;"	d
+ELFCLASS64	elf64.h	34;"	d
+ELFCLASS_MAX	elf64.h	35;"	d
+ELFDATA2LSB	elf64.h	47;"	d
+ELFDATA2MSB	elf64.h	48;"	d
+ELFDATA_MAX	elf64.h	49;"	d
+ELFOSABI_HPUX	elf64.h	60;"	d
+ELFOSABI_LINUX	elf64.h	61;"	d
+ELFOSABI_MAX	elf64.h	62;"	d
+ELFOSABI_STANDALONE	elf64.h	63;"	d
+ELFOSABI_SYSV	elf64.h	59;"	d
+ELFclass	elf64.h	/^const char *ELFclass[ELFCLASS_MAX] = {$/;"	v
+ELFdata	elf64.h	/^const char *ELFdata[ELFDATA_MAX] = {$/;"	v
+ELFetype	elf64.h	/^const char *ELFetype[ET_MAX] = {$/;"	v
+ELFosabi	elf64.h	/^const char *ELFosabi[ELFOSABI_MAX] = {$/;"	v
+ELFptype	elf64.h	/^const char *ELFptype[PT_MAX] = {$/;"	v
+ELFshtype	elf64.h	/^const char *ELFshtype[SHT_MAX] = {$/;"	v
+EMFILE	klibc.h	80;"	d
+EMFILE	libc.h	50;"	d
+EMLINK	klibc.h	87;"	d
+EMLINK	libc.h	57;"	d
+EMS	ahci.c	/^	int	EMS:1;$/;"	m	struct:_CAP	file:
+EM_CTL	ahci.c	/^	uint32	EM_CTL;$/;"	m	struct:GHC	file:
+EM_LOC	ahci.c	/^	uint32	EM_LOC;$/;"	m	struct:GHC	file:
+EM_X86_64	elf64.h	37;"	d
+ENFILE	klibc.h	79;"	d
+ENFILE	libc.h	49;"	d
+ENODEV	klibc.h	75;"	d
+ENODEV	libc.h	45;"	d
+ENOENT	klibc.h	58;"	d
+ENOENT	libc.h	28;"	d
+ENOEXEC	klibc.h	64;"	d
+ENOEXEC	libc.h	34;"	d
+ENOMEM	klibc.h	68;"	d
+ENOMEM	libc.h	38;"	d
+ENOSPC	klibc.h	84;"	d
+ENOSPC	libc.h	54;"	d
+ENOSYS	errno.h	4;"	d
+ENOTBLK	klibc.h	71;"	d
+ENOTBLK	libc.h	41;"	d
+ENOTDIR	klibc.h	76;"	d
+ENOTDIR	libc.h	46;"	d
+ENOTTY	klibc.h	81;"	d
+ENOTTY	libc.h	51;"	d
+ENP	pcnet.h	/^	uint8 ENP:1;		\/\/ 24$/;"	m	struct:pcnet_rx_16
+ENP	pcnet.h	/^	uint8 ENP:1;		\/\/ 24$/;"	m	struct:pcnet_rx_32
+ENP	pcnet.h	/^	uint8 ENP:1;		\/\/ 24$/;"	m	struct:pcnet_tx_16
+ENP	pcnet.h	/^	uint8 ENP:1;		\/\/ 24$/;"	m	struct:pcnet_tx_32
+ENXIO	klibc.h	62;"	d
+ENXIO	libc.h	32;"	d
+EOF	libc.h	24;"	d
+EOT	ide.h	/^	uint8	EOT:1;$/;"	m	struct:PRD
+EPERM	klibc.h	57;"	d
+EPERM	libc.h	27;"	d
+EPIPE	klibc.h	88;"	d
+EPIPE	libc.h	58;"	d
+ERANGE	klibc.h	90;"	d
+ERANGE	libc.h	60;"	d
+EROFS	klibc.h	86;"	d
+EROFS	libc.h	56;"	d
+ERR	pcnet.h	/^	uint8 ERR:1;		\/\/ 30$/;"	m	struct:pcnet_rx_16
+ERR	pcnet.h	/^	uint8 ERR:1;		\/\/ 30$/;"	m	struct:pcnet_rx_32
+ERR	pcnet.h	/^	uint8 ERR:1;		\/\/ 30$/;"	m	struct:pcnet_tx_16
+ERR	pcnet.h	/^	uint8 ERR:1;		\/\/ 30$/;"	m	struct:pcnet_tx_32
+ERR_STAT	ide.h	53;"	d
+ESP	ahci.c	/^	uint8 ESP:1;$/;"	m	struct:_PxCMD	file:
+ESPIPE	klibc.h	85;"	d
+ESPIPE	libc.h	55;"	d
+ESRCH	klibc.h	59;"	d
+ESRCH	libc.h	29;"	d
+ESTABLISHED	tcp.h	61;"	d
+ES_LOADED	elf64.h	106;"	d
+ES_LOADME	elf64.h	107;"	d
+ETHPROTO_ARP	eth.h	29;"	d
+ETHPROTO_IP	eth.h	28;"	d
+ETXTBSY	klibc.h	82;"	d
+ETXTBSY	libc.h	52;"	d
+ET_CORE	elf64.h	77;"	d
+ET_DYN	elf64.h	76;"	d
+ET_EXEC	elf64.h	75;"	d
+ET_MAX	elf64.h	78;"	d
+ET_NONE	elf64.h	73;"	d
+ET_REL	elf64.h	74;"	d
+EXDEF	pcnet.h	/^	uint8 EXDEF:1;		\/\/ 29$/;"	m	struct:pcnet_tx_16
+EXDEF	pcnet.h	/^	uint8 EXDEF:1;		\/\/ 29$/;"	m	struct:pcnet_tx_32
+EXDEV	klibc.h	74;"	d
+EXDEV	libc.h	44;"	d
+EXIT_SUCCESS	libc.h	66;"	d
+ExtendedChecksum	acpi.h	/^	uint8 ExtendedChecksum;$/;"	m	struct:RSDPDescriptor20
+FBSCP	ahci.c	/^	uint8 FBSCP:1;$/;"	m	struct:_PxCMD	file:
+FBSS	ahci.c	/^	int	FBSS:1;$/;"	m	struct:_CAP	file:
+FCOLL	pcnet.h	/^	uint8 FCOLL:1;$/;"	m	struct:CSR15_mode
+FILE	libc.h	/^} FILE;$/;"	t	typeref:struct:__anon17
+FIN_WAIT_1	tcp.h	62;"	d
+FIN_WAIT_2	tcp.h	63;"	d
+FR	ahci.c	/^	uint8 FR:1;$/;"	m	struct:_PxCMD	file:
+FRAM	pcnet.h	/^	uint8 FRAM:1;		\/\/ 29$/;"	m	struct:pcnet_rx_16
+FRAM	pcnet.h	/^	uint8 FRAM:1;		\/\/ 29$/;"	m	struct:pcnet_rx_32
+FRE	ahci.c	/^	uint8 FRE:1;$/;"	m	struct:_PxCMD	file:
+FS_BLOCK	file.h	34;"	d
+FS_BOUND	file.h	38;"	d
+FS_CHAR	file.h	35;"	d
+FS_DIR	file.h	32;"	d
+FS_FILE	file.h	33;"	d
+FS_KERNEL	file.h	36;"	d
+FS_LISTEN	file.h	39;"	d
+FS_SOCKET	file.h	37;"	d
+GDT_SIZE	cpu.h	200;"	d
+GDT_TYPE_CALL	cpu.h	47;"	d
+GDT_TYPE_CS	cpu.h	42;"	d
+GDT_TYPE_DS	cpu.h	41;"	d
+GDT_TYPE_INT	cpu.h	48;"	d
+GDT_TYPE_LDT	cpu.h	44;"	d
+GDT_TYPE_TRAP	cpu.h	49;"	d
+GDT_TYPE_TSSA	cpu.h	45;"	d
+GDT_TYPE_TSSB	cpu.h	46;"	d
+GET_PE	page.h	107;"	d
+GET_PE_N	page.h	108;"	d
+GET_PHYS	page.h	110;"	d
+GET_PHYS_K	page.h	111;"	d
+GET_PTP	page.h	104;"	d
+GET_VIRT	page.h	116;"	d
+GHC	ahci.c	/^	uint32	GHC;$/;"	m	struct:GHC	file:
+GHC	ahci.c	/^struct GHC {$/;"	s	file:
+GHC_AE	ahci.c	134;"	d	file:
+GHC_HR	ahci.c	135;"	d	file:
+GTF_B	cpu.h	61;"	d
+GTF_C	cpu.h	54;"	d
+GTF_D	cpu.h	60;"	d
+GTF_DPL	cpu.h	65;"	d
+GTF_E	cpu.h	55;"	d
+GTF_G	cpu.h	63;"	d
+GTF_L	cpu.h	58;"	d
+GTF_P	cpu.h	57;"	d
+GTF_R	cpu.h	51;"	d
+GTF_W	cpu.h	52;"	d
+HD0	ramfs.c	19;"	d	file:
+HDLC_ESCAPE	ppp.h	13;"	d
+HDLC_FLAG	ppp.h	10;"	d
+HDLC_PPP_ADDR	ppp.h	11;"	d
+HDLC_PPP_CMD	ppp.h	12;"	d
+HEAD_SIZE	mem.h	46;"	d
+HPCP	ahci.c	/^	uint8 HPCP:1;$/;"	m	struct:_PxCMD	file:
+HRD_ETHERNET	arp.h	31;"	d
+I	ahci.c	/^	int		I:1;$/;"	m	struct:PRDT	file:
+ICC	ahci.c	/^	uint8 ICC:4;$/;"	m	struct:_PxCMD	file:
+ICMP_ECHO_REPLY	ip.h	24;"	d
+ICMP_ECHO_REQUEST	ip.h	25;"	d
+IDETIM_DMA_TE	ide.h	17;"	d
+IDETIM_IDE_DE	ide.h	18;"	d
+IDETIM_PRI	ide.h	6;"	d
+IDETIM_SEC	ide.h	7;"	d
+IDETIM_TIME0	ide.h	15;"	d
+IDETIM_TIME1	ide.h	16;"	d
+IDE_MAJOR	dev.h	74;"	d
+IDE_MASTER	pci.h	111;"	d
+IDE_PRI_OP	pci.h	107;"	d
+IDE_PRI_PR	pci.h	108;"	d
+IDE_SEC_OP	pci.h	109;"	d
+IDE_SEC_PR	pci.h	110;"	d
+IDT_SIZE	cpu.h	181;"	d
+INADDR_ANY	ip.h	55;"	d
+INADDR_ANY	task2.c	15;"	d	file:
+INDEX_STAT	ide.h	54;"	d
+INTL	pcnet.h	/^	uint8 INTL:1;$/;"	m	struct:CSR15_mode
+IPCPC_IPADDR	ppp.h	28;"	d
+IPF_DF	ip.h	38;"	d
+IPF_MF	ip.h	39;"	d
+IPF_OFFSET	ip.h	40;"	d
+IPF_RF	ip.h	37;"	d
+IPPROTO_ICMP	ip.h	44;"	d
+IPPROTO_TCP	ip.h	45;"	d
+IPS_CONNECT	ip.h	92;"	d
+IPS_LISTEN	ip.h	91;"	d
+IPS_SOCKET	ip.h	90;"	d
+IPS_UNDEF	ip.h	89;"	d
+IS	ahci.c	/^	uint32	IS;$/;"	m	struct:GHC	file:
+ISS	ahci.c	/^	int	ISS:4;$/;"	m	struct:_CAP	file:
+KERNEL	Makefile	/^KERNEL=kernel$/;"	m
+KERNEL_TASK	proc.h	91;"	d
+KERN_END	mboot_hdr.S	/^KERN_END	equ	kernel_end$/;"	d
+KERN_POOLS	mem.h	6;"	d
+KERN_START	mboot_hdr.S	/^KERN_START	equ	kernel_start$/;"	d
+KEY_ALT	dev.c	18;"	d	file:
+KEY_CTRL	dev.c	17;"	d	file:
+KEY_SHIFT	dev.c	16;"	d	file:
+KP_ALIGN	mem.h	34;"	d
+KP_FREE	mem.h	33;"	d
+LADRF	pcnet.h	/^	uint64 LADRF;		\/\/ 00 - 63$/;"	m	struct:pcnet_init_32
+LADRF	pcnet.h	/^	uint64 LADRF;$/;"	m	struct:pcnet_init_16
+LAST_ACK	tcp.h	67;"	d
+LCAR	pcnet.h	/^	uint8 LCAR:1;		\/\/ 27$/;"	m	struct:pcnet_tx_16
+LCAR	pcnet.h	/^	uint8 LCAR:1;		\/\/ 27$/;"	m	struct:pcnet_tx_32
+LCOL	pcnet.h	/^	uint8 LCOL:1;		\/\/ 28$/;"	m	struct:pcnet_tx_16
+LCOL	pcnet.h	/^	uint8 LCOL:1;		\/\/ 28$/;"	m	struct:pcnet_tx_32
+LCPC_ASYNCMAP	ppp.h	25;"	d
+LCPC_MAGIC_NUMBER	ppp.h	26;"	d
+LCP_CONF_ACK	ppp.h	19;"	d
+LCP_CONF_NAK	ppp.h	20;"	d
+LCP_CONF_REJ	ppp.h	21;"	d
+LCP_CONF_REQ	ppp.h	18;"	d
+LCP_TERM_ACK	ppp.h	23;"	d
+LCP_TERM_REQ	ppp.h	22;"	d
+LD	Makefile	/^LD=@ld$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS=--build-id=none -nostdlib --check-sections -N -g$/;"	m
+LISTEN	tcp.h	58;"	d
+LOOP	pcnet.h	/^	uint8 LOOP:1;$/;"	m	struct:CSR15_mode
+Length	acpi.h	/^	uint32 Length;$/;"	m	struct:ACPISDTHeader
+Length	acpi.h	/^	uint32 Length;$/;"	m	struct:RSDPDescriptor20
+MAX_CPU	cpu.h	211;"	d
+MAX_EXCEPTION	cpu.c	21;"	d	file:
+MAX_FD	proc.h	43;"	d
+MAX_KEYS	dev.c	14;"	d	file:
+MAX_PHYS_MEM_SLOTS	frame.h	12;"	d
+MAX_SYSCALL	intr.S	/^	MAX_SYSCALL equ 0x100$/;"	d
+MAX_SYSCALL	syscall.h	68;"	d
+MBF_ALIGN	mboot_hdr.S	/^MBF_ALIGN	equ	1<<0$/;"	d
+MBF_KLUDGE	mboot_hdr.S	/^MBF_KLUDGE	equ 1<<16$/;"	d
+MBF_MEMINFO	mboot_hdr.S	/^MBF_MEMINFO	equ	1<<1$/;"	d
+MBR	disk.h	/^struct MBR$/;"	s
+MB_FLAGS	mboot_hdr.S	/^MB_FLAGS	equ	MBF_ALIGN|MBF_MEMINFO|MBF_KLUDGE$/;"	d
+MB_MAGIC	mboot_hdr.S	/^MB_MAGIC	equ	0x1BADB002$/;"	d
+MCNT	pcnet.h	/^	uint16 MCNT:12;		\/\/ 00 - 11$/;"	m	struct:pcnet_rx_16
+MCNT	pcnet.h	/^	uint16 MCNT:12;		\/\/ 00 - 11$/;"	m	struct:pcnet_rx_32
+MENDECL	pcnet.h	/^	uint8 MENDECL:1;$/;"	m	struct:CSR15_mode
+MODE	pcnet.h	/^	uint16 MODE;		\/\/ 00 - 15$/;"	m	struct:pcnet_init_32
+MODE	pcnet.h	/^	uint16 MODE;$/;"	m	struct:pcnet_init_16
+MORE	pcnet.h	/^	uint8 MORE:1;		\/\/ 28$/;"	m	struct:pcnet_tx_16
+MORE	pcnet.h	/^	uint8 MORE:1;		\/\/ 28$/;"	m	struct:pcnet_tx_32
+MPSP	ahci.c	/^	uint8 MPSP:1;$/;"	m	struct:_PxCMD	file:
+MPSS	ahci.c	/^	uint8 MPSS:1;$/;"	m	struct:_PxCMD	file:
+MSR_APIC_BAR	cpu.h	209;"	d
+MSR_CSTAR	cpu.h	206;"	d
+MSR_CSTAR	mboot.S	/^MSR_CSTAR	equ	0xc0000083	; target RIP in compat$/;"	d
+MSR_EFER	cpu.h	203;"	d
+MSR_EFER	mboot.S	/^MSR_EFER	equ	0xc0000080$/;"	d
+MSR_KERNEL_GSBASE	cpu.h	208;"	d
+MSR_KERN_GS_BASE	mboot.S	/^MSR_KERN_GS_BASE	equ	0xc0000102	; KernelGSBase$/;"	d
+MSR_LSTAR	cpu.h	205;"	d
+MSR_LSTAR	mboot.S	/^MSR_LSTAR	equ	0xc0000082	; target RIP in long mode$/;"	d
+MSR_SFMASK	cpu.h	207;"	d
+MSR_SF_MASK	mboot.S	/^MSR_SF_MASK	equ	0xc0000084	; flags mask (32bit)$/;"	d
+MSR_STAR	cpu.h	204;"	d
+MSR_STAR	mboot.S	/^MSR_STAR	equ	0xc0000081	; target CS\/SS\/RIP in legacy$/;"	d
+MULTIBOOT_BOOTLOADER_MAGIC	mboot.h	4;"	d
+MULTIBOOT_HEADER_FLAGS	mboot.h	51;"	d
+MULTIBOOT_HEADER_MAGIC	mboot.h	50;"	d
+NASM	Makefile	/^NASM=@nasm$/;"	m
+NASMFLAGS	Makefile	/^NASMFLAGS=-f elf64 -g$/;"	m
+NCS	ahci.c	/^	int	NCS:5;$/;"	m	struct:_CAP	file:
+NETDEV_ETH	net.h	57;"	d
+NETDEV_NULL	net.h	54;"	d
+NETDEV_PPP	net.h	55;"	d
+NETDEV_SLIP	net.h	56;"	d
+NETPROTO_IP	net.h	60;"	d
+NETPROTO_NULL	net.h	59;"	d
+NET_NEW	net.h	51;"	d
+NET_READY	net.h	52;"	d
+NODE_DATA	mem.h	31;"	d
+NODE_SIZE	mem.h	30;"	d
+NP	ahci.c	/^	int	NP:4;$/;"	m	struct:_CAP	file:
+NULL	klibc.h	23;"	d
+NULL	klibc.h	25;"	d
+NULL	libc.h	10;"	d
+NULL	libc.h	13;"	d
+NUM_RD	ram.h	4;"	d
+NUM_SER	dev.h	99;"	d
+NUM_TASKS	proc.h	8;"	d
+OEMID	acpi.h	/^	char OEMID[6];$/;"	m	struct:ACPISDTHeader
+OEMID	acpi.h	/^	char OEMID[6];$/;"	m	struct:RSDPDescriptor20
+OEMRevision	acpi.h	/^	uint32 OEMRevision;$/;"	m	struct:ACPISDTHeader
+OEMTableID	acpi.h	/^	char OEMTableID[8];$/;"	m	struct:ACPISDTHeader
+OFLO	pcnet.h	/^	uint8 OFLO:1;		\/\/ 28$/;"	m	struct:pcnet_rx_16
+OFLO	pcnet.h	/^	uint8 OFLO:1;		\/\/ 28$/;"	m	struct:pcnet_rx_32
+ONE	pcnet.h	/^	uint8 ONE:1;		\/\/ 27$/;"	m	struct:pcnet_tx_16
+ONE	pcnet.h	/^	uint8 ONE:1;		\/\/ 27$/;"	m	struct:pcnet_tx_32
+OWN	pcnet.h	/^	uint8 OWN:1;		\/\/ 31$/;"	m	struct:pcnet_rx_16
+OWN	pcnet.h	/^	uint8 OWN:1;		\/\/ 31$/;"	m	struct:pcnet_rx_32
+OWN	pcnet.h	/^	uint8 OWN:1;		\/\/ 31$/;"	m	struct:pcnet_tx_16
+OWN	pcnet.h	/^	uint8 OWN:1;		\/\/ 31$/;"	m	struct:pcnet_tx_32
+O_RDONLY	libc.h	62;"	d
+O_RDWR	libc.h	64;"	d
+O_WRONLY	libc.h	63;"	d
+P	ahci.c	/^	int P:1;$/;"	m	struct:CommandHeader	file:
+PADR	pcnet.h	/^	uint8  PADR[6];$/;"	m	struct:pcnet_init_16
+PADR	pcnet.h	/^	uint8 PADR[6];		\/\/ 00 - 23$/;"	m	struct:pcnet_init_32
+PAGE_SIZE	mboot.S	/^PAGE_SIZE	equ	0x1000$/;"	d
+PAGE_SIZE	page.h	5;"	d
+PAUSE	ide.c	8;"	d	file:
+PCI_BAR	pci.h	38;"	d
+PCI_BAR_0	pci.h	37;"	d
+PCI_CLASS_CODE	pci.h	29;"	d
+PCI_CLASS_MASS_STORAGE	pci.h	103;"	d
+PCI_CMD_INTX_DISABLE	pci.h	63;"	d
+PCI_CMD_IO	pci.h	60;"	d
+PCI_CMD_MASTER	pci.h	62;"	d
+PCI_CMD_MEMORY	pci.h	61;"	d
+PCI_CMD_REG	pci.h	21;"	d
+PCI_DEVICE_828011_AHCI	pci.h	99;"	d
+PCI_DEVICE_ID	pci.h	19;"	d
+PCI_DEVICE_PCNET	pci.h	96;"	d
+PCI_DEVICE_PIIX3	pci.h	100;"	d
+PCI_DEVICE_PIIX4	pci.h	101;"	d
+PCI_HEADER_TYPE	pci.h	33;"	d
+PCI_HT_MULTI	pci.h	34;"	d
+PCI_INT_LINE	pci.h	49;"	d
+PCI_INT_PIN	pci.h	51;"	d
+PCI_NUM_BARS	pci.h	13;"	d
+PCI_REV_ID	pci.h	25;"	d
+PCI_STATUS_REG	pci.h	23;"	d
+PCI_SUBCLASS_IDE	pci.h	105;"	d
+PCI_SUB_ID	pci.h	43;"	d
+PCI_SUB_VENDOR_ID	pci.h	41;"	d
+PCI_VENDOR_AMD	pci.h	95;"	d
+PCI_VENDOR_ID	pci.h	17;"	d
+PCI_VENDOR_INTEL	pci.h	98;"	d
+PEF_A	page.h	59;"	d
+PEF_COW	page.h	64;"	d
+PEF_D	page.h	60;"	d
+PEF_G	page.h	63;"	d
+PEF_LAST	page.h	62;"	d
+PEF_NX	page.h	65;"	d
+PEF_P	page.h	54;"	d
+PEF_PAT	page.h	61;"	d
+PEF_PCD	page.h	58;"	d
+PEF_PWT	page.h	57;"	d
+PEF_U	page.h	56;"	d
+PEF_W	page.h	55;"	d
+PF_ID	cpu.h	260;"	d
+PF_P	cpu.h	256;"	d
+PF_R	elf64.h	134;"	d
+PF_RSVD	cpu.h	259;"	d
+PF_US	cpu.h	258;"	d
+PF_W	elf64.h	133;"	d
+PF_WR	cpu.h	257;"	d
+PF_X	elf64.h	132;"	d
+PGSIZE_1G	page.h	132;"	d
+PGSIZE_2M	page.h	131;"	d
+PGSIZE_4K	page.h	130;"	d
+PI	ahci.c	/^	uint32	PI;$/;"	m	struct:GHC	file:
+PID_IPCP	ppp.h	16;"	d
+PID_LCP	ppp.h	15;"	d
+PMA	ahci.c	/^	uint8 PMA:1;$/;"	m	struct:_PxCMD	file:
+PMD	ahci.c	/^	int	PMD:1;$/;"	m	struct:_CAP	file:
+PML2	mboot.S	/^PML2		equ	0x10000$/;"	d
+PML3	mboot.S	/^PML3		equ	PML2+PAGE_SIZE$/;"	d
+PML4	mboot.S	/^PML4		equ	PML3+PAGE_SIZE$/;"	d
+PMP	ahci.c	/^	int PMP:4;$/;"	m	struct:CommandHeader	file:
+POD	ahci.c	/^	uint8 POD:1;$/;"	m	struct:_PxCMD	file:
+PORT	ahci.c	/^struct PORT {$/;"	s	file:
+PORTSEL	pcnet.h	/^	uint8 PORTSEL:2;$/;"	m	struct:CSR15_mode
+PRD	ide.h	/^struct PRD {$/;"	s
+PRDBC	ahci.c	/^	uint32 PRDBC;$/;"	m	struct:CommandHeader	file:
+PRDT	ahci.c	/^struct PRDT {$/;"	s	file:
+PRDTL	ahci.c	/^	int PRDTL:16;$/;"	m	struct:CommandHeader	file:
+PRI_CMD_BLOCK	ide.h	37;"	d
+PRI_CON_BLOCK	ide.h	38;"	d
+PROM	pcnet.h	/^	uint8 PROM:1;$/;"	m	struct:CSR15_mode
+PSC	ahci.c	/^	int	PSC:1;$/;"	m	struct:_CAP	file:
+PSDE0	ide.h	13;"	d
+PSDE1	ide.h	12;"	d
+PT_DYNAMIC	elf64.h	111;"	d
+PT_INTERP	elf64.h	112;"	d
+PT_LOAD	elf64.h	110;"	d
+PT_MAX	elf64.h	116;"	d
+PT_NOTE	elf64.h	113;"	d
+PT_NULL	elf64.h	109;"	d
+PT_PHDR	elf64.h	115;"	d
+PT_SHLIB	elf64.h	114;"	d
+PT_SIZE	page.h	93;"	d
+PxCI	ahci.c	/^	uint32	PxCI;$/;"	m	struct:PORT	file:
+PxCLB	ahci.c	/^	struct	CommandHeader *PxCLB; \/\/ Contains 32$/;"	m	struct:PORT	typeref:struct:PORT::CommandHeader	file:
+PxCMD	ahci.c	/^	} __attribute__((packed)) PxCMD;$/;"	m	struct:PORT	typeref:union:PORT::__anon9	file:
+PxFB	ahci.c	/^	uint64	PxFB;$/;"	m	struct:PORT	file:
+PxFBS	ahci.c	/^	uint32	PxFBS;$/;"	m	struct:PORT	file:
+PxIE	ahci.c	/^	uint32	PxIE;$/;"	m	struct:PORT	file:
+PxIS	ahci.c	/^	uint32	PxIS;$/;"	m	struct:PORT	file:
+PxSACT	ahci.c	/^	uint32	PxSACT;$/;"	m	struct:PORT	file:
+PxSCTL	ahci.c	/^	uint32	PxSCTL;$/;"	m	struct:PORT	file:
+PxSERR	ahci.c	/^	uint32	PxSERR;$/;"	m	struct:PORT	file:
+PxSIG	ahci.c	/^	uint32	PxSIG;$/;"	m	struct:PORT	file:
+PxSNTF	ahci.c	/^	uint32	PxSNTF;$/;"	m	struct:PORT	file:
+PxSSTS	ahci.c	/^	uint32	PxSSTS;$/;"	m	struct:PORT	file:
+PxTFD	ahci.c	/^	uint32	PxTFD;$/;"	m	struct:PORT	file:
+PxVS	ahci.c	/^	uint8	PxVS[16];$/;"	m	struct:PORT	file:
+R	ahci.c	/^	int R:1;$/;"	m	struct:CommandHeader	file:
+RAP	pcnet.h	8;"	d
+RBADR	pcnet.h	/^	uint32 RBADR:24;	\/\/ 00 - 31$/;"	m	struct:pcnet_rx_16
+RBADR	pcnet.h	/^	uint32 RBADR;		\/\/ 00 - 31$/;"	m	struct:pcnet_rx_32
+RCC	pcnet.h	/^	uint8 RCC;$/;"	m	struct:pcnet_rx_32
+RDP	pcnet.h	7;"	d
+RDRA	pcnet.h	/^	uint32 RDRA:24;$/;"	m	struct:pcnet_init_16
+RDRA	pcnet.h	/^	uint32 RDRA;		\/\/ 00 - 31$/;"	m	struct:pcnet_init_32
+RD_0_MINOR	ram.h	8;"	d
+RD_MAJOR	ram.h	7;"	d
+RD_SIZE	ram.h	5;"	d
+READY_STAT	ide.h	59;"	d
+RES	pcnet.h	/^	uint16 RES:12;		\/\/ 04 - 15$/;"	m	struct:pcnet_tx_32
+RESET	pcnet.h	9;"	d
+RLEN	pcnet.h	/^	uint8  RLEN:4;$/;"	m	struct:pcnet_init_16
+RLEN	pcnet.h	/^	uint8 RLEN:4;		\/\/ 20 - 23$/;"	m	struct:pcnet_init_32
+RPC	pcnet.h	/^	uint8 RPC;$/;"	m	struct:pcnet_rx_32
+RSDPDescriptor20	acpi.h	/^struct RSDPDescriptor20 {$/;"	s
+RTRY	pcnet.h	/^	uint8 RTRY:1;		\/\/ 26$/;"	m	struct:pcnet_tx_16
+RTRY	pcnet.h	/^	uint8 RTRY:1;		\/\/ 26$/;"	m	struct:pcnet_tx_32
+RX_RLEN	pcnet.h	14;"	d
+Revision	acpi.h	/^	uint8 Revision;$/;"	m	struct:ACPISDTHeader
+Revision	acpi.h	/^	uint8 Revision;$/;"	m	struct:RSDPDescriptor20
+RsdtAddress	acpi.h	/^	uint32 RsdtAddress;$/;"	m	struct:RSDPDescriptor20
+S64A	ahci.c	/^	int	S64A:1;$/;"	m	struct:_CAP	file:
+SAL	ahci.c	/^	int	SAL:1;$/;"	m	struct:_CAP	file:
+SALP	ahci.c	/^	int	SALP:1;$/;"	m	struct:_CAP	file:
+SAM	ahci.c	/^	int	SAM:1;$/;"	m	struct:_CAP	file:
+SCLO	ahci.c	/^	int	SCLO:1;$/;"	m	struct:_CAP	file:
+SECOND_COMP	klibc.h	37;"	d
+SEC_CMD_BLOCK	ide.h	39;"	d
+SEC_CON_BLOCK	ide.h	40;"	d
+SEEK_STAT	ide.h	57;"	d
+SEL_CS	mboot.S	/^SEL_CS		equ	gdtcode64 - gdt_desc$/;"	d
+SEL_DS	mboot.S	/^SEL_DS		equ	gdtdata64 - gdt_desc$/;"	d
+SER_0_MINOR	dev.h	72;"	d
+SER_BUFFER_SIZE	dev.h	69;"	d
+SER_CTRL	dev.h	17;"	d
+SER_DATA	dev.h	13;"	d
+SER_FCR	dev.h	18;"	d
+SER_FCR_14B	dev.h	31;"	d
+SER_FCR_4B	dev.h	29;"	d
+SER_FCR_8B	dev.h	30;"	d
+SER_FCR_CLR_RX	dev.h	26;"	d
+SER_FCR_CLR_TX	dev.h	27;"	d
+SER_FCR_DMA_1	dev.h	28;"	d
+SER_FCR_ENABLE	dev.h	25;"	d
+SER_INTEN	dev.h	14;"	d
+SER_LCR	dev.h	19;"	d
+SER_LCR_5	dev.h	37;"	d
+SER_LCR_6	dev.h	38;"	d
+SER_LCR_7	dev.h	39;"	d
+SER_LCR_8	dev.h	40;"	d
+SER_LCR_DLAB	dev.h	33;"	d
+SER_LCR_EVEN	dev.h	36;"	d
+SER_LCR_SBR	dev.h	34;"	d
+SER_LCR_STICK	dev.h	35;"	d
+SER_LSB_DIV	dev.h	15;"	d
+SER_LSR	dev.h	21;"	d
+SER_LSR_DR	dev.h	54;"	d
+SER_LSR_THR	dev.h	55;"	d
+SER_LSR_THR_IDLE	dev.h	56;"	d
+SER_MAJOR	dev.h	71;"	d
+SER_MCR	dev.h	20;"	d
+SER_MCR_DTR	dev.h	51;"	d
+SER_MCR_RTS	dev.h	52;"	d
+SER_MSB_DIV	dev.h	16;"	d
+SER_MSR	dev.h	22;"	d
+SER_MSR_CTS	dev.h	45;"	d
+SER_MSR_DCD	dev.h	42;"	d
+SER_MSR_DCTS	dev.h	49;"	d
+SER_MSR_DDCD	dev.h	46;"	d
+SER_MSR_DDSR	dev.h	48;"	d
+SER_MSR_DSR	dev.h	44;"	d
+SER_MSR_RI	dev.h	43;"	d
+SER_MSR_TERI	dev.h	47;"	d
+SER_SCRATCH	dev.h	23;"	d
+SET_PHYS	page.h	113;"	d
+SET_PHYS_K	page.h	114;"	d
+SET_PTP	page.h	105;"	d
+SHF_ALLOC	elf64.h	191;"	d
+SHF_EXECINSTR	elf64.h	192;"	d
+SHF_WRITE	elf64.h	190;"	d
+SHT_DYANMIC	elf64.h	169;"	d
+SHT_HASH	elf64.h	168;"	d
+SHT_MAX	elf64.h	172;"	d
+SHT_NOBITS	elf64.h	171;"	d
+SHT_NOTE	elf64.h	170;"	d
+SHT_NULL	elf64.h	163;"	d
+SHT_PROGBITS	elf64.h	164;"	d
+SHT_RELA	elf64.h	167;"	d
+SHT_STRTAB	elf64.h	166;"	d
+SHT_SYMTAB	elf64.h	165;"	d
+SLIP_END	slip.c	6;"	d	file:
+SLIP_ESC	slip.c	7;"	d	file:
+SLIP_ESC_END	slip.c	8;"	d	file:
+SLIP_ESC_ESC	slip.c	9;"	d	file:
+SLIP_MAX_PACKET	slip.c	5;"	d	file:
+SMPS	ahci.c	/^	int	SMPS:1;$/;"	m	struct:_CAP	file:
+SNCQ	ahci.c	/^	int	SNCQ:1;$/;"	m	struct:_CAP	file:
+SOCK_STREAM	ip.h	47;"	d
+SOCK_STREAM	task2.c	5;"	d	file:
+SPM	ahci.c	/^	int	SPM:1;$/;"	m	struct:_CAP	file:
+SSC	ahci.c	/^	int	SSC:1;$/;"	m	struct:_CAP	file:
+SSDE0	ide.h	11;"	d
+SSDE1	ide.h	10;"	d
+SSNTF	ahci.c	/^	int	SSNTF:1;$/;"	m	struct:_CAP	file:
+SSS	ahci.c	/^	int	SSS:1;$/;"	m	struct:_CAP	file:
+ST	ahci.c	/^	uint8 ST:1;$/;"	m	struct:_PxCMD	file:
+STACK_BOTTOM	mboot.S	/^STACK_BOTTOM	equ	PML4+PAGE_SIZE$/;"	d
+STACK_SIZE	mboot.S	/^STACK_SIZE	equ	0x8000$/;"	d
+STACK_SIZE	proc.h	9;"	d
+STACK_TOP	mboot.S	/^STACK_TOP	equ	STACK_BOTTOM+STACK_SIZE$/;"	d
+STAR	init.c	/^} __attribute__((packed)) STAR;$/;"	t	typeref:union:__anon13	file:
+STATE_CREATING	proc.h	74;"	d
+STATE_EMPTY	proc.h	72;"	d
+STATE_EXECVE	proc.h	77;"	d
+STATE_FORK	proc.h	78;"	d
+STATE_KILLING	proc.h	73;"	d
+STATE_NUM	proc.h	79;"	d
+STATE_RUNNING	proc.h	75;"	d
+STATE_WAIT	proc.h	76;"	d
+STP	pcnet.h	/^	uint8 STP:1;		\/\/ 25$/;"	m	struct:pcnet_rx_16
+STP	pcnet.h	/^	uint8 STP:1;		\/\/ 25$/;"	m	struct:pcnet_rx_32
+STP	pcnet.h	/^	uint8 STP:1;		\/\/ 25$/;"	m	struct:pcnet_tx_16
+STP	pcnet.h	/^	uint8 STP:1;		\/\/ 25$/;"	m	struct:pcnet_tx_32
+SUD	ahci.c	/^	uint8 SUD:1;$/;"	m	struct:_PxCMD	file:
+SXS	ahci.c	/^	int	SXS:1;$/;"	m	struct:_CAP	file:
+SYN_RECV	tcp.h	60;"	d
+SYN_SENT	tcp.h	59;"	d
+SYSCALL0	libc.h	83;"	d
+SYSCALL1	libc.h	84;"	d
+SYSCALL2	libc.h	85;"	d
+SYSCALL3	libc.h	86;"	d
+SYSCALL4	libc.h	87;"	d
+SYSCALL_ACCEPT	syscall.h	55;"	d
+SYSCALL_BIND	syscall.h	56;"	d
+SYSCALL_BRK	syscall.h	45;"	d
+SYSCALL_CLOSE	syscall.h	43;"	d
+SYSCALL_EXECVE	syscall.h	61;"	d
+SYSCALL_EXIT	syscall.h	62;"	d
+SYSCALL_FORK	syscall.h	59;"	d
+SYSCALL_GETPID	syscall.h	51;"	d
+SYSCALL_IOCTL	syscall.h	47;"	d
+SYSCALL_KILL	syscall.h	64;"	d
+SYSCALL_LISTEN	syscall.h	57;"	d
+SYSCALL_OPEN	syscall.h	42;"	d
+SYSCALL_PAUSE	syscall.h	49;"	d
+SYSCALL_READ	syscall.h	40;"	d
+SYSCALL_SOCKET	syscall.h	53;"	d
+SYSCALL_TIME	syscall.h	66;"	d
+SYSCALL_WAIT4	syscall.h	63;"	d
+SYSCALL_WRITE	syscall.h	41;"	d
+Signature	acpi.h	/^	char Signature[4];$/;"	m	struct:ACPISDTHeader
+Signature	acpi.h	/^	char Signature[8];$/;"	m	struct:RSDPDescriptor20
+TABLE_ENTRIES	page.h	4;"	d
+TBADR	pcnet.h	/^	uint32 TBADR:24;	\/\/ 00 - 23$/;"	m	struct:pcnet_tx_16
+TBADR	pcnet.h	/^	uint32 TBADR;$/;"	m	struct:pcnet_tx_32
+TCP_ACK	tcp.h	51;"	d
+TCP_FIN	tcp.h	47;"	d
+TCP_HDR	tcp.h	54;"	d
+TCP_PHDR	tcp.h	55;"	d
+TCP_PSH	tcp.h	50;"	d
+TCP_RST	tcp.h	49;"	d
+TCP_STATES	tcp.h	68;"	d
+TCP_SYN	tcp.h	48;"	d
+TCP_URG	tcp.h	52;"	d
+TDR	pcnet.h	/^	uint16 TDR:10;		\/\/ 16 - 25$/;"	m	struct:pcnet_tx_16
+TDR	pcnet.h	/^	uint16 TDR:10;		\/\/ 16 - 25$/;"	m	struct:pcnet_tx_32
+TDRA	pcnet.h	/^	uint32 TDRA:24;$/;"	m	struct:pcnet_init_16
+TDRA	pcnet.h	/^	uint32 TDRA;		\/\/ 00 - 31$/;"	m	struct:pcnet_init_32
+TEXT	mboot_hdr.S	/^TEXT		equ	code$/;"	d
+TIME_WAIT	tcp.h	65;"	d
+TLEN	pcnet.h	/^	uint8  TLEN:4;$/;"	m	struct:pcnet_init_16
+TLEN	pcnet.h	/^	uint8 TLEN:4;		\/\/ 28 - 31$/;"	m	struct:pcnet_init_32
+TRC	pcnet.h	/^	uint8 TRC:4;		\/\/ 00 - 03$/;"	m	struct:pcnet_tx_32
+TSEL	pcnet.h	/^	uint8 TSEL:1;$/;"	m	struct:CSR15_mode
+TTY	ramfs.c	18;"	d	file:
+TX_TLEN	pcnet.h	13;"	d
+UDMACTL	ide.h	8;"	d
+UFLO	pcnet.h	/^	uint8 UFLO:1;		\/\/ 30$/;"	m	struct:pcnet_tx_16
+UFLO	pcnet.h	/^	uint8 UFLO:1;		\/\/ 30$/;"	m	struct:pcnet_tx_32
+USER_CODE_START	proc.h	85;"	d
+USER_RSP	proc.h	88;"	d
+USER_STACK_SIZE	proc.h	84;"	d
+USER_STACK_START	proc.h	83;"	d
+USER_START	proc.h	87;"	d
+USER_TASK	proc.h	90;"	d
+VS	ahci.c	/^	uint32	VS;$/;"	m	struct:GHC	file:
+W	ahci.c	/^	int W:1;$/;"	m	struct:CommandHeader	file:
+WIN_IDENTIFY	ide.h	65;"	d
+WIN_READ_SECTORS	ide.h	64;"	d
+WRERR_STAT	ide.h	58;"	d
+XsdtAddress	acpi.h	/^	uint64 XsdtAddress;$/;"	m	struct:RSDPDescriptor20
+_ACPI_H	acpi.h	2;"	d
+_AHCI_H	ahci.h	2;"	d
+_APICbar	init.c	/^struct _APICbar {$/;"	s	file:
+_ARP_H	arp.h	2;"	d
+_BLOCK_H	block.h	2;"	d
+_CAP	ahci.c	/^struct _CAP {$/;"	s	file:
+_CHAR_H	char.h	2;"	d
+_CPU_C	cpu.c	1;"	d	file:
+_CPU_H	cpu.h	2;"	d
+_DEV_C	dev.c	1;"	d	file:
+_DEV_H	dev.h	2;"	d
+_ELF64_H	elf64.h	2;"	d
+_ERRNO_H	errno.h	2;"	d
+_ETH_H	eth.h	2;"	d
+_FILE_H	file.h	2;"	d
+_FRAME_C	frame.c	1;"	d	file:
+_FRAME_H	frame.h	2;"	d
+_IDE_H	ide.h	2;"	d
+_INIT_C	init.c	1;"	d	file:
+_INT	klibc.c	42;"	d	file:
+_INTR_H	intr.h	2;"	d
+_IP_H	ip.h	2;"	d
+_KERNEL	libc.h	1;"	d
+_KERNEL_CS	cpu.h	189;"	d
+_KERNEL_DS	cpu.h	190;"	d
+_KLIBC_H	klibc.h	2;"	d
+_LIBC_C	klibc.c	1;"	d	file:
+_LIBC_H	libc.h	3;"	d
+_LONG	klibc.c	44;"	d	file:
+_MBOOT_H	mboot.h	2;"	d
+_MEM_H	mem.h	2;"	d
+_NET_H	net.h	2;"	d
+_NULL_CS	cpu.h	187;"	d
+_PAGE_C	page.c	1;"	d	file:
+_PAGE_H	page.h	2;"	d
+_PCI_H	pci.h	2;"	d
+_PCNET_H	pcnet.h	2;"	d
+_PPP_H	ppp.h	2;"	d
+_PROC_C	proc.c	1;"	d	file:
+_PROC_H	proc.h	2;"	d
+_PxCMD	ahci.c	/^struct _PxCMD {$/;"	s	file:
+_RAMFS_H	ramfs.h	2;"	d
+_RAM_H	ram.h	2;"	d
+_SHORT	klibc.c	43;"	d	file:
+_SLIP_H	slip.h	2;"	d
+_SSIZE	cpu.h	183;"	d
+_STAR	init.c	/^struct _STAR {$/;"	s	file:
+_SYSCALL_H	syscall.h	2;"	d
+_TCP_H	tcp.h	2;"	d
+_TSS_CS	cpu.h	198;"	d
+_USER32_CS	cpu.h	193;"	d
+_USER32_DS	cpu.h	192;"	d
+_USER_CS	cpu.h	196;"	d
+_USER_DS	cpu.h	195;"	d
+_brk	cpu.h	10;"	d
+_brk	cpu.h	16;"	d
+_cpuid	init.c	475;"	d	file:
+_dosyscall	syscalls.S	/^_dosyscall:$/;"	l
+_idt_main	cpu.c	/^void _idt_main(struct regs r)$/;"	f
+_kfs_data_block	kirkfs.h	/^typedef struct _kfs_data_block {$/;"	s
+_kfs_file_block	kirkfs.h	/^typedef struct _kfs_file_block {$/;"	s
+_kfs_free_block	kirkfs.h	/^typedef struct _kfs_free_block {$/;"	s
+_kfs_superblock	kirkfs.h	/^typedef struct _kfs_superblock {$/;"	s
+_kp_head	mem.h	/^typedef struct _kp_head {$/;"	s
+_kp_node	mem.h	/^typedef struct _kp_node {$/;"	s
+_start	crt0.c	/^void _start()$/;"	f
+a	ahci.c	/^		struct _CAP	a;$/;"	m	union:GHC::__anon8	typeref:struct:GHC::__anon8::_CAP	file:
+a	ahci.c	/^		struct _PxCMD a;$/;"	m	union:PORT::__anon9	typeref:struct:PORT::__anon9::_PxCMD	file:
+a	init.c	/^	struct _APICbar a;$/;"	m	union:__anon14	typeref:struct:__anon14::_APICbar	file:
+a	init.c	/^	struct _STAR a;$/;"	m	union:__anon13	typeref:struct:__anon13::_STAR	file:
+aba	init.c	/^	uint64 aba:40;$/;"	m	struct:_APICbar	file:
+access	cpu.h	/^	unsigned	access:1;		\/\/ 8$/;"	m	struct:gdt_entry
+access	page.h	/^	unsigned	access:1;		\/\/ 5$/;"	m	struct:__anon5
+ack	tcp.h	/^	unsigned    ack:1;$/;"	m	struct:tcp_hdr
+ack_num	tcp.h	/^	uint32  ack_num;$/;"	m	struct:tcp_hdr
+acpi_OEMID	acpi.c	/^char acpi_OEMID[7];$/;"	v
+acpi_id	acpi.c	/^const uint64 acpi_id = 0x2052545020445352;$/;"	v
+acpi_ident	acpi.c	/^const char acpi_ident[] = "RSD PTR \\0";$/;"	v
+acpi_probe	acpi.c	/^\/*@null@*\/ struct RSDPDescriptor20 *acpi_probe()$/;"	f
+add_dev	dev.c	/^struct dev *add_dev(uint64 id, uint64 type, void *ops, char *name, $/;"	f
+add_disk	ide.c	/^struct dev *add_disk(struct disk_dev *dd)$/;"	f
+add_listen	ip.c	/^uint64 add_listen(struct fileh *f)$/;"	f
+add_page_task	proc.c	/^void *add_page_task(struct task *tsk)$/;"	f
+add_pci_device	pci.c	/^struct pci_dev *add_pci_device(int bus, int dev, int func)$/;"	f
+add_to_useable_mem	frame.c	/^void add_to_useable_mem(void *from, uint64 len)$/;"	f
+addr	eth.h	/^	uint8	addr[6];$/;"	m	struct:eth_dev
+addr	net.h	/^    uint32 addr;$/;"	m	struct:ip_addr
+addr	page.h	/^	uint64 addr;$/;"	m	union:__anon4
+addr	pci.h	/^	uint32 addr;$/;"	m	struct:pcibar
+addr	ppp.h	/^	uint8	addr;$/;"	m	struct:hdlc_ppp_hdr
+ae	init.c	/^	unsigned ae:1;$/;"	m	struct:_APICbar	file:
+always0	cpu.h	/^	unsigned	always0:1;$/;"	m	struct:idt_entry
+aout_sym	mboot.h	/^		aout_symbol_table_t aout_sym;$/;"	m	union:multiboot_info::__anon7
+aout_symbol_table	mboot.h	/^typedef struct aout_symbol_table {$/;"	s
+aout_symbol_table_t	mboot.h	/^} aout_symbol_table_t;$/;"	t	typeref:struct:aout_symbol_table
+apic_id	cpu.h	/^	uint8	apic_id;$/;"	m	struct:cpu
+arp_entry	arp.h	/^struct arp_entry$/;"	s
+arp_handle	arp.c	/^void arp_handle(struct net_dev *nd, uint8 *data, uint64 len)$/;"	f
+arp_header	arp.h	/^struct arp_header$/;"	s
+arp_scan	arp.c	/^void arp_scan()$/;"	f
+arptable	arp.c	/^struct arp_entry *arptable;$/;"	v	typeref:struct:arp_entry
+atime	kirkfs.h	/^	unsigned long	atime,mtime,ctime;$/;"	m	struct:_kfs_file_block
+attrib	dev.c	/^uint16 attrib = 0x07;$/;"	v
+avail	page.h	/^	unsigned	avail:11;		\/\/ 51,..,62$/;"	m	struct:__anon5
+avl	cpu.h	/^	unsigned	avl:1;			\/\/ 20$/;"	m	struct:gdt_entry
+avl	page.h	/^	unsigned	avl:2;			\/\/ 10,11: 2 free bits i AVL$/;"	m	struct:__anon5
+b	ahci.c	/^		uint32	b;$/;"	m	union:GHC::__anon8	file:
+b	ahci.c	/^		uint32	b;$/;"	m	union:PORT::__anon9	file:
+b	init.c	/^	uint64 b;$/;"	m	union:__anon13	file:
+b	init.c	/^	uint64 b;$/;"	m	union:__anon14	file:
+bar	pci.h	/^	uint32	bar[PCI_NUM_BARS];$/;"	m	struct:pcicfg
+bars	pci.h	/^	pcibar_t bars[PCI_NUM_BARS];$/;"	m	struct:pci_dev
+base	cpu.h	/^	uint64	base;$/;"	m	struct:gdt64_ptr
+base	cpu.h	/^	uint64	base;$/;"	m	struct:idt64_ptr
+base	ide.h	/^	uint8	base;$/;"	m	struct:PRD
+base	page.h	/^	uint64		base:40;		\/\/ 12,..,50; for lowest PML 12=pat$/;"	m	struct:__anon5
+base_addr_high	mboot.h	/^	unsigned int base_addr_high;$/;"	m	struct:memory_map
+base_addr_low	mboot.h	/^	unsigned int base_addr_low;$/;"	m	struct:memory_map
+base_high	cpu.h	/^	uint8	base_high;		\/\/ 24-31$/;"	m	struct:gdt_entry
+base_low	cpu.h	/^	uint16	base_low;		\/\/ 16-31$/;"	m	struct:gdt_entry
+base_middle	cpu.h	/^	uint8	base_middle;	\/\/ 0-7$/;"	m	struct:gdt_entry
+base_very_high	cpu.h	/^	uint32	base_very_high;$/;"	m	struct:gdt_entry_high
+bcast	net.h	/^    uint32 bcast;$/;"	m	struct:ip_addr
+bcount	block.h	/^	uint64				 bcount;$/;"	m	struct:block_dev
+bdev	ide.h	/^	struct block_dev *bdev;$/;"	m	struct:disk_dev	typeref:struct:disk_dev::block_dev
+bif_size	ide.h	/^	uint16	bif_size;$/;"	m	struct:hdd_ident
+bio_do_req	block.c	/^struct bio_req *bio_do_req(struct block_dev *dev, struct task *owner, $/;"	f
+bio_poll	block.c	/^void bio_poll()$/;"	f
+bio_proc	block.c	/^void bio_proc(struct block_dev *dev)$/;"	f
+bio_proc_one	block.c	/^void bio_proc_one(struct bio_req *req)$/;"	f
+bio_proc_read	block.c	/^void bio_proc_read(struct bio_req *req)$/;"	f
+bio_proc_write	block.c	/^void bio_proc_write(struct bio_req *req)$/;"	f
+bio_req	block.c	/^struct bio_req {$/;"	s	file:
+bio_signal_done	block.c	/^void bio_signal_done(struct bio_req *req)$/;"	f
+bits	pci.h	/^			uint8 bits;$/;"	m	struct:pcibar::__anon10::__anon12
+bits_ELF_PF	elf64.h	/^const char *bits_ELF_PF[] = {$/;"	v
+bits_IDE_STAT	ide.c	/^const char *bits_IDE_STAT[] = {$/;"	v
+bits_PF	cpu.h	/^const char *bits_PF[] = {$/;"	v
+bits_SHF	elf64.h	/^const char *bits_SHF[] = {$/;"	v
+bl_dev	dev.h	/^		struct block_dev *bl_dev;$/;"	m	union:dev::__anon22	typeref:struct:dev::__anon22::block_dev
+blk_dev	file.h	/^		struct block_dev *blk_dev;$/;"	m	union:fileh::__anon15	typeref:struct:fileh::__anon15::block_dev
+block_dev	block.h	/^struct block_dev {$/;"	s
+block_ops	block.h	/^struct block_ops {$/;"	s
+block_read	block.c	/^uint64 block_read(struct block_dev *dev, uint8 *dst, uint64 len, uint64 off)$/;"	f
+block_size	kirkfs.h	/^	unsigned short	block_size;		\/* >= 512 *\/$/;"	m	struct:_kfs_superblock
+block_type	kirkfs.h	/^	unsigned short	block_type;$/;"	m	struct:_kfs_data_block
+block_type	kirkfs.h	/^	unsigned short	block_type;$/;"	m	struct:_kfs_file_block
+block_type	kirkfs.h	/^	unsigned short	block_type;$/;"	m	struct:_kfs_free_block
+block_type	kirkfs.h	/^	unsigned short	block_type;$/;"	m	struct:_kfs_superblock
+bool	klibc.h	32;"	d
+bool	libc.h	/^	typedef enum { false, true } bool;$/;"	t	typeref:enum:__anon16
+boot_device	mboot.h	/^	unsigned int boot_device;$/;"	m	struct:multiboot_info
+boot_done	init.c	/^bool boot_done = false;$/;"	v
+brk	libc.c	/^int brk(void *addr)$/;"	f
+bsc	init.c	/^	unsigned bsc:1;$/;"	m	struct:_APICbar	file:
+bsect	ide.h	/^	uint16 bsect;$/;"	m	struct:disk_dev
+bsize	block.h	/^	uint64				 bsize;$/;"	m	struct:block_dev
+buf	dev.h	/^	char buf[CON_BUFF];$/;"	m	struct:con_private
+buf	dev.h	/^	char buf[CON_BUFF];$/;"	m	struct:ser_private
+buf_type	ide.h	/^	uint16	buf_type;$/;"	m	struct:hdd_ident
+buffer	mem.h	/^	unsigned char *buffer;$/;"	m	struct:ring_head
+bus	pci.h	/^	uint8 bus, dev, func;$/;"	m	struct:pci_dev
+busybox	busybox.h	/^unsigned char busybox[] = {$/;"	v
+busybox_len	busybox.h	/^unsigned int busybox_len = 1045992;$/;"	v
+bytes_per_sector	ide.h	/^	uint16	bytes_per_sector;$/;"	m	struct:hdd_ident
+bytes_per_track	ide.h	/^	uint16	bytes_per_track;$/;"	m	struct:hdd_ident
+c	ide.h	/^	uint16 c,h,s;$/;"	m	struct:disk_dev
+calc_div	mem.c	/^void calc_div(uint64 len, int *div, char *suf)$/;"	f
+capability	ide.h	/^	uint8	capability;$/;"	m	struct:hdd_ident
+ce	cpu.h	/^	unsigned	ce:1;			\/\/ 10 CS or DS$/;"	m	struct:gdt_entry
+cfg	pci.h	/^	pcicfg_t cfg;$/;"	m	struct:pci_dev
+ch_dev	dev.h	/^		struct char_dev *ch_dev;$/;"	m	union:dev::__anon22	typeref:struct:dev::__anon22::char_dev
+char_dev	char.h	/^struct char_dev {$/;"	s
+char_dev	file.h	/^		struct char_dev *char_dev;$/;"	m	union:fileh::__anon15	typeref:struct:fileh::__anon15::char_dev
+char_ops	char.h	/^struct char_ops {$/;"	s
+check	ip.h	/^	uint16 check;$/;"	m	struct:icmp_hdr
+checksum	ip.c	/^uint16 checksum(uint16 *data, uint32 len)$/;"	f
+checksum	ip.h	/^	uint16 checksum;$/;"	m	struct:ip_hdr
+checksum	mboot.h	/^    unsigned int checksum;$/;"	m	struct:multiboot_header
+childi	ramfs.h	/^	uint64 childi;$/;"	m	struct:ramfs_ino
+chip_version_lo	pcnet.h	/^	uint32 chip_version_lo;$/;"	m	struct:pcnet_private
+chip_version_up	pcnet.h	/^	uint32 chip_version_up;$/;"	m	struct:pcnet_private
+chksum	tcp.h	/^	uint16  chksum;$/;"	m	struct:tcp_hdr
+class_code	pci.h	/^	uint8	class_code;$/;"	m	struct:pcicfg
+clear_frame	frame.c	/^void clear_frame(void *addr)$/;"	f
+clear_n_frames	frame.c	/^void clear_n_frames(void *addr, uint64 nframes)$/;"	f
+cli	cpu.h	13;"	d
+cli	cpu.h	7;"	d
+clone_mm	page.c	/^void clone_mm(pt_t *old_pt4, pt_t *new_pt4, void *owner)$/;"	f
+close	eth.h	/^	uint64 (*close)(struct eth_dev *d);$/;"	m	struct:eth_ops
+close	file.h	/^	uint64 (*close)(struct task *, struct fileh *);$/;"	m	struct:fs_ops
+cls	dev.c	/^void cls(void)$/;"	f
+cmd_reg	pci.h	/^	uint16	cmd_reg;$/;"	m	struct:pcicfg
+cmdline	mboot.h	/^	unsigned int cmdline;$/;"	m	struct:multiboot_info
+cnt	ide.h	/^	int	cnt;$/;"	m	struct:disk_dev
+cnt	ide.h	/^	uint16	cnt;$/;"	m	struct:PRD
+code	ip.h	/^	uint8 code;$/;"	m	struct:icmp_hdr
+code_end	proc.h	/^	uint8	*code_end;$/;"	m	struct:task
+code_start	proc.h	/^	uint8	*code_start;$/;"	m	struct:task
+command_sets	ide.h	/^	uint16	command_sets;$/;"	m	struct:hdd_ident
+con_dev	dev.c	/^struct char_dev *con_dev = NULL;$/;"	v	typeref:struct:char_dev
+con_init	dev.c	/^bool con_init(struct char_dev *dev)$/;"	f
+con_pending	dev.c	/^uint64 con_pending(struct char_dev *dev)$/;"	f
+con_private	dev.h	/^struct con_private {$/;"	s
+con_read	dev.c	/^uint64 con_read(struct char_dev *dev, unsigned char *dest, uint64 len)$/;"	f
+con_write	dev.c	/^uint64 con_write(struct char_dev *dev, unsigned char *src, uint64 len)$/;"	f
+config	ide.h	/^	uint16	config;$/;"	m	struct:hdd_ident
+console_char_ops	dev.c	/^struct char_ops console_char_ops = {$/;"	v	typeref:struct:char_ops
+cont	ppp.h	/^	uint8	cont;$/;"	m	struct:hdlc_ppp_hdr
+copy_to_user	mem.c	/^void copy_to_user(uint8 *dst, struct task *task, uint8 *data, uint64 len)$/;"	f
+cow	page.h	/^	unsigned	cow:1;			\/\/ 9: 1 bit of AVL$/;"	m	struct:__anon5
+cpu	cpu.h	/^struct cpu {$/;"	s
+cpu_init	init.c	/^void cpu_init()$/;"	f
+cpus	cpu.c	/^struct cpu cpus[MAX_CPU];$/;"	v	typeref:struct:cpu
+cr3_flush	cpu.c	/^void cr3_flush(pt_t *pml4)$/;"	f
+crap	proc.h	/^	uint64	crap;$/;"	m	struct:rusage
+crap0	mboot.h	/^	unsigned int crap0;$/;"	m	struct:aout_symbol_table
+crap0	mboot.h	/^	unsigned int crap0;$/;"	m	struct:elf_section_header_table
+crap1	mboot.h	/^	unsigned int crap1;$/;"	m	struct:aout_symbol_table
+crap1	mboot.h	/^	unsigned int crap1;$/;"	m	struct:elf_section_header_table
+crap2	mboot.h	/^	unsigned int crap2;$/;"	m	struct:aout_symbol_table
+crap2	mboot.h	/^	unsigned int crap2;$/;"	m	struct:elf_section_header_table
+crap3	mboot.h	/^	unsigned int crap3;$/;"	m	struct:aout_symbol_table
+crap3	mboot.h	/^	unsigned int crap3;$/;"	m	struct:elf_section_header_table
+crap_gdt	init.c	/^uint64 crap_gdt[] = {$/;"	v
+create_page_entry_1g	page.c	/^bool create_page_entry_1g(pt_t *pt4, uint64 _virt, uint64 _phys, int flag, struct task *owner)$/;"	f
+create_page_entry_2m	page.c	/^bool create_page_entry_2m(pt_t *pt4, uint64 _virt, uint64 _phys, int flag, struct task *owner)$/;"	f
+create_page_entry_4k	page.c	/^bool create_page_entry_4k(pt_t *pt4, uint64 _virt, uint64 _phys, int flag, struct task *owner)$/;"	f
+create_tasks	init.c	/^void create_tasks(void)$/;"	f
+cs	cpu.h	/^	uint64	cs;						\/\/ 0xb0$/;"	m	struct:regs
+ctime	kirkfs.h	/^	unsigned long	atime,mtime,ctime;$/;"	m	struct:_kfs_file_block
+cur	block.c	/^	struct sector 		*first,*last,*cur;$/;"	m	struct:bio_req	typeref:struct:bio_req::	file:
+cur_capacity0	ide.h	/^	uint16	cur_capacity0;$/;"	m	struct:hdd_ident
+cur_capacity1	ide.h	/^	uint16	cur_capacity1;$/;"	m	struct:hdd_ident
+cur_cyl	ide.h	/^	uint16	cur_cyl;$/;"	m	struct:hdd_ident
+cur_heads	ide.h	/^	uint16	cur_heads;$/;"	m	struct:hdd_ident
+cur_sectors	ide.h	/^	uint16	cur_sectors;$/;"	m	struct:hdd_ident
+cur_x	dev.c	/^int cur_x = 0;$/;"	v
+cur_y	dev.c	/^int cur_y = 0;$/;"	v
+curtask	proc.c	/^uint64	curtask = 0;$/;"	v
+cwr	tcp.h	/^	unsigned    cwr:1;$/;"	m	struct:tcp_hdr
+cyl	ide.h	/^	uint16	cyl;$/;"	m	struct:hdd_ident
+data	block.c	/^	uint8  				*data;$/;"	m	struct:bio_req	file:
+data	block.c	/^	uint8  			*data;$/;"	m	struct:sector	file:
+data	elf64.h	/^	void *data;$/;"	m	struct:elf_segment
+data	kirkfs.h	/^	unsigned char	data[0];$/;"	m	struct:_kfs_data_block
+data	kirkfs.h	/^	unsigned char	data[0];$/;"	m	struct:_kfs_file_block
+data	kirkfs.h	/^	unsigned char	data[0];$/;"	m	struct:_kfs_superblock
+data	kirkfs.h	/^	unsigned long	data[64];		\/* 64*4*8 = 2048 blocks *\/$/;"	m	struct:_kfs_free_block
+data	mem.h	/^	int data;$/;"	m	struct:ring_head
+data	pcnet.c	/^	uint8	data[1500];$/;"	m	struct:eth_frame	file:
+data	ram.h	/^	uint8	*data;$/;"	m	struct:ramdisk
+data	ramfs.h	/^	uint8 *data;$/;"	m	struct:ramfs_ino
+data_end	proc.h	/^	uint8	*data_end;$/;"	m	struct:task
+data_offset	tcp.h	/^	unsigned    data_offset:4;$/;"	m	struct:tcp_hdr
+data_start	proc.h	/^	uint8	*data_start;$/;"	m	struct:task
+decode_flags	page.c	/^void decode_flags(pe_t *pe)$/;"	f
+def	cpu.h	/^	unsigned	def:1;			\/\/ 22$/;"	m	struct:gdt_entry
+def_isr	intr.S	/^def_isr:$/;"	l
+delay	cpu.c	/^uint16 delay;$/;"	v
+desc	mem.h	/^	char	desc[DESC_LEN];$/;"	m	struct:_kp_node
+describe_mem	mem.c	/^void describe_mem(uint64 addr)$/;"	f
+dev	arp.h	/^	struct	net_dev	*dev;$/;"	m	struct:arp_entry	typeref:struct:arp_entry::net_dev
+dev	block.c	/^	struct block_dev 	*dev;$/;"	m	struct:bio_req	typeref:struct:bio_req::block_dev	file:
+dev	dev.h	/^struct dev {$/;"	s
+dev	eth.h	/^	struct dev		*dev;$/;"	m	struct:eth_dev	typeref:struct:eth_dev::dev
+dev	file.h	/^		void *dev;$/;"	m	union:fileh::__anon15
+dev	file.h	/^	struct block_dev *dev;$/;"	m	struct:mount	typeref:struct:mount::block_dev
+dev	net.h	/^    struct net_dev *dev;$/;"	m	struct:ip_addr	typeref:struct:ip_addr::net_dev
+dev	pci.h	/^	uint8 bus, dev, func;$/;"	m	struct:pci_dev
+dev	pcnet.h	/^	struct pci_dev			*dev;$/;"	m	struct:pcnet_private	typeref:struct:pcnet_private::pci_dev
+dev_init	init.c	/^void dev_init()$/;"	f
+device_id	pci.h	/^	uint16	device_id;$/;"	m	struct:pcicfg
+devid	block.h	/^	uint64				 devid;		\/\/ major|minor$/;"	m	struct:block_dev
+devid	char.h	/^	uint64	devid;			\/\/ major|minor$/;"	m	struct:char_dev
+devs	dev.c	/^struct dev *devs;$/;"	v	typeref:struct:dev
+dirty	page.h	/^	unsigned	dirty:1;		\/\/ 6$/;"	m	struct:__anon5
+disk_dev	ide.h	/^struct disk_dev {$/;"	s
+dma_1word	ide.h	/^	uint16	dma_1word;$/;"	m	struct:hdd_ident
+dma_mword	ide.h	/^	uint16	dma_mword;$/;"	m	struct:hdd_ident
+dma_ultra	ide.h	/^	uint16	dma_ultra;$/;"	m	struct:hdd_ident
+do_accept	net.c	/^uint64 do_accept(struct task *this_task, struct fileh *f, struct sockaddr *sa, uint64 *len)$/;"	f
+do_bind	net.c	/^uint64 do_bind(struct task *this_task, struct fileh *f, struct sockaddr *sa, uint64 len)$/;"	f
+do_close	file.c	/^void do_close(struct fileh *fh, struct task *t)$/;"	f
+do_close_socket	file.c	/^uint64 do_close_socket(struct fileh *fh, struct task *this)$/;"	f
+do_dup	file.c	/^struct fileh *do_dup(struct fileh *fh, struct task *t)$/;"	f
+do_exec	proc.c	/^uint64 do_exec(struct task *t, const char *f, uint8 **code, uint64 *clen, uint8 **data, uint64 *dlen, uint64 *vaddr, uint64 *daddr)$/;"	f
+do_fork	proc.c	/^void do_fork(struct task *ctask, struct regs *r, uint64 rip, $/;"	f
+do_listen	net.c	/^uint64 do_listen(struct task *this_task, struct fileh *f, uint64 listen)$/;"	f
+do_mount	file.c	/^struct mount *do_mount(struct block_dev *dev, char *point, struct fs_ops *fsops)$/;"	f
+do_one_pool	mem.c	/^int do_one_pool(struct task *owner)$/;"	f
+do_open	file.c	/^struct fileh *do_open(const char *name, struct task *t, int flags)$/;"	f
+do_read	file.c	/^uint64 do_read(struct fileh *fh, unsigned char *dst, uint64 len)$/;"	f
+do_seek	file.c	/^void do_seek(struct fileh *fh, uint64 off)$/;"	f
+do_socket	net.c	/^struct fileh *do_socket(struct task *this_task, uint64 family, uint64 type, uint64 proto)$/;"	f
+do_write	file.c	/^uint64 do_write(struct fileh *fh, unsigned char *src, uint64 len)$/;"	f
+dpl	cpu.h	/^	unsigned	dpl:2;			\/\/ 13, 14$/;"	m	struct:gdt_entry
+dpl	cpu.h	/^	unsigned	dpl:2;$/;"	m	struct:idt_entry
+ds	cpu.h	/^	uint64	ds, es, fs, gs;			\/\/ 0x00	$/;"	m	struct:regs
+dst	ip.h	/^	uint32 dst;$/;"	m	struct:ip_hdr
+dst	pcnet.c	/^	uint8	dst[6];$/;"	m	struct:eth_frame	file:
+dst	tcp.h	/^	uint32  dst;$/;"	m	struct:tcp_phdr
+dst	tcp.h	/^	uint32 dst;		\/\/ their IP$/;"	m	struct:tcb
+dst_ack	tcp.h	/^	uint32 dst_ack;	\/\/ our ack of them$/;"	m	struct:tcb
+dst_port	tcp.h	/^	uint16  dst_port;$/;"	m	struct:tcp_hdr
+dst_port	tcp.h	/^	uint16 dst_port;	\/\/ their port$/;"	m	struct:tcb
+dst_seq	tcp.h	/^	uint32 dst_seq; \/\/ their initial seq$/;"	m	struct:tcb
+dummy0	ide.h	/^	uint16	dummy0[12];$/;"	m	struct:hdd_ident
+dummy1	ide.h	/^	uint16	dummy1[5];$/;"	m	struct:hdd_ident
+dummy2	ide.h	/^	uint16	dummy2[38];$/;"	m	struct:hdd_ident
+dump_arp	arp.c	/^void dump_arp()$/;"	f
+dump_listen	ip.c	/^void dump_listen()$/;"	f
+dump_pool	mem.c	/^void dump_pool(kp_head *kph)$/;"	f
+dump_pools	mem.c	/^void dump_pools()$/;"	f
+dump_task	proc.c	/^void dump_task(struct task *t)$/;"	f
+dump_taskbm	frame.c	/^void dump_taskbm()$/;"	f
+dump_tcbs	tcp.c	/^void dump_tcbs()$/;"	f
+dw2_res	ahci.c	/^	uint32	dw2_res;$/;"	m	struct:PRDT	file:
+dw_res	ahci.c	/^	uint32 dw_res[4];$/;"	m	struct:CommandHeader	file:
+dword_io	ide.h	/^	uint16	dword_io;$/;"	m	struct:hdd_ident
+e_cyl	disk.h	/^	uint16	e_cyl:10;$/;"	m	struct:part
+e_ehsize	elf64.h	/^	uint16	e_ehsize;$/;"	m	struct:__anon19
+e_entry	elf64.h	/^	uint64	e_entry;$/;"	m	struct:__anon19
+e_flags	elf64.h	/^	uint32	e_flags;$/;"	m	struct:__anon19
+e_head	disk.h	/^	uint8	e_head;$/;"	m	struct:part
+e_machine	elf64.h	/^	uint16	e_machine;$/;"	m	struct:__anon19
+e_phentsize	elf64.h	/^	uint16	e_phentsize;$/;"	m	struct:__anon19
+e_phnum	elf64.h	/^	uint16	e_phnum;$/;"	m	struct:__anon19
+e_phoff	elf64.h	/^	uint64	e_phoff;$/;"	m	struct:__anon19
+e_sec	disk.h	/^	uint8	e_sec:6;$/;"	m	struct:part
+e_shentsize	elf64.h	/^	uint16	e_shentsize;$/;"	m	struct:__anon19
+e_shnum	elf64.h	/^	uint16	e_shnum;$/;"	m	struct:__anon19
+e_shoff	elf64.h	/^	uint64	e_shoff;$/;"	m	struct:__anon19
+e_shstrndx	elf64.h	/^	uint16	e_shstrndx;$/;"	m	struct:__anon19
+e_type	elf64.h	/^	uint16	e_type;$/;"	m	struct:__anon19
+e_version	elf64.h	/^	uint32	e_version;$/;"	m	struct:__anon19
+ecc_bytes	ide.h	/^	uint16	ecc_bytes;$/;"	m	struct:hdd_ident
+ece	tcp.h	/^	unsigned    ece:1;$/;"	m	struct:tcp_hdr
+ei_abiversion	elf64.h	/^	uint8	ei_abiversion;	\/\/ 8$/;"	m	struct:__anon19
+ei_class	elf64.h	/^	uint8	ei_class;		\/\/ 4$/;"	m	struct:__anon19
+ei_data	elf64.h	/^	uint8	ei_data;		\/\/ 5$/;"	m	struct:__anon19
+ei_mag	elf64.h	/^	uint8	ei_mag[4];		\/\/ 0,1,2,3$/;"	m	struct:__anon19
+ei_osabi	elf64.h	/^	uint8	ei_osabi;		\/\/ 7$/;"	m	struct:__anon19
+ei_pad	elf64.h	/^	uint8	ei_pad[7];		\/\/ 9,10,11,12,13,14,15$/;"	m	struct:__anon19
+ei_version	elf64.h	/^	uint8	ei_version;		\/\/ 6$/;"	m	struct:__anon19
+eide_dma_min	ide.h	/^	uint16	eide_dma_min;$/;"	m	struct:hdd_ident
+eide_dma_time	ide.h	/^	uint16	eide_dma_time;$/;"	m	struct:hdd_ident
+eide_pio	ide.h	/^	uint16	eide_pio;$/;"	m	struct:hdd_ident
+eide_pio_iordy	ide.h	/^	uint16	eide_pio_iordy;$/;"	m	struct:hdd_ident
+eide_pio_modes	ide.h	/^	uint16	eide_pio_modes;$/;"	m	struct:hdd_ident
+elf	elf64.h	/^struct elf {$/;"	s
+elf	proc.h	/^	struct elf	*elf;$/;"	m	struct:task	typeref:struct:task::elf
+elf64_hdr	elf64.h	/^elf64_hdr;$/;"	t	typeref:struct:__anon19
+elf64_phdr	elf64.h	/^} elf64_phdr;$/;"	t	typeref:struct:__anon20
+elf64_shdr	elf64.h	/^} elf64_shdr;$/;"	t	typeref:struct:__anon21
+elf_sec	mboot.h	/^		elf_section_header_table_t elf_sec;$/;"	m	union:multiboot_info::__anon7
+elf_section	elf64.h	/^struct elf_section {$/;"	s
+elf_section_header_table	mboot.h	/^typedef struct elf_section_header_table {$/;"	s
+elf_section_header_table_t	mboot.h	/^} elf_section_header_table_t;$/;"	t	typeref:struct:elf_section_header_table
+elf_segment	elf64.h	/^struct elf_segment {$/;"	s
+empty	cpu.h	/^	uint32	empty;$/;"	m	struct:gdt_entry_high
+end_of_kernel	end.c	/^unsigned long end_of_kernel;$/;"	v
+epicfail	cpu.c	/^int epicfail = 0;$/;"	v
+error_code	cpu.h	/^	uint64	error_code;				\/\/ 0xa0$/;"	m	struct:regs
+es	cpu.h	/^	uint64	ds, es, fs, gs;			\/\/ 0x00	$/;"	m	struct:regs
+eth	pcnet.h	/^	struct eth_dev			*eth;$/;"	m	struct:pcnet_private	typeref:struct:pcnet_private::eth_dev
+eth_alloc	eth.c	/^struct eth_dev *eth_alloc(void *phys, struct eth_ops *ops)$/;"	f
+eth_cnt	eth.c	/^uint8 eth_cnt = 0;$/;"	v
+eth_dev	eth.h	/^struct eth_dev {$/;"	s
+eth_frame	pcnet.c	/^struct eth_frame {$/;"	s	file:
+eth_free	eth.c	/^void eth_free(struct eth_dev *e)$/;"	f
+eth_init	eth.c	/^uint64 eth_init(struct net_dev *nd, void *phys, int type, struct net_proto *np)$/;"	f
+eth_init_socket	eth.c	/^uint64 eth_init_socket(struct fileh *fh, struct net_dev *nd)$/;"	f
+eth_net_ops	eth.c	/^struct net_ops eth_net_ops = {$/;"	v	typeref:struct:net_ops
+eth_ops	eth.h	/^struct eth_ops {$/;"	s
+eth_process	eth.c	/^uint64 eth_process(struct net_dev *nd)$/;"	f
+eth_write	eth.c	/^uint64 eth_write(struct fileh *fh, struct net_dev *nd, unsigned char *d, $/;"	f
+eths	eth.c	/^struct eth_dev *eths = NULL;$/;"	v	typeref:struct:eth_dev
+exceptions	cpu.c	/^static const char *exceptions[MAX_EXCEPTION] = {$/;"	v	file:
+execve	libc.c	/^int execve(const char *file, char *const argv[], char *const envp[])$/;"	f
+execvp	libc.c	/^int execvp(const char *file, char *const argv[])$/;"	f
+exit	libc.c	/^void exit(int status)$/;"	f
+extern	mboot_hdr.S	/^extern	code$/;"	l
+extern	mboot_hdr.S	/^extern	data_end$/;"	l
+extern	mboot_hdr.S	/^extern	kernel_end$/;"	l
+extern	mboot_hdr.S	/^extern	kernel_start$/;"	l
+extern	mboot_hdr.S	/^extern	loader$/;"	l
+extern	mboot_hdr.S	/^extern	main$/;"	l
+f	ip.h	/^	struct fileh *f;$/;"	m	struct:ip_sock	typeref:struct:ip_sock::fileh
+false	klibc.h	34;"	d
+false	libc.h	/^	typedef enum { false, true } bool;$/;"	e	enum:__anon16
+family	cpu.h	/^	uint8	family;$/;"	m	struct:cpu
+family	file.h	/^	uint64	family,type,protocol;		\/\/ sys_socket params saved for forking a new socket$/;"	m	struct:fileh
+fd	libc.h	/^	int fd;$/;"	m	struct:__anon17
+fgetc	libc.c	/^int fgetc(FILE *s)$/;"	f
+field_value	ide.h	/^	uint16	field_value;$/;"	m	struct:hdd_ident
+fileh	file.h	/^struct fileh {$/;"	s
+fin	tcp.h	/^	unsigned    fin:1;$/;"	m	struct:tcp_hdr
+find_arp_entry	arp.c	/^struct arp_entry *find_arp_entry(uint32 ip)$/;"	f
+find_dev	dev.c	/^void *find_dev(uint64 id, uint64 type)$/;"	f
+find_dev_ip	net.c	/^struct net_dev *find_dev_ip(uint32 ip)$/;"	f
+find_dev_route	ip.c	/^struct net_dev *find_dev_route(uint32 dst)$/;"	f
+find_frame	frame.c	/^void *find_frame(void *owner)$/;"	f
+find_free_task	proc.c	/^uint64 find_free_task(bool lock)$/;"	f
+find_listen	net.c	/^struct fileh *find_listen(uint16 family, struct sockaddr *sa, uint16 proto)$/;"	f
+find_listen_ip	ip.c	/^struct fileh *find_listen_ip(struct sockaddr_in *sin, uint32 proto)$/;"	f
+find_mount	file.c	/^struct mount *find_mount(char *name, char **newmount)$/;"	f
+find_n_frames	frame.c	/^void *find_n_frames(unsigned long nframes, void *owner)$/;"	f
+find_sym	mem.c	/^const char *find_sym(void *addr)$/;"	f
+find_tcbs	tcp.c	/^struct tcb *find_tcbs(uint32 src, uint32 dst, uint16 src_port, uint16 dst_port)$/;"	f
+first	block.c	/^	struct sector 		*first,*last,*cur;$/;"	m	struct:bio_req	typeref:struct:bio_req::sector	file:
+first	kirkfs.h	/^	unsigned char	first;$/;"	m	struct:_kfs_file_block
+first	mem.h	/^	kp_node *first;$/;"	m	struct:_kp_head
+firsttask	proc.c	/^unsigned long firsttask = 1;$/;"	v
+fix_ide_string	ide.c	/^void fix_ide_string(uint8 *s, uint8 cnt)$/;"	f
+flag	disk.h	/^	uint8	flag;$/;"	m	struct:part
+flag	ppp.h	/^	uint8	flag;$/;"	m	struct:hdlc_ppp_hdr
+flags	block.c	/^	uint64				 flags;$/;"	m	struct:bio_req	file:
+flags	elf64.h	/^	int flags;$/;"	m	struct:elf_segment
+flags	file.h	/^	uint64	flags;$/;"	m	struct:fileh
+flags	frame.h	/^	unsigned long flags;$/;"	m	struct:phys_mem_slot
+flags	kirkfs.h	/^	unsigned char	flags;$/;"	m	struct:_kfs_free_block
+flags	kirkfs.h	/^	unsigned long	flags;$/;"	m	struct:_kfs_file_block
+flags	mboot.h	/^	unsigned int flags;$/;"	m	struct:multiboot_info
+flags	mboot.h	/^    unsigned int flags;$/;"	m	struct:multiboot_header
+flags	mem.h	/^	uint8	flags;$/;"	m	struct:_kp_node
+flags	ramfs.h	/^	uint64 flags;$/;"	m	struct:ramfs_ino
+force_sched	proc.c	/^bool force_sched = false;$/;"	v
+fork	libc.c	/^pid_t fork(void)$/;"	f
+fprintf	libc.c	/^void fprintf(FILE *fp, const char *format, ...)$/;"	f
+fps	proc.h	/^	struct fileh	*fps[MAX_FD];$/;"	m	struct:task	typeref:struct:task::fileh
+fputc	libc.c	/^int fputc(int c, FILE *s)$/;"	f
+fputs	libc.c	/^int fputs(const char *c, FILE *s)$/;"	f
+frames	elf64.h	/^	uint64	frames;$/;"	m	struct:elf
+frames_lock	frame.c	/^unsigned long frames_lock;$/;"	v
+frames_lock	proc.c	/^unsigned long frames_lock;$/;"	v
+free_block	kirkfs.h	/^	unsigned char	free_block;		\/* block containing free block list *\/$/;"	m	struct:_kfs_superblock
+free_dev	dev.c	/^void free_dev(struct dev *d)$/;"	f
+free_netdev	net.c	/^void free_netdev(struct net_dev *nd)$/;"	f
+free_page_size	frame.c	/^unsigned long high_mem_start=0, top_of_mem=0, free_page_size=0, total_frames=0;$/;"	v
+from	frame.h	/^	void *from;$/;"	m	struct:phys_mem_slot
+fs	cpu.h	/^	uint64	ds, es, fs, gs;			\/\/ 0x00	$/;"	m	struct:regs
+fs	file.h	/^	struct mount *fs;	\/\/ ptr to fs structure, NULL for sockets$/;"	m	struct:fileh	typeref:struct:fileh::mount
+fs_init	init.c	/^void fs_init()$/;"	f
+fs_ops	dev.h	/^		struct fs_ops *fs_ops;$/;"	m	union:dev::__anon22	typeref:struct:dev::__anon22::fs_ops
+fs_ops	file.h	/^struct fs_ops {$/;"	s
+func	pci.h	/^	uint8 bus, dev, func;$/;"	m	struct:pci_dev
+function	symtable.h	/^	        const char      *function;$/;"	m	struct:symtable
+g	page.h	/^	gb_pe g;$/;"	m	union:__anon4
+gb_pe	page.h	/^gb_pe;$/;"	t	typeref:struct:__anon3
+gdt	cpu.c	/^struct gdt_entry gdt[GDT_SIZE];$/;"	v	typeref:struct:gdt_entry
+gdt64_ptr	cpu.h	/^struct gdt64_ptr$/;"	s
+gdt_desc	mboot.S	/^gdt_desc:$/;"	l
+gdt_desc_end	mboot.S	/^gdt_desc_end:$/;"	l
+gdt_entry	cpu.h	/^struct gdt_entry$/;"	s
+gdt_entry_high	cpu.h	/^struct gdt_entry_high$/;"	s
+gdt_flush	cpu.c	/^void gdt_flush(void)$/;"	f
+gdt_sel	mboot.S	/^gdt_sel:	$/;"	l
+gdt_set_gate	cpu.c	/^void gdt_set_gate(uint16 _num, uint64 base, uint32 limit, uint8 dpl, uint8 flag, uint8 type)$/;"	f
+gdtcode32	mboot.S	/^gdtcode32:				; 0x4 0x20$/;"	l
+gdtcode64	mboot.S	/^gdtcode64:				; 0x2 0x10$/;"	l
+gdtdata32	mboot.S	/^gdtdata32:				; 0x3 0x18$/;"	l
+gdtdata64	mboot.S	/^gdtdata64:				; 0x1 0x08$/;"	l
+gdtnull	mboot.S	/^gdtnull:				; 0x0 0x00$/;"	l
+gdtp	cpu.c	/^struct gdt64_ptr gdtp;$/;"	v	typeref:struct:gdt64_ptr
+get_cr2	cpu.c	/^uint64 get_cr2(void)$/;"	f
+get_cr3	cpu.c	/^pt_t *get_cr3(void)$/;"	f
+get_pe	page.c	/^pe_t *get_pe(pt_t *pd, uint64 _virt)$/;"	f
+get_pe_size	page.c	/^uint64 get_pe_size(pt_t *pd, uint64 _virt)$/;"	f
+get_phys_address	page.c	/^unsigned long get_phys_address(pt_t *pd, uint64 _virt)$/;"	f
+get_task	proc.c	/^struct task *get_task(uint64 i)$/;"	f
+getch_s	dev.c	/^bool getch_s(uint16 port, unsigned char *c)$/;"	f
+getchar	libc.c	/^int getchar(void)$/;"	f
+getpid	libc.c	/^pid_t getpid(void)$/;"	f
+global	page.h	/^	unsigned	global:1;		\/\/ 8$/;"	m	struct:__anon5
+global_tss	cpu.c	/^struct tss_64 global_tss;$/;"	v	typeref:struct:tss_64
+gousermode	intr.S	/^gousermode:$/;"	l
+granularity	cpu.h	/^	unsigned	granularity:1;	\/\/ 23$/;"	m	struct:gdt_entry
+group	kirkfs.h	/^	unsigned long	group;$/;"	m	struct:_kfs_file_block
+grow_page	page.c	/^uint64 grow_page(struct task *ctsk, uint64 addr, pt_t *pt)$/;"	f
+gs	cpu.h	/^	uint64	ds, es, fs, gs;			\/\/ 0x00	$/;"	m	struct:regs
+h	elf64.h	/^	elf64_hdr	h;$/;"	m	struct:elf
+h	ide.h	/^	uint16 c,h,s;$/;"	m	struct:disk_dev
+handle_frame	pcnet.c	/^void handle_frame(struct eth_dev *e, struct net_dev *nd,$/;"	f
+hdd_ident	ide.h	/^struct hdd_ident {$/;"	s
+hdlc_ppp_hdr	ppp.h	/^struct hdlc_ppp_hdr {$/;"	s
+hdr	elf64.h	/^	elf64_phdr	hdr;$/;"	m	struct:elf_segment
+hdr	elf64.h	/^	elf64_shdr hdr;$/;"	m	struct:elf_section
+hdr	tcp.h	/^	struct  tcp_hdr hdr;$/;"	m	struct:tcp_phdr	typeref:struct:tcp_phdr::tcp_hdr
+hdr	tcp.h	/^	struct tcp_hdr	hdr;$/;"	m	struct:tcp_buf	typeref:struct:tcp_buf::tcp_hdr
+head	dev.h	/^	int head;$/;"	m	struct:con_private
+head	dev.h	/^	int head;$/;"	m	struct:ser_private
+head	kirkfs.h	/^	unsigned char	head;$/;"	m	struct:_kfs_data_block
+head	mem.h	/^	struct _kp_head *head;$/;"	m	struct:_kp_node	typeref:struct:_kp_node::_kp_head
+header_type	pci.h	/^	uint8	header_type;$/;"	m	struct:pcicfg
+heads	ide.h	/^	uint16	heads;$/;"	m	struct:hdd_ident
+heap_end	proc.h	/^	uint8	*heap_end;$/;"	m	struct:task
+heap_start	proc.h	/^	uint8	*heap_start;$/;"	m	struct:task
+high_mem_start	frame.c	/^unsigned long high_mem_start=0, top_of_mem=0, free_page_size=0, total_frames=0;$/;"	v
+highaddr	elf64.h	/^	uint64	highaddr;$/;"	m	struct:elf
+hlen	arp.h	/^	uint8	hlen;$/;"	m	struct:arp_header
+hlen	ip.h	/^	unsigned hlen:4;$/;"	m	struct:ip_hdr
+hlt	cpu.h	15;"	d
+hlt	cpu.h	9;"	d
+htonl	klibc.c	/^uint32 htonl(uint32 word)$/;"	f
+htonq	klibc.c	/^uint64 htonq(uint64 word)$/;"	f
+htons	klibc.c	/^uint16 htons(uint16 word)$/;"	f
+htype	arp.h	/^	uint16	htype;$/;"	m	struct:arp_header
+hw	ppp.h	/^	struct char_dev *hw;$/;"	m	struct:ppp_private	typeref:struct:ppp_private::char_dev
+hw	slip.h	/^	struct char_dev *hw;$/;"	m	struct:slip_private	typeref:struct:slip_private::char_dev
+icmp	ip.h	/^		uint64 icmp;$/;"	m	union:ip_sock::__anon18
+icmp_hdr	ip.h	/^struct icmp_hdr {$/;"	s
+icmp_recv	ip.c	/^uint64 icmp_recv(struct net_dev *nd, uint32 src, uint32 dst, $/;"	f
+id	dev.h	/^	uint64	id;$/;"	m	struct:dev
+id	disk.h	/^	uint8	id;$/;"	m	struct:part
+id	ip.h	/^	uint16 id;$/;"	m	struct:ip_hdr
+ide_init	ide.c	/^void ide_init(struct block_dev *b)$/;"	f
+ide_ops	ide.c	/^struct block_ops ide_ops = {$/;"	v	typeref:struct:block_ops
+ide_read_one	ide.c	/^uint64 ide_read_one(struct block_dev *b, uint8 *dst, uint64 off)$/;"	f
+ide_wait	ide.c	/^bool ide_wait(uint16 cmd, uint8 mask, uint8 *code)$/;"	f
+ide_write_one	ide.c	/^uint64 ide_write_one(struct block_dev *b, uint8 *src, uint64 off)$/;"	f
+idle_task	init.c	/^unsigned char idle_task[] = {$/;"	v
+idt	cpu.c	/^struct idt_entry idt[IDT_SIZE];$/;"	v	typeref:struct:idt_entry
+idt64_ptr	cpu.h	/^struct idt64_ptr$/;"	s
+idt_entry	cpu.h	/^struct idt_entry$/;"	s
+idt_flush	cpu.c	/^void idt_flush(void)$/;"	f
+idt_main	cpu.c	/^void idt_main(struct regs *r)$/;"	f
+idt_set_gate	cpu.c	/^void idt_set_gate(uint8 num, uint64 base, uint16 sel, uint8 type, uint8 ist)$/;"	f
+idtp	cpu.c	/^struct idt64_ptr idtp;$/;"	v	typeref:struct:idt64_ptr
+ignore	cpu.h	/^	uint32	ignore;$/;"	m	struct:idt_entry
+in_addr	ip.h	/^struct in_addr {$/;"	s
+in_addr	task2.c	/^struct in_addr {$/;"	s	file:
+init	block.h	/^	void (*init)(struct block_dev *);$/;"	m	struct:block_ops
+init	char.h	/^	bool (*init)(struct char_dev *);$/;"	m	struct:char_ops
+init	net.h	/^	uint64 (*init)(struct net_dev *, void *phys, int type, struct net_proto *);$/;"	m	struct:net_ops
+init	net.h	/^	uint64 (*init)(struct net_proto *);$/;"	m	struct:net_proto_ops
+init	pcnet.h	/^	struct pcnet_init_32	*init;$/;"	m	struct:pcnet_private	typeref:struct:pcnet_private::pcnet_init_32
+init_ahci	ahci.c	/^void init_ahci(struct pci_dev *d)$/;"	f
+init_ide	ide.c	/^void init_ide(struct pci_dev *d)$/;"	f
+init_ide_port	ide.c	/^void init_ide_port(uint16 cmd, uint8 bus)$/;"	f
+init_netdev	net.c	/^uint64 init_netdev(struct net_dev *nd, void *phys, $/;"	f
+init_nic_pcnet	pcnet.c	/^uint64 init_nic_pcnet(struct pci_dev *d)$/;"	f
+init_pool	mem.c	/^void init_pool(void *loc, unsigned long len, uint64 pool)$/;"	f
+init_socket	net.h	/^	uint64 (*init_socket)(struct fileh *fh, struct net_dev *);$/;"	m	struct:net_ops
+init_task	init.c	/^struct task *init_task;$/;"	v	typeref:struct:task
+ino	ramfs.h	/^	uint64 ino;$/;"	m	struct:ramfs_ino
+inode	file.h	/^	uint64	inode;		\/\/ inode on fs, 0 for sockets$/;"	m	struct:fileh
+inportb	dev.c	/^uint8 inportb (unsigned short _port)$/;"	f
+inportl	dev.c	/^uint32 inportl (unsigned short _port)$/;"	f
+inportw	dev.c	/^uint16 inportw (unsigned short _port)$/;"	f
+insw	dev.h	/^static inline void insw (unsigned short _port, void *addr, uint64 _cnt)$/;"	f
+int16	klibc.h	/^typedef	signed short	int16;$/;"	t
+int32	klibc.h	/^typedef	signed int		int32;$/;"	t
+int64	klibc.h	/^typedef signed long		int64;$/;"	t
+int8	klibc.h	/^typedef	signed char		int8;$/;"	t
+int_line	pci.h	/^	uint8	int_line;$/;"	m	struct:pcicfg
+int_num	cpu.h	/^	uint64	int_num;				\/\/ 0x98$/;"	m	struct:regs
+int_pin	pci.h	/^	uint8	int_pin;$/;"	m	struct:pcicfg
+io	pci.h	/^		} io;$/;"	m	union:pcibar::__anon10	typeref:struct:pcibar::__anon10::__anon11
+io_map_base_addr	proc.h	/^	unsigned short	io_map_base_addr;$/;"	m	struct:tss_64
+io_perm_bitmap	proc.h	/^	unsigned char	io_perm_bitmap[0x2000];$/;"	m	struct:tss_64
+ip	arp.h	/^	uint32	ip;$/;"	m	struct:arp_entry
+ip	net.h	/^	struct ip_addr		ip;$/;"	m	struct:net_dev	typeref:struct:net_dev::ip_addr
+ip_accept	ip.c	/^uint64 ip_accept(struct fileh *f, struct fileh *newf, struct sockaddr_in *sin, uint64 *len)$/;"	f
+ip_addr	net.h	/^struct ip_addr {$/;"	s
+ip_bind	ip.c	/^uint64 ip_bind(struct fileh *f, struct sockaddr_in *sa, uint64 len)$/;"	f
+ip_hdr	ip.h	/^struct ip_hdr {$/;"	s
+ip_init	ip.c	/^uint64 ip_init(struct net_proto *np)$/;"	f
+ip_init_socket	ip.c	/^void ip_init_socket(struct fileh *f, uint64 type, uint64 proto)$/;"	f
+ip_listen	ip.c	/^uint64 ip_listen(struct fileh *f, uint64 listen)$/;"	f
+ip_proto_ops	ip.c	/^struct net_proto_ops ip_proto_ops = {$/;"	v	typeref:struct:net_proto_ops
+ip_recv	ip.c	/^uint64 ip_recv(struct net_dev *nd, struct net_proto *np, $/;"	f
+ip_send	ip.c	/^uint64 ip_send(struct net_dev *nd, uint32 src, uint32 dst, $/;"	f
+ip_sock	ip.h	/^struct ip_sock {$/;"	s
+is_useable	frame.c	/^bool is_useable(void *ad)$/;"	f
+is_valid	mem.c	/^bool is_valid(void *vaddr)$/;"	f
+islong	cpu.h	/^	unsigned	islong:1;		\/\/ 21$/;"	m	struct:gdt_entry
+isprint	klibc.c	/^bool isprint(uint8 c)$/;"	f
+issegment	cpu.h	/^	unsigned	issegment:1;	\/\/ 12$/;"	m	struct:gdt_entry
+ist	cpu.h	/^	unsigned	ist:3;$/;"	m	struct:idt_entry
+ist1	proc.h	/^	unsigned long	ist1;$/;"	m	struct:tss_64
+ist2	proc.h	/^	unsigned long	ist2;$/;"	m	struct:tss_64
+ist3	proc.h	/^	unsigned long	ist3;$/;"	m	struct:tss_64
+ist4	proc.h	/^	unsigned long	ist4;$/;"	m	struct:tss_64
+ist5	proc.h	/^	unsigned long	ist5;$/;"	m	struct:tss_64
+ist6	proc.h	/^	unsigned long	ist6;$/;"	m	struct:tss_64
+ist7	proc.h	/^	unsigned long	ist7;$/;"	m	struct:tss_64
+itoa	klibc.c	/^void itoa (char *buf, int base, uint64 d, bool pad, int size)$/;"	f
+itoa	libc.c	/^void itoa (char *buf, int base, unsigned long d, bool pad, int size)$/;"	f
+k	page.h	/^	kb_pe k;$/;"	m	union:__anon4
+kb_pe	page.h	/^kb_pe;$/;"	t	typeref:struct:__anon1
+kern_pool	mem.c	/^char *kern_pool[KERN_POOLS];$/;"	v
+kernel_ds_end	frame.c	/^unsigned long kernel_ds_end=0;$/;"	v
+kernel_pd	page.c	/^struct pt_t *kernel_pd;$/;"	v	typeref:struct:pt_t
+kernel_stack	init.c	/^uint8	kernel_stack[STACK_SIZE*2];$/;"	v
+kernelsptr	proc.h	/^	uint8	*kernelsptr;			\/\/ 0xd8$/;"	m	struct:task
+kernelstack	proc.h	/^	uint8	*kernelstack;$/;"	m	struct:task
+kerntime	cpu.c	/^struct timeval kerntime;$/;"	v	typeref:struct:timeval
+keymap	dev.c	/^char keymap[MAX_KEYS] = $/;"	v
+keymap_shift	dev.c	/^char keymap_shift[MAX_KEYS] = $/;"	v
+kfree	mem.c	/^int kfree(void *free)$/;"	f
+kfs_data_block	kirkfs.h	/^} __attribute__ ((packed)) kfs_data_block;$/;"	t	typeref:struct:_kfs_data_block
+kfs_file_block	kirkfs.h	/^} __attribute__ ((packed)) kfs_file_block;$/;"	t	typeref:struct:_kfs_file_block
+kfs_free_block	kirkfs.h	/^} __attribute__ ((packed)) kfs_free_block;$/;"	t	typeref:struct:_kfs_free_block
+kfs_superblock	kirkfs.h	/^}  __attribute__ ((packed)) kfs_superblock;$/;"	t	typeref:struct:_kfs_superblock
+kmalloc	mem.c	/^void *kmalloc(uint64 len, char *desc, void *owner)$/;"	f
+kmalloc_align	mem.c	/^void *kmalloc_align(unsigned long len, char *desc, void *owner)$/;"	f
+kmalloc_int	mem.c	/^void *kmalloc_int(unsigned long length, int align, void *owner)$/;"	f
+kmerge_free	mem.c	/^void kmerge_free(kp_node *a, kp_node *b)$/;"	f
+kp_head	mem.h	/^kp_head;$/;"	t	typeref:struct:_kp_head
+kp_node	mem.h	/^kp_node;$/;"	t	typeref:struct:_kp_node
+kplock	mem.c	/^int kplock[KERN_POOLS];$/;"	v
+kscan	mem.c	/^void kscan()$/;"	f
+kscan_pool	mem.c	/^void kscan_pool(kp_head *h)$/;"	f
+last	block.c	/^	struct sector 		*first,*last,*cur;$/;"	m	struct:bio_req	typeref:struct:bio_req::	file:
+last	page.h	/^	unsigned	last:1;			\/\/ 7 for a PML3\/PML2 a 1 means no more PMLs$/;"	m	struct:__anon5
+lba	ide.h	/^	uint32 lba;$/;"	m	struct:disk_dev
+lba_capacity	ide.h	/^	uint32	lba_capacity;$/;"	m	struct:hdd_ident
+lcp_add	ppp.c	/^uint64 lcp_add(uint8 *buf, uint8 *cnt, uint16 *len, uint8 ptype, uint8 plen, $/;"	f
+lcp_close	ppp.c	/^uint64 lcp_close(uint8 *buf, uint8 *cnt, uint16 *len)$/;"	f
+lcp_init_reply	ppp.c	/^uint64 lcp_init_reply(uint8 *buf, uint8 code, uint8 id, uint8 *cnt,$/;"	f
+len	block.c	/^	uint64 			 len;$/;"	m	struct:sector	file:
+len	block.c	/^	uint64  			 len;$/;"	m	struct:bio_req	file:
+len	frame.h	/^	unsigned long len;$/;"	m	struct:phys_mem_slot
+len	ip.h	/^	uint16 len;$/;"	m	struct:ip_hdr
+len	kirkfs.h	/^	unsigned short	len;$/;"	m	struct:_kfs_data_block
+len	mem.h	/^	uint64	len;$/;"	m	struct:_kp_head
+len	mem.h	/^	uint64	len;$/;"	m	struct:_kp_node
+len	pci.h	/^	uint32 len;$/;"	m	struct:pcibar
+len	pcnet.c	/^	uint16	len;$/;"	m	struct:eth_frame	file:
+len	ramfs.h	/^	uint64 len;$/;"	m	struct:ramfs_ino
+length	mem.h	/^	int length;$/;"	m	struct:ring_head
+length	ram.h	/^	uint32	length;$/;"	m	struct:ramdisk
+length_high	mboot.h	/^	unsigned int length_high;$/;"	m	struct:memory_map
+length_low	mboot.h	/^	unsigned int length_low;$/;"	m	struct:memory_map
+limit	cpu.h	/^	uint16	limit;$/;"	m	struct:gdt64_ptr
+limit	cpu.h	/^	uint16	limit;$/;"	m	struct:idt64_ptr
+limit_low	cpu.h	/^	uint16	limit_low;		\/\/ 0-15$/;"	m	struct:gdt_entry
+limit_middle	cpu.h	/^	unsigned	limit_middle:4;	\/\/ 16-19$/;"	m	struct:gdt_entry
+listen	ip.c	/^struct fileh *listen = NULL;$/;"	v	typeref:struct:fileh
+listen_next	file.h	/^	struct fileh *listen_next;$/;"	m	struct:fileh	typeref:struct:fileh::fileh
+lmode	mboot.S	/^lmode:$/;"	l
+loader	mboot.S	/^loader:$/;"	l
+loc	mem.h	/^	struct _kp_head *loc;$/;"	m	struct:_kp_head	typeref:struct:_kp_head::_kp_head
+local	ip.h	/^	struct sockaddr_in local;$/;"	m	struct:ip_sock	typeref:struct:ip_sock::sockaddr_in
+location	symtable.h	/^	        void            *location;$/;"	m	struct:symtable
+lock_frames	frame.c	/^void lock_frames(void)$/;"	f
+lock_pool	mem.c	/^void lock_pool(unsigned long pool)$/;"	f
+lock_tasks	proc.c	/^inline void lock_tasks(void)$/;"	f
+lowaddr	elf64.h	/^	uint64	lowaddr;$/;"	m	struct:elf
+m	page.h	/^	mb_pe m;$/;"	m	union:__anon4
+mac	arp.h	/^	uint8	mac[6];$/;"	m	struct:arp_entry
+magic	kirkfs.h	/^	unsigned long	magic;$/;"	m	struct:_kfs_data_block
+magic	kirkfs.h	/^	unsigned long	magic;$/;"	m	struct:_kfs_file_block
+magic	kirkfs.h	/^	unsigned long	magic;$/;"	m	struct:_kfs_free_block
+magic	kirkfs.h	/^	unsigned long	magic;$/;"	m	struct:_kfs_superblock
+magic	mboot.h	/^    unsigned int magic;$/;"	m	struct:multiboot_header
+main	init.c	/^void main(unsigned long magic, multiboot_info_t *mbd)$/;"	f
+main	task2.c	/^void main(int ac, char *av[])$/;"	f
+main	task3.c	/^int main(int ac, char *av[])$/;"	f
+major	kirkfs.h	/^	unsigned long	major;$/;"	m	struct:_kfs_file_block
+max_multsect	ide.h	/^	uint8	max_multsect;$/;"	m	struct:hdd_ident
+maxino	ramfs.h	/^	uint64 maxino;$/;"	m	struct:ramfs_super
+mb_magic	mboot.S	/^mb_magic:	dq	0x0$/;"	d
+mb_pe	page.h	/^mb_pe;$/;"	t	typeref:struct:__anon2
+mb_struct	mboot.S	/^mb_struct:	dq	0x0$/;"	d
+mbh	mboot_hdr.S	/^mbh:	$/;"	l
+mem	pci.h	/^		} mem;$/;"	m	union:pcibar::__anon10	typeref:struct:pcibar::__anon10::__anon12
+mem	pci.h	/^	bool mem;$/;"	m	struct:pcibar
+mem_init	mem.c	/^bool mem_init = false;$/;"	v
+mem_lower	mboot.h	/^	unsigned int mem_lower;$/;"	m	struct:multiboot_info
+mem_upper	mboot.h	/^	unsigned int mem_upper;$/;"	m	struct:multiboot_info
+memcpy	klibc.c	/^void *memcpy(void *dest, void *src, size_t count)$/;"	f
+memdebug	mem.c	/^bool memdebug = false;$/;"	v
+memory_map	mboot.h	/^typedef struct memory_map$/;"	s
+memory_map_t	mboot.h	/^} memory_map_t;$/;"	t	typeref:struct:memory_map
+memset	klibc.c	/^void *memset(void *dest, int val, size_t count)$/;"	f
+memset	libc.c	/^void *memset(void *dest, unsigned char val, size_t count)$/;"	f
+memsetw	klibc.c	/^short *memsetw(short *dest, unsigned short val, uint64 count)$/;"	f
+minor	kirkfs.h	/^	unsigned long	minor;$/;"	m	struct:_kfs_file_block
+mktime	cpu.h	/^static inline uint64 mktime (uint64 year, uint64 mon, uint64 day, uint64 hour, uint64 min, uint64 sec)$/;"	f
+mmap_addr	mboot.h	/^	unsigned int mmap_addr;$/;"	m	struct:multiboot_info
+mmap_length	mboot.h	/^	unsigned int mmap_length;$/;"	m	struct:multiboot_info
+model	cpu.h	/^	uint8	model;$/;"	m	struct:cpu
+model	ide.h	/^	uint8	model[40];$/;"	m	struct:hdd_ident
+mods_addr	mboot.h	/^	unsigned int mods_addr;$/;"	m	struct:multiboot_info
+mods_count	mboot.h	/^	unsigned int mods_count;$/;"	m	struct:multiboot_info
+mount	file.h	/^	void (*mount)(struct mount *);$/;"	m	struct:fs_ops
+mount	file.h	/^struct mount {$/;"	s
+mounts	file.c	/^struct mount *mounts,*root;$/;"	v	typeref:struct:mount
+move_csr	dev.c	/^void move_csr(void)$/;"	f
+mtime	kirkfs.h	/^	unsigned long	atime,mtime,ctime;$/;"	m	struct:_kfs_file_block
+mult	ide.h	/^	uint8  mult;$/;"	m	struct:disk_dev
+multiboot_header	mboot.h	/^struct multiboot_header$/;"	s
+multiboot_info	mboot.h	/^typedef struct multiboot_info$/;"	s
+multiboot_info_t	mboot.h	/^} multiboot_info_t;$/;"	t	typeref:struct:multiboot_info
+multisect	ide.h	/^	uint8	multisect;$/;"	m	struct:hdd_ident
+multisect_valid	ide.h	/^	uint8	multisect_valid;$/;"	m	struct:hdd_ident
+name	file.h	/^	char name[64];$/;"	m	struct:fs_ops
+name	kirkfs.h	/^	unsigned char	name[128];$/;"	m	struct:_kfs_file_block
+name	proc.h	/^	char	name[256];$/;"	m	struct:task
+name	ramfs.h	/^	char name[64];$/;"	m	struct:ramfs_ino
+name	task2.c	/^const char *name = "\/dev\/hd0";$/;"	v
+net_dev	dev.h	/^		struct net_dev *net_dev;$/;"	m	union:dev::__anon22	typeref:struct:dev::__anon22::net_dev
+net_dev	file.h	/^		struct net_dev *net_dev;$/;"	m	union:fileh::__anon15	typeref:struct:fileh::__anon15::net_dev
+net_dev	net.h	/^struct net_dev {$/;"	s
+net_init	init.c	/^void net_init()$/;"	f
+net_loop	net.c	/^void net_loop()$/;"	f
+net_ops	net.h	/^struct net_ops {$/;"	s
+net_proto	dev.h	/^		struct net_proto *net_proto;$/;"	m	union:dev::__anon22	typeref:struct:dev::__anon22::net_proto
+net_proto	net.h	/^struct net_proto {$/;"	s
+net_proto_ops	net.h	/^struct net_proto_ops {$/;"	s
+netdevs	net.c	/^struct net_dev *netdevs;$/;"	v	typeref:struct:net_dev
+netmask	net.h	/^    uint32 netmask;$/;"	m	struct:ip_addr
+newpid	proc.h	/^	uint64	newpid;$/;"	m	struct:task
+next	arp.h	/^	struct	arp_entry *next;$/;"	m	struct:arp_entry	typeref:struct:arp_entry::arp_entry
+next	block.c	/^	struct bio_req		*next;$/;"	m	struct:bio_req	typeref:struct:bio_req::bio_req	file:
+next	block.c	/^	struct sector 	*next;$/;"	m	struct:sector	typeref:struct:sector::sector	file:
+next	dev.h	/^	struct dev *next;$/;"	m	struct:dev	typeref:struct:dev::dev
+next	eth.h	/^	struct	eth_dev	*next;$/;"	m	struct:eth_dev	typeref:struct:eth_dev::eth_dev
+next	file.h	/^	struct mount *next;$/;"	m	struct:mount	typeref:struct:mount::mount
+next	kirkfs.h	/^	unsigned char	next;$/;"	m	struct:_kfs_data_block
+next	kirkfs.h	/^	unsigned char	next;$/;"	m	struct:_kfs_free_block
+next	mem.h	/^	struct _kp_node *next;$/;"	m	struct:_kp_node	typeref:struct:_kp_node::_kp_node
+next	net.h	/^	struct net_dev		*next;$/;"	m	struct:net_dev	typeref:struct:net_dev::net_dev
+next	net.h	/^	struct net_proto *next;$/;"	m	struct:net_proto	typeref:struct:net_proto::net_proto
+next	pci.h	/^	struct pci_dev *next;$/;"	m	struct:pci_dev	typeref:struct:pci_dev::pci_dev
+next	tcp.h	/^	struct tcb 		*next;$/;"	m	struct:tcb	typeref:struct:tcb::tcb
+next	tcp.h	/^	struct tcp_buf	*next;$/;"	m	struct:tcp_buf	typeref:struct:tcp_buf::tcp_buf
+nexti	ramfs.h	/^	uint64 nexti;$/;"	m	struct:ramfs_ino
+nosched	frame.c	/^unsigned long nosched=0;$/;"	v
+nosched	proc.c	/^unsigned long nosched;$/;"	v
+ns	tcp.h	/^	unsigned    ns:1;$/;"	m	struct:tcp_hdr
+ntohl	klibc.c	/^uint32 ntohl(uint32 word)$/;"	f
+ntohs	klibc.c	/^uint16 ntohs(uint16 word)$/;"	f
+nullsym	mem.c	/^const char *nullsym = "_";$/;"	v
+num_blocks	kirkfs.h	/^	unsigned short	num_blocks;		\/* max fs size is 65535*256*512 = 8GiB *\/$/;"	m	struct:_kfs_superblock
+num_cpus	cpu.c	/^uint8 num_cpus = (uint8)1;$/;"	v
+num_kern_pools	mem.c	/^uint64 num_kern_pools;$/;"	v
+nx	page.h	/^	unsigned	nx:1;			\/\/ 63$/;"	m	struct:__anon5
+offset	block.c	/^	uint64				 offset;$/;"	m	struct:bio_req	file:
+offset	ip.h	/^	uint16 offset;$/;"	m	struct:ip_hdr
+offset	page.h	/^	unsigned	offset:12;$/;"	m	struct:__anon1
+offset	page.h	/^	unsigned	offset:21;$/;"	m	struct:__anon2
+offset	page.h	/^	unsigned	offset:30;$/;"	m	struct:__anon3
+ones	pcnet.h	/^	uint8 ones:4;		\/\/ 12 - 15$/;"	m	struct:pcnet_rx_16
+ones	pcnet.h	/^	uint8 ones:4;		\/\/ 12 - 15$/;"	m	struct:pcnet_rx_32
+ones	pcnet.h	/^	uint8 ones:4;		\/\/ 12 - 15$/;"	m	struct:pcnet_tx_16
+ones	pcnet.h	/^	uint8 ones:4;		\/\/ 12 - 15$/;"	m	struct:pcnet_tx_32
+op	dev.h	/^	} op;$/;"	m	struct:dev	typeref:union:dev::__anon22
+open	eth.h	/^	uint64 (*open)(struct eth_dev *d);$/;"	m	struct:eth_ops
+open	file.h	/^	uint64 (*open)(struct task *, struct mount *, char *, struct fileh *);$/;"	m	struct:fs_ops
+open	libc.c	/^int open(const char *pathname, int flags)$/;"	f
+oper	arp.h	/^	uint16	oper;$/;"	m	struct:arp_header
+ops	block.h	/^	struct 	block_ops	*ops;		\/\/ block ops$/;"	m	struct:block_dev	typeref:struct:block_dev::block_ops
+ops	char.h	/^	struct char_ops	*ops;	\/\/ block ops$/;"	m	struct:char_dev	typeref:struct:char_dev::char_ops
+ops	dev.h	/^		void *ops;$/;"	m	union:dev::__anon22
+ops	eth.h	/^	struct eth_ops	*ops;$/;"	m	struct:eth_dev	typeref:struct:eth_dev::eth_ops
+ops	file.h	/^	struct fs_ops *ops;$/;"	m	struct:mount	typeref:struct:mount::fs_ops
+ops	net.h	/^	struct net_ops		*ops;$/;"	m	struct:net_dev	typeref:struct:net_dev::net_ops
+ops	net.h	/^	struct net_proto_ops	*ops;$/;"	m	struct:net_proto	typeref:struct:net_proto::net_proto_ops
+outportb	dev.c	/^void outportb (unsigned short _port, uint8 _data)$/;"	f
+outportl	dev.c	/^void outportl (uint16 _port, uint32 _data)$/;"	f
+outportw	dev.c	/^void outportw (unsigned short _port, uint16 _data)$/;"	f
+owner	block.c	/^	struct task 		*owner;$/;"	m	struct:bio_req	typeref:struct:bio_req::task	file:
+owner	kirkfs.h	/^	unsigned long	owner;$/;"	m	struct:_kfs_file_block
+owner	mem.h	/^	struct task *owner;$/;"	m	struct:_kp_node	typeref:struct:_kp_node::task
+p_align	elf64.h	/^	uint64	p_align;$/;"	m	struct:__anon20
+p_filesz	elf64.h	/^	uint64	p_filesz;$/;"	m	struct:__anon20
+p_flags	elf64.h	/^	uint32	p_flags;$/;"	m	struct:__anon20
+p_memsz	elf64.h	/^	uint64	p_memsz;$/;"	m	struct:__anon20
+p_offset	elf64.h	/^	uint64	p_offset;$/;"	m	struct:__anon20
+p_paddr	elf64.h	/^	uint64	p_paddr;$/;"	m	struct:__anon20
+p_type	elf64.h	/^	uint32	p_type;$/;"	m	struct:__anon20
+p_vaddr	elf64.h	/^	uint64	p_vaddr;$/;"	m	struct:__anon20
+pad	kirkfs.h	/^	unsigned char	pad[3];$/;"	m	struct:_kfs_file_block
+pad	kirkfs.h	/^	unsigned short	pad;$/;"	m	struct:_kfs_free_block
+pad0	kirkfs.h	/^	unsigned char	pad0;$/;"	m	struct:_kfs_data_block
+pad0	kirkfs.h	/^	unsigned short	pad0;			\/* res: 32bit num_blocks *\/$/;"	m	struct:_kfs_superblock
+pad0	pci.h	/^	uint8	pad0;$/;"	m	struct:pcicfg
+pad1	cpu.h	/^	uint64	pad2,pad1;$/;"	m	struct:syscall_regs
+pad1	pci.h	/^	uint8	pad1;$/;"	m	struct:pcicfg
+pad2	cpu.h	/^	uint64	pad2,pad1;$/;"	m	struct:syscall_regs
+pad2	pci.h	/^	uint8	pad2;$/;"	m	struct:pcicfg
+pad3	pci.h	/^	uint32	pad3;$/;"	m	struct:pcicfg
+pad4	pci.h	/^	uint32	pad4;$/;"	m	struct:pcicfg
+pad5	pci.h	/^	unsigned	pad5:8;$/;"	m	struct:pcicfg
+pad6	pci.h	/^	uint8	pad6;$/;"	m	struct:pcicfg
+pad7	pci.h	/^	uint8	pad7;$/;"	m	struct:pcicfg
+padding	disk.h	/^	uint8	padding[446];$/;"	m	struct:MBR
+padding	net.h	/^	uint32	padding[16];$/;"	m	struct:net_proto
+page_start	elf64.h	/^	void	*page_start;$/;"	m	struct:elf
+pagebm	frame.c	/^\/*@null@*\/ uint64 *pagebm;$/;"	v
+parent	tcp.h	/^	struct tcb		*parent;$/;"	m	struct:tcb	typeref:struct:tcb::tcb
+parenti	ramfs.h	/^	uint64 parenti;$/;"	m	struct:ramfs_ino
+part	disk.h	/^struct part$/;"	s
+parts	disk.h	/^	struct	part parts[4];$/;"	m	struct:MBR	typeref:struct:MBR::part
+pause	cpu.h	11;"	d
+pause	cpu.h	17;"	d
+pcd	page.h	/^	unsigned	pcd:1;			\/\/ 4$/;"	m	struct:__anon5
+pci_dev	pci.h	/^struct pci_dev {$/;"	s
+pci_devs	pci.c	/^struct pci_dev *pci_devs = NULL;$/;"	v	typeref:struct:pci_dev
+pci_init	init.c	/^void pci_init()$/;"	f
+pci_read_conf16	pci.c	/^uint16 pci_read_conf16(uint8 bus, uint8 dev, uint8 func, uint8 reg)$/;"	f
+pci_read_conf32	pci.c	/^uint32 pci_read_conf32(uint8 bus, uint8 dev, uint8 func, uint8 reg)$/;"	f
+pci_read_conf8	pci.c	/^uint8 pci_read_conf8(uint8 bus, uint8 dev, uint8 func, uint8 reg)$/;"	f
+pci_write_conf16	pci.c	/^void pci_write_conf16(uint8 bus, uint8 dev, uint8 func, uint8 reg, uint16 val)$/;"	f
+pci_write_conf32	pci.c	/^void pci_write_conf32(uint8 bus, uint8 dev, uint8 func, uint8 reg, uint32 val)$/;"	f
+pcibar	pci.h	/^typedef struct pcibar {$/;"	s
+pcibar_t	pci.h	/^} pcibar_t;$/;"	t	typeref:struct:pcibar
+pcicfg	pci.h	/^typedef struct pcicfg {$/;"	s
+pcicfg_t	pci.h	/^pcicfg_t;$/;"	t	typeref:struct:pcicfg
+pcnet_close	pcnet.c	/^uint64 pcnet_close(struct eth_dev *e)$/;"	f
+pcnet_init_16	pcnet.h	/^struct pcnet_init_16 {$/;"	s
+pcnet_init_32	pcnet.h	/^struct pcnet_init_32 {$/;"	s
+pcnet_open	pcnet.c	/^uint64 pcnet_open(struct eth_dev *e)$/;"	f
+pcnet_ops	pcnet.c	/^struct eth_ops pcnet_ops = {$/;"	v	typeref:struct:eth_ops
+pcnet_poll	pcnet.c	/^uint64 pcnet_poll(struct eth_dev *e, struct net_dev *nd)$/;"	f
+pcnet_private	pcnet.h	/^struct pcnet_private {$/;"	s
+pcnet_rx_16	pcnet.h	/^struct pcnet_rx_16 {$/;"	s
+pcnet_rx_32	pcnet.h	/^struct pcnet_rx_32 {$/;"	s
+pcnet_send	pcnet.c	/^uint64 pcnet_send(struct eth_dev *e, uint8 *d, uint64 len, uint8 dst[6])$/;"	f
+pcnet_tx_16	pcnet.h	/^struct pcnet_tx_16 {$/;"	s
+pcnet_tx_32	pcnet.h	/^struct pcnet_tx_32 {$/;"	s
+pd	proc.h	/^	pt_t 	*pd;$/;"	m	struct:task
+pe_t	page.h	/^pe_t;$/;"	t	typeref:struct:__anon5
+pending	char.h	/^	uint64 (*pending)(struct char_dev *);$/;"	m	struct:char_ops
+pending	ip.h	/^	struct sockaddr_in pending[1];$/;"	m	struct:ip_sock	typeref:struct:ip_sock::sockaddr_in
+perms	file.h	/^	uint64	perms;		\/\/ file perms\/flags$/;"	m	struct:fileh
+perms	kirkfs.h	/^	unsigned long	perms;$/;"	m	struct:_kfs_file_block
+perms	ramfs.h	/^	uint64 perms;$/;"	m	struct:ramfs_ino
+ph	elf64.h	/^	struct	elf_segment *ph;$/;"	m	struct:elf	typeref:struct:elf::elf_segment
+phys	eth.h	/^	void	*phys;$/;"	m	struct:eth_dev
+phys_mem_list	frame.c	/^struct phys_mem_slot phys_mem_list[MAX_PHYS_MEM_SLOTS];$/;"	v	typeref:struct:phys_mem_slot
+phys_mem_slot	frame.h	/^struct phys_mem_slot {$/;"	s
+pid_t	klibc.h	/^typedef int pid_t;$/;"	t
+pid_t	libc.h	/^typedef	int				pid_t;$/;"	t
+plen	arp.h	/^	uint8	plen;$/;"	m	struct:arp_header
+pml1_offset	page.h	/^	unsigned	pml1_offset:9;$/;"	m	struct:__anon1
+pml2_offset	page.h	/^	unsigned	pml2_offset:9;$/;"	m	struct:__anon1
+pml2_offset	page.h	/^	unsigned	pml2_offset:9;$/;"	m	struct:__anon2
+pml3_offset	page.h	/^	unsigned	pml3_offset:9;$/;"	m	struct:__anon1
+pml3_offset	page.h	/^	unsigned	pml3_offset:9;$/;"	m	struct:__anon2
+pml3_offset	page.h	/^	unsigned	pml3_offset:9;$/;"	m	struct:__anon3
+pml4_offset	page.h	/^	unsigned	pml4_offset:9;$/;"	m	struct:__anon1
+pml4_offset	page.h	/^	unsigned	pml4_offset:9;$/;"	m	struct:__anon2
+pml4_offset	page.h	/^	unsigned	pml4_offset:9;$/;"	m	struct:__anon3
+poll	eth.h	/^	uint64 (*poll)(struct eth_dev *d, struct net_dev *nd);$/;"	m	struct:eth_ops
+pool	mem.h	/^	uint64	pool;$/;"	m	struct:_kp_head
+pool_page_num	mem.c	/^uint64 pool_page_num;$/;"	v
+port	dev.h	/^	uint16 port;$/;"	m	struct:ser_private
+port	ide.h	/^	int	port;$/;"	m	struct:disk_dev
+ppp_byte	ppp.c	/^uint8 ppp_byte(struct char_dev *cd)$/;"	f
+ppp_init	ppp.c	/^uint64 ppp_init(struct net_dev *nd, void *phys, int type, struct net_proto *up)$/;"	f
+ppp_init_sock	ppp.c	/^uint64 ppp_init_sock(struct fileh *fh, struct net_dev *nd)$/;"	f
+ppp_net_ops	ppp.c	/^struct net_ops ppp_net_ops = {$/;"	v	typeref:struct:net_ops
+ppp_private	ppp.h	/^struct ppp_private {$/;"	s
+ppp_process	ppp.c	/^uint64 ppp_process(struct net_dev *nd)$/;"	f
+ppp_read	ppp.c	/^uint64 ppp_read(struct fileh *fh, struct net_dev *nd, unsigned char *dst, uint64 len, $/;"	f
+ppp_wbyte	ppp.c	/^uint64 ppp_wbyte(struct char_dev *cd, uint8 byte)$/;"	f
+ppp_write	ppp.c	/^uint64 ppp_write(struct fileh *fh, struct net_dev *nd, unsigned char *src, uint64 len, $/;"	f
+prefs	pci.h	/^			uint8 prefs;$/;"	m	struct:pcibar::__anon10::__anon12
+present	cpu.h	/^	unsigned	present:1;		\/\/ 15$/;"	m	struct:gdt_entry
+present	cpu.h	/^	unsigned	present:1;$/;"	m	struct:idt_entry
+present	page.h	/^	unsigned	present:1;		\/\/ 0$/;"	m	struct:__anon5
+prev	kirkfs.h	/^	unsigned char	prev;$/;"	m	struct:_kfs_data_block
+prev	kirkfs.h	/^	unsigned char	prev;$/;"	m	struct:_kfs_free_block
+prev	mem.h	/^	struct _kp_node *prev;$/;"	m	struct:_kp_node	typeref:struct:_kp_node::_kp_node
+prev	tcp.h	/^	struct tcp_buf	*prev;$/;"	m	struct:tcp_buf	typeref:struct:tcp_buf::tcp_buf
+print_bits	klibc.c	/^void print_bits(uint64 val, const char *bits[], uint64 max, uint8 br)$/;"	f
+print_block	block.c	/^void print_block(struct block_dev *dev)$/;"	f
+print_fh	file.c	/^void print_fh(struct fileh *fh)$/;"	f
+print_frame_stats	frame.c	/^void print_frame_stats()$/;"	f
+print_kmem_stats	mem.c	/^void print_kmem_stats()$/;"	f
+print_mac	pcnet.c	/^void print_mac(uint8 t[6])$/;"	f
+print_mm	page.c	/^void print_mm(pt_t *pt4)$/;"	f
+print_nd	net.c	/^void print_nd(struct net_dev *nd)$/;"	f
+print_pci_dev	pci.c	/^void print_pci_dev(struct pci_dev *d)$/;"	f
+print_pcnet	pcnet.c	/^void print_pcnet(struct pcnet_private *p)$/;"	f
+print_reg	proc.c	/^void print_reg(struct regs *r)$/;"	f
+print_ring	mem.c	/^void print_ring(struct ring_head *rh)$/;"	f
+print_stack	proc.c	/^void print_stack(void *rsp)$/;"	f
+print_task	proc.c	/^void print_task(struct task *tsk)$/;"	f
+print_tasks	proc.c	/^void print_tasks(void)$/;"	f
+printf	klibc.c	/^void printf(const char *format, ...)$/;"	f
+printf	libc.c	/^void printf(const char *format, ...)$/;"	f
+priv	file.h	/^	void *priv;$/;"	m	struct:fileh
+priv	net.h	/^	void				*priv;$/;"	m	struct:net_dev
+process	net.h	/^	uint64 (*process)(struct net_dev *);$/;"	m	struct:net_ops
+process_key	dev.c	/^void process_key()$/;"	f
+process_lcp	ppp.c	/^uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)$/;"	f
+progif	pci.h	/^	uint8	progif;$/;"	m	struct:pcicfg
+proto	ip.h	/^	uint64 proto;$/;"	m	struct:ip_sock
+proto	ip.h	/^	uint8 proto;$/;"	m	struct:ip_hdr
+proto_init	init.c	/^void proto_init()$/;"	f
+protocol	file.h	/^	uint64	family,type,protocol;		\/\/ sys_socket params saved for forking a new socket$/;"	m	struct:fileh
+protocol	tcp.h	/^	uint8   protocol;$/;"	m	struct:tcp_phdr
+psh	tcp.h	/^	unsigned    psh:1;$/;"	m	struct:tcp_hdr
+pt_t	page.h	/^pt_t;$/;"	t	typeref:union:__anon6
+ptype	arp.h	/^	uint16	ptype;$/;"	m	struct:arp_header
+putch	dev.c	/^void putch(unsigned char c)$/;"	f
+putch_s	dev.c	/^void putch_s(uint16 port, unsigned char c)$/;"	f
+putchar	libc.c	/^int putchar(int c)$/;"	f
+puts	klibc.c	/^int puts(char *text)$/;"	f
+putsn	klibc.c	/^int putsn(char *text, size_t max)$/;"	f
+pwt	page.h	/^	unsigned	pwt:1;			\/\/ 3$/;"	m	struct:__anon5
+r	cpu.h	/^	struct	regs r;$/;"	m	struct:syscall_regs	typeref:struct:syscall_regs::regs
+r	syscall.c	/^	struct regs r;$/;"	m	struct:sys_call_regs	typeref:struct:sys_call_regs::regs	file:
+r10	cpu.h	/^	uint64	r11, r10, r9, r8;		\/\/ 0x40$/;"	m	struct:regs
+r11	cpu.h	/^	uint64	r11, r10, r9, r8;		\/\/ 0x40$/;"	m	struct:regs
+r11	syscall.c	/^	long	r11;$/;"	m	struct:sys_call_regs	file:
+r12	cpu.h	/^	uint64	r15, r14, r13, r12; 	\/\/ 0x20$/;"	m	struct:regs
+r13	cpu.h	/^	uint64	r15, r14, r13, r12; 	\/\/ 0x20$/;"	m	struct:regs
+r14	cpu.h	/^	uint64	r15, r14, r13, r12; 	\/\/ 0x20$/;"	m	struct:regs
+r15	cpu.h	/^	uint64	r15, r14, r13, r12; 	\/\/ 0x20$/;"	m	struct:regs
+r8	cpu.h	/^	uint64	r11, r10, r9, r8;		\/\/ 0x40$/;"	m	struct:regs
+r9	cpu.h	/^	uint64	r11, r10, r9, r8;		\/\/ 0x40$/;"	m	struct:regs
+ram_block_ops	ram.c	/^struct block_ops ram_block_ops = {$/;"	v	typeref:struct:block_ops
+ramdisk	ram.h	/^struct ramdisk {$/;"	s
+ramfs_close	ramfs.c	/^uint64 ramfs_close(struct task *t, struct fileh *fh)$/;"	f
+ramfs_ino	ramfs.h	/^struct ramfs_ino {$/;"	s
+ramfs_mount	ramfs.c	/^void ramfs_mount(struct mount *mnt)$/;"	f
+ramfs_open	ramfs.c	/^uint64 ramfs_open(struct task *t, struct mount *mnt, char *file, $/;"	f
+ramfs_ops	ramfs.c	/^struct fs_ops ramfs_ops = {$/;"	v	typeref:struct:fs_ops
+ramfs_read	ramfs.c	/^uint64 ramfs_read(struct fileh *f, unsigned char *dst, uint64 len)$/;"	f
+ramfs_super	ramfs.h	/^struct ramfs_super {$/;"	s
+ramfs_write	ramfs.c	/^uint64 ramfs_write(struct fileh *f, const unsigned char *src, uint64 len)$/;"	f
+rax	cpu.h	/^	uint64	rdx, rcx, rbx, rax;		\/\/ 0x78$/;"	m	struct:regs
+rbp	cpu.h	/^	uint64	rdi, rsi, rbp;			\/\/ 0x60$/;"	m	struct:regs
+rbx	cpu.h	/^	uint64	rdx, rcx, rbx, rax;		\/\/ 0x78$/;"	m	struct:regs
+rcx	cpu.h	/^	uint64	rdx, rcx, rbx, rax;		\/\/ 0x78$/;"	m	struct:regs
+rcx	syscall.c	/^	long	rcx;$/;"	m	struct:sys_call_regs	file:
+rd_init	ram.c	/^void rd_init(struct block_dev *b)$/;"	f
+rd_read_one	ram.c	/^uint64 rd_read_one(struct block_dev *b, uint8 *target, uint64 start)$/;"	f
+rd_write_one	ram.c	/^uint64 rd_write_one(struct block_dev *b, uint8 *source, uint64 start)$/;"	f
+rdi	cpu.h	/^	uint64	rdi, rsi, rbp;			\/\/ 0x60$/;"	m	struct:regs
+rds	ram.c	/^struct ramdisk rds[NUM_RD];$/;"	v	typeref:struct:ramdisk
+rdx	cpu.h	/^	uint64	rdx, rcx, rbx, rax;		\/\/ 0x78$/;"	m	struct:regs
+read	block.h	/^	uint64 (*read)(struct block_dev *d, uint8 *data, uint64 off, uint64 len);$/;"	m	struct:block_ops
+read	char.h	/^	uint64 (*read)(struct char_dev *, unsigned char *, uint64);$/;"	m	struct:char_ops
+read	file.h	/^	uint64 (*read)(struct fileh *, unsigned char *, uint64);$/;"	m	struct:fs_ops
+read	libc.c	/^ssize_t read(int fd, void *buf, size_t count)$/;"	f
+read	mem.h	/^	int read;$/;"	m	struct:ring_head
+readBCR	pcnet.c	/^uint32 readBCR(uint32 base, uint32 index)$/;"	f
+readCSR	pcnet.c	/^uint32 readCSR(uint32 base, uint32 index)$/;"	f
+read_msr	cpu.c	/^uint64 read_msr(uint32 msr)$/;"	f
+read_one	block.h	/^	uint64 (*read_one)(struct block_dev *d, uint8 *data, uint64 sector);$/;"	m	struct:block_ops
+recv	net.h	/^	uint64 (*recv)(struct net_dev *nd, struct net_proto *, uint8 *, uint64);$/;"	m	struct:net_proto_ops
+recv_q	tcp.h	/^	struct tcp_buf	*recv_q;$/;"	m	struct:tcb	typeref:struct:tcb::tcp_buf
+regs	cpu.h	/^struct regs$/;"	s
+rel_sec	disk.h	/^	uint32	rel_sec;$/;"	m	struct:part
+remote	ip.h	/^	struct sockaddr_in remote;$/;"	m	struct:ip_sock	typeref:struct:ip_sock::sockaddr_in
+req	block.c	/^	struct bio_req 	*req;$/;"	m	struct:sector	typeref:struct:sector::bio_req	file:
+req	block.h	/^	struct	bio_req		*req;$/;"	m	struct:block_dev	typeref:struct:block_dev::bio_req
+res	ahci.c	/^	int	res:1;$/;"	m	struct:_CAP	file:
+res	ahci.c	/^	int res:1;$/;"	m	struct:CommandHeader	file:
+res	ahci.c	/^	uint32	res:9;$/;"	m	struct:PRDT	file:
+res	ahci.c	/^	uint8	res[32];$/;"	m	struct:CommandTable	file:
+res	ahci.c	/^	uint8 res:3;$/;"	m	struct:_PxCMD	file:
+res	cpu.h	/^	unsigned	res:1;			\/\/ 11 1=CS, 2=DS if issegment$/;"	m	struct:gdt_entry
+res	cpu.h	/^	unsigned	res:5;$/;"	m	struct:idt_entry
+res	kirkfs.h	/^	unsigned long	res[4];$/;"	m	struct:_kfs_data_block
+res	kirkfs.h	/^	unsigned long	res[4];$/;"	m	struct:_kfs_file_block
+res	tcp.h	/^	uint8   res;$/;"	m	struct:tcp_phdr
+res	tcp.h	/^	unsigned    res:3;$/;"	m	struct:tcp_hdr
+res0	ahci.c	/^	uint32	res0;$/;"	m	struct:PORT	file:
+res0	ide.h	/^	uint16	res0;$/;"	m	struct:hdd_ident
+res0	ide.h	/^	uint8	res0;$/;"	m	struct:PRD
+res0	init.c	/^	unsigned res0:8;$/;"	m	struct:_APICbar	file:
+res0	pci.h	/^	unsigned	res0:24;$/;"	m	struct:pcicfg
+res0	pcnet.h	/^	uint8  res0:4;$/;"	m	struct:pcnet_init_16
+res0	pcnet.h	/^	uint8 res0:4;		\/\/ 16 - 19$/;"	m	struct:pcnet_init_32
+res0	proc.h	/^	unsigned int	res0;$/;"	m	struct:tss_64
+res1	ahci.c	/^	uint8	res1[44];$/;"	m	struct:PORT	file:
+res1	ide.h	/^	uint8	res1:7;$/;"	m	struct:PRD
+res1	init.c	/^	unsigned res1:2;$/;"	m	struct:_APICbar	file:
+res1	pci.h	/^	uint32	res1;$/;"	m	struct:pcicfg
+res1	pcnet.h	/^	uint8  res1:4;$/;"	m	struct:pcnet_init_16
+res1	pcnet.h	/^	uint8 res1:4;		\/\/ 24 - 27$/;"	m	struct:pcnet_init_32
+res1	pcnet.h	/^	uint8 res1;			\/\/ 16 - 23$/;"	m	struct:pcnet_rx_32
+res1	pcnet.h	/^	uint8 res1;			\/\/ 16 - 23$/;"	m	struct:pcnet_tx_32
+res1	proc.h	/^	unsigned long	res1;$/;"	m	struct:tss_64
+res2	init.c	/^	unsigned res2:12;$/;"	m	struct:_APICbar	file:
+res2	pcnet.h	/^	uint16 res2;		\/\/ 24 - 31$/;"	m	struct:pcnet_init_32
+res2	pcnet.h	/^	uint32 res2;		\/\/ 00 - 31$/;"	m	struct:pcnet_rx_32
+res2	proc.h	/^	unsigned long	res2;$/;"	m	struct:tss_64
+res3	proc.h	/^	unsigned long	res3;$/;"	m	struct:tss_64
+res4	proc.h	/^	unsigned short	res4;$/;"	m	struct:tss_64
+reserved	acpi.h	/^	uint8 reserved[3];$/;"	m	struct:RSDPDescriptor20
+reserved	ide.h	/^	uint16	reserved[127];$/;"	m	struct:hdd_ident
+reserved50	ide.h	/^	uint16	reserved50;$/;"	m	struct:hdd_ident
+rev	ide.h	/^	uint8	rev[8];$/;"	m	struct:hdd_ident
+rev	pci.h	/^	unsigned	rev:8;$/;"	m	struct:pcicfg
+rflags	cpu.h	/^	uint64	rflags;					\/\/ 0xb8$/;"	m	struct:regs
+rflags	proc.h	/^	uint64	rflags;					\/\/ 0xf0$/;"	m	struct:task
+rh	dev.h	/^	struct ring_head *rh;$/;"	m	struct:con_private	typeref:struct:con_private::ring_head
+rh	dev.h	/^	struct ring_head *rh;$/;"	m	struct:ser_private	typeref:struct:ser_private::ring_head
+ring_head	mem.h	/^struct ring_head {$/;"	s
+ring_init	mem.c	/^struct ring_head *ring_init(int length, void *owner)$/;"	f
+ring_read	mem.c	/^bool ring_read(struct ring_head *rh, unsigned char *byte)$/;"	f
+ring_write	mem.c	/^bool ring_write(struct ring_head *rh, unsigned char byte)$/;"	f
+rip	cpu.h	/^	uint64	rip;					\/\/ 0xa8$/;"	m	struct:regs
+rip	proc.h	/^	uint64	rip;					\/\/ 0xe8$/;"	m	struct:task
+root	file.c	/^struct mount *mounts,*root;$/;"	v	typeref:struct:
+root	ramfs.h	/^	struct ramfs_ino *root;$/;"	m	struct:ramfs_super	typeref:struct:ramfs_super::ramfs_ino
+root_block	kirkfs.h	/^	unsigned char	root_block;		\/* block containing \/ *\/$/;"	m	struct:_kfs_superblock
+rsi	cpu.h	/^	uint64	rdi, rsi, rbp;			\/\/ 0x60$/;"	m	struct:regs
+rsp	cpu.h	/^	uint64	rsp;					\/\/ 0xc0$/;"	m	struct:regs
+rsp0	proc.h	/^	unsigned long	rsp0;$/;"	m	struct:tss_64
+rsp1	proc.h	/^	unsigned long	rsp1;$/;"	m	struct:tss_64
+rsp2	proc.h	/^	unsigned long	rsp2;$/;"	m	struct:tss_64
+rst	tcp.h	/^	unsigned    rst:1;$/;"	m	struct:tcp_hdr
+rusage	proc.h	/^struct rusage {$/;"	s
+rw	cpu.h	/^	unsigned	rw:1;			\/\/ 9 CS or DS$/;"	m	struct:gdt_entry
+rx	pcnet.h	/^	struct pcnet_rx_32		*rx;$/;"	m	struct:pcnet_private	typeref:struct:pcnet_private::pcnet_rx_32
+rx	tcp.h	/^	uint64 rx;		\/\/ bytes they've sent$/;"	m	struct:tcb
+s	ide.h	/^	uint16 c,h,s;$/;"	m	struct:disk_dev
+s	ip.h	/^	} s;$/;"	m	struct:ip_sock	typeref:union:ip_sock::__anon18
+s_addr	ip.h	/^	uint32 s_addr;$/;"	m	struct:in_addr
+s_addr	task2.c	/^	uint32 s_addr;$/;"	m	struct:in_addr	file:
+s_cyl	disk.h	/^	uint16	s_cyl:10;$/;"	m	struct:part
+s_head	disk.h	/^	uint8	s_head;$/;"	m	struct:part
+s_sector	disk.h	/^	uint8	s_sector:6;$/;"	m	struct:part
+save_state	proc.c	/^void save_state(struct task *old, struct regs *r)$/;"	f
+sched_fail	proc.c	/^void sched_fail(void)$/;"	f
+sched_main	proc.c	/^void sched_main( struct regs *r)$/;"	f
+scroll	dev.c	/^void scroll(void)$/;"	f
+sdev	file.h	/^	} sdev;$/;"	m	struct:fileh	typeref:union:fileh::__anon15
+section	mboot_hdr.S	/^section	.text$/;"	l
+sector	block.c	/^	uint64 			 sector;$/;"	m	struct:sector	file:
+sector	block.c	/^struct sector {$/;"	s	file:
+sectors	ide.h	/^	uint16	sectors;$/;"	m	struct:hdd_ident
+security	ide.h	/^	uint16	security;$/;"	m	struct:hdd_ident
+seek	file.h	/^	uint64	seek;		\/\/ offset in bytes, 0 for sockets$/;"	m	struct:fileh
+seg	elf64.h	/^	struct elf_segment *seg;$/;"	m	struct:elf_section	typeref:struct:elf_section::elf_segment
+sel	cpu.h	/^	uint16	sel;$/;"	m	struct:idt_entry
+send	eth.h	/^	uint64 (*send)(struct eth_dev *, uint8 *, uint64, uint8 dst[6]);$/;"	m	struct:eth_ops
+send_frame	pcnet.c	/^void send_frame(struct pcnet_tx_32 *b, uint8 src[6], uint8 dst[6],$/;"	f
+send_lcp	ppp.c	/^uint64 send_lcp(struct char_dev *cd, uint8 *buf, uint16 len)$/;"	f
+send_q	tcp.h	/^	struct tcp_buf	*send_q;$/;"	m	struct:tcb	typeref:struct:tcb::tcp_buf
+seq_num	tcp.h	/^	uint32  seq_num;$/;"	m	struct:tcp_hdr
+ser_init	dev.c	/^bool ser_init(struct char_dev *dev)$/;"	f
+ser_pending	dev.c	/^uint64 ser_pending(struct char_dev *dev)$/;"	f
+ser_private	dev.h	/^struct ser_private {$/;"	s
+ser_read	dev.c	/^uint64 ser_read(struct char_dev *dev, unsigned char *dest, uint64 len)$/;"	f
+ser_status	dev.c	/^void ser_status(uint16 port)$/;"	f
+ser_write	dev.c	/^uint64 ser_write(struct char_dev *dev, unsigned char *src, uint64 len)$/;"	f
+serial	ide.h	/^	uint8	serial[20];$/;"	m	struct:hdd_ident
+serial_char_ops	dev.c	/^struct char_ops serial_char_ops = {$/;"	v	typeref:struct:char_ops
+set_frame	frame.c	/^void set_frame(void *addr)$/;"	f
+set_pe	page.c	/^void set_pe(pe_t *pe, uint64 virt, uint64 phys, unsigned present, $/;"	f
+set_pe_in_pt	page.c	/^void set_pe_in_pt(pt_t *pt, uint64 virt, uint64 phys, int present, int write, int user, int is_frame)$/;"	f
+setup_gdt	init.c	/^void setup_gdt(void)$/;"	f
+setup_ldt	init.c	/^void setup_ldt(void)$/;"	f
+setup_mem	init.c	/^void setup_mem(unsigned long magic, multiboot_info_t *mbi)$/;"	f
+setup_msr	init.c	/^void setup_msr()$/;"	f
+setup_pic	init.c	/^void setup_pic(void)$/;"	f
+setup_pit	init.c	/^void setup_pit(uint32 freq)$/;"	f
+setup_serial	init.c	/^void setup_serial(unsigned short port, uint32 speed)$/;"	f
+setup_task	proc.c	/^void setup_task(struct task *tsk, uint64 eip, int type, $/;"	f
+setup_tss	init.c	/^void setup_tss(void)$/;"	f
+setup_vga	init.c	/^void setup_vga(void)$/;"	f
+sh	elf64.h	/^	struct	elf_section *sh;$/;"	m	struct:elf	typeref:struct:elf::elf_section
+sh_addr	elf64.h	/^	uint64	sh_addr;$/;"	m	struct:__anon21
+sh_addrinfo	elf64.h	/^	uint64	sh_addrinfo;$/;"	m	struct:__anon21
+sh_entsize	elf64.h	/^	uint64	sh_entsize;$/;"	m	struct:__anon21
+sh_flags	elf64.h	/^	uint64	sh_flags;$/;"	m	struct:__anon21
+sh_info	elf64.h	/^	uint32	sh_info;$/;"	m	struct:__anon21
+sh_link	elf64.h	/^	uint32	sh_link;$/;"	m	struct:__anon21
+sh_name	elf64.h	/^	uint32	sh_name;$/;"	m	struct:__anon21
+sh_offset	elf64.h	/^	uint64	sh_offset;$/;"	m	struct:__anon21
+sh_size	elf64.h	/^	uint64	sh_size;$/;"	m	struct:__anon21
+sh_type	elf64.h	/^	uint32	sh_type;$/;"	m	struct:__anon21
+sign_extend	page.h	/^	unsigned	sign_extend:16;$/;"	m	struct:__anon1
+sign_extend	page.h	/^	unsigned	sign_extend:16;$/;"	m	struct:__anon2
+sign_extend	page.h	/^	unsigned	sign_extend:16;$/;"	m	struct:__anon3
+sin_addr	ip.h	/^	struct in_addr sin_addr;$/;"	m	struct:sockaddr_in	typeref:struct:sockaddr_in::in_addr
+sin_addr	task2.c	/^	struct in_addr sin_addr;$/;"	m	struct:sockaddr_in	typeref:struct:sockaddr_in::in_addr	file:
+sin_family	ip.h	/^	uint16 	sin_family;$/;"	m	struct:sockaddr_in
+sin_family	task2.c	/^	uint16  sin_family;$/;"	m	struct:sockaddr_in	file:
+sin_port	ip.h	/^	uint16	sin_port;$/;"	m	struct:sockaddr_in
+sin_port	task2.c	/^	uint16  sin_port;$/;"	m	struct:sockaddr_in	file:
+size	mboot.h	/^	unsigned int size;$/;"	m	struct:memory_map
+size_t	klibc.h	/^typedef	unsigned long	size_t;$/;"	t
+size_t	libc.h	/^typedef unsigned long	size_t;$/;"	t
+slip_init	slip.c	/^uint64 slip_init(struct net_dev *nd, void *phys, int type, $/;"	f
+slip_init_sock	slip.c	/^uint64 slip_init_sock(struct fileh *fh, struct net_dev *nd)$/;"	f
+slip_net_ops	slip.c	/^struct net_ops slip_net_ops = {$/;"	v	typeref:struct:net_ops
+slip_private	slip.h	/^struct slip_private {$/;"	s
+slip_process	slip.c	/^uint64 slip_process(struct net_dev *nd)$/;"	f
+slip_recv_packet	slip.c	/^uint64 slip_recv_packet(uint8 *p, uint64 len, struct char_dev *cd)$/;"	f
+slip_send_packet	slip.c	/^uint64 slip_send_packet(uint8 *p, uint64 len, struct char_dev *cd)$/;"	f
+slip_write	slip.c	/^uint64 slip_write(struct fileh *fh, struct net_dev *nd, unsigned char *src, uint64 len,$/;"	f
+sock	tcp.h	/^	struct fileh	*sock;$/;"	m	struct:tcb	typeref:struct:tcb::fileh
+sockaddr_in	ip.h	/^struct sockaddr_in {$/;"	s
+sockaddr_in	task2.c	/^struct sockaddr_in {$/;"	s	file:
+special	file.h	/^	uint64	special;	\/\/ major|minor, 0 for sockets$/;"	m	struct:fileh
+special	ramfs.h	/^	uint64 special;$/;"	m	struct:ramfs_ino
+spin_lock	cpu.h	/^static inline void spin_lock(int *lock)$/;"	f
+spun_unloc	cpu.h	/^static inline void spun_unloc(uint64 *lock)$/;"	f
+src	ip.h	/^	uint32 src;$/;"	m	struct:ip_hdr
+src	pcnet.c	/^	uint8	src[6];$/;"	m	struct:eth_frame	file:
+src	tcp.h	/^	uint32  src;$/;"	m	struct:tcp_phdr
+src	tcp.h	/^	uint32 src;		\/\/ our IP$/;"	m	struct:tcb
+src_ack	tcp.h	/^	uint32 src_ack; \/\/ their ack of us$/;"	m	struct:tcb
+src_port	tcp.h	/^	uint16  src_port;$/;"	m	struct:tcp_hdr
+src_port	tcp.h	/^	uint16 src_port;	\/\/ our port$/;"	m	struct:tcb
+src_seq	tcp.h	/^	uint32 src_seq; \/\/ our initial seq$/;"	m	struct:tcb
+ss	cpu.h	/^	uint64	ss;						\/\/ 0xc8$/;"	m	struct:regs
+ssize_t	libc.h	/^typedef long			ssize_t;$/;"	t
+stack_end	proc.h	/^	uint8	*stack_end;			\/\/ top of the stack$/;"	m	struct:task
+stack_start	proc.h	/^	uint8	*stack_start;		\/\/ bottom of the stack$/;"	m	struct:task
+stacksave	proc.h	/^	char	*stacksave;				\/\/ 0xd0$/;"	m	struct:task
+state	ip.h	/^	uint64 state;$/;"	m	struct:ip_sock
+state	net.h	/^	uint16				 state;$/;"	m	struct:net_dev
+state	proc.h	/^	uint64	state;$/;"	m	struct:task
+state	tcp.h	/^	uint32 state;$/;"	m	struct:tcb
+state_names	proc.c	/^const char *state_names[STATE_NUM] = {$/;"	v
+status_reg	pci.h	/^	uint16	status_reg;$/;"	m	struct:pcicfg
+stderr	crt0.c	/^FILE *stdin, *stdout, *stderr;$/;"	v
+stdin	crt0.c	/^FILE *stdin, *stdout, *stderr;$/;"	v
+stdout	crt0.c	/^FILE *stdin, *stdout, *stderr;$/;"	v
+stepping	cpu.h	/^	uint8	stepping;$/;"	m	struct:cpu
+sti	cpu.h	14;"	d
+sti	cpu.h	8;"	d
+strcmp	klibc.c	/^uint64 strcmp(const char *a, const char *b)$/;"	f
+strcpy	klibc.c	/^char *strcpy(char *dest, const char *src)$/;"	f
+strlen	klibc.c	/^uint64 strlen(const char *str)$/;"	f
+strlen	libc.c	/^size_t strlen(const char *str)$/;"	f
+strncmp	klibc.c	/^uint64 strncmp(const char *a, const char *b, uint64 len)$/;"	f
+strncpy	klibc.c	/^char *strncpy(char *dest, const char *source, unsigned long count)$/;"	f
+sub_id	pci.h	/^	uint16	sub_id;$/;"	m	struct:pcicfg
+sub_vendor_id	pci.h	/^	uint16	sub_vendor_id;$/;"	m	struct:pcicfg
+subclass	pci.h	/^	uint8	subclass;$/;"	m	struct:pcicfg
+super	file.h	/^	void *super;$/;"	m	struct:mount
+switch_to	proc.c	/^bool switch_to(struct task *new_tsk, struct regs *r)$/;"	f
+syms	dummy-syms.c	/^struct symtable syms[] = {$/;"	v	typeref:struct:symtable
+syms	syms.c	/^struct symtable syms[] = {$/;"	v	typeref:struct:symtable
+symtable	symtable.h	/^struct symtable {$/;"	s
+syn	tcp.h	/^	unsigned    syn:1;$/;"	m	struct:tcp_hdr
+sys_accept	file.c	/^uint64 sys_accept(uint64 fd, struct sockaddr *sa, uint64 *len)$/;"	f
+sys_bind	file.c	/^uint64 sys_bind(uint64 fd, struct sockaddr *sa, uint64 len)$/;"	f
+sys_brk	syscall.c	/^uint8 *sys_brk(uint8 *brk)$/;"	f
+sys_call_regs	syscall.c	/^struct sys_call_regs$/;"	s	file:
+sys_close	file.c	/^uint64 sys_close(uint64 fd)$/;"	f
+sys_execve	proc.c	/^uint64 sys_execve(const char *file, char *const argv[], char *const envp[])$/;"	f
+sys_exit	proc.c	/^void sys_exit(int status)$/;"	f
+sys_fork	proc.c	/^uint64 sys_fork()$/;"	f
+sys_getpid	syscall.c	/^uint64 sys_getpid(void)$/;"	f
+sys_kill	syscall.c	/^uint64 sys_kill(uint64 pid, uint64 sig)$/;"	f
+sys_listen	file.c	/^uint64 sys_listen(uint64 fd, uint64 listen)$/;"	f
+sys_open	file.c	/^uint64 sys_open(const char *name, int flags)$/;"	f
+sys_pause	syscall.c	/^uint64 sys_pause()$/;"	f
+sys_read	file.c	/^uint64 sys_read(uint64 fd, uint8 *data, uint64 len)$/;"	f
+sys_socket	file.c	/^uint64 sys_socket(uint64 family, uint64 type, uint64 protocol)$/;"	f
+sys_time	cpu.c	/^uint64 sys_time(void *tloc)$/;"	f
+sys_unimp	syscall.c	/^uint64 sys_unimp(uint64 a, uint64 b, uint64 c, uint64 d, uint64 e)$/;"	f
+sys_wait4	proc.c	/^uint64 sys_wait4(pid_t pid, int *status, int options, struct rusage *rusage)$/;"	f
+sys_write	file.c	/^uint64 sys_write(uint64 fd, uint8 *data, uint64 len)$/;"	f
+syscall_csss	init.c	/^	uint16	syscall_csss;$/;"	m	struct:_STAR	file:
+syscall_eip	init.c	/^	uint32	syscall_eip;$/;"	m	struct:_STAR	file:
+syscall_init	init.c	/^void syscall_init()$/;"	f
+syscall_regs	cpu.h	/^struct syscall_regs$/;"	s
+syscall_table	syscall.c	/^uint64 syscall_table[MAX_SYSCALL];$/;"	v
+sysenter	intr.S	/^sysenter:$/;"	l
+sysret_csss	init.c	/^	uint16	sysret_csss;$/;"	m	struct:_STAR	file:
+t_ramfs_ino	ramfs.c	/^struct ramfs_ino t_ramfs_ino[] = {$/;"	v	typeref:struct:ramfs_ino
+t_ramfs_super	ramfs.c	/^struct ramfs_super t_ramfs_super = {$/;"	v	typeref:struct:ramfs_super
+table_pe	page.h	/^	pe_t table_pe[PT_SIZE]; $/;"	m	union:__anon6
+table_u64	page.h	/^	uint64 table_u64[PT_SIZE];$/;"	m	union:__anon6
+target_high	cpu.h	/^	uint16	target_high;$/;"	m	struct:idt_entry
+target_low	cpu.h	/^	uint16	target_low;$/;"	m	struct:idt_entry
+target_very_high	cpu.h	/^	uint32	target_very_high;$/;"	m	struct:idt_entry
+task	file.h	/^	struct task *task;	\/\/ NULL for kernel$/;"	m	struct:fileh	typeref:struct:fileh::task
+task	proc.h	/^struct task {$/;"	s
+task2	task2.h	/^unsigned char task2[] = {$/;"	v
+task2_len	task2.h	/^unsigned int task2_len = 4664;$/;"	v
+task3	task3.h	/^unsigned char task3[] = {$/;"	v
+task3_len	task3.h	/^unsigned int task3_len = 682456;$/;"	v
+task_lock	proc.c	/^unsigned long task_lock;$/;"	v
+taskbm	frame.c	/^struct task **taskbm;$/;"	v	typeref:struct:task
+tasks	proc.c	/^struct task tasks[NUM_TASKS];$/;"	v	typeref:struct:task
+tcb	tcp.h	/^struct tcb {$/;"	s
+tcbs	tcp.c	/^struct tcb *tcbs = NULL;$/;"	v	typeref:struct:tcb
+tcp	ip.h	/^		struct tcb *tcp;$/;"	m	union:ip_sock::__anon18	typeref:struct:ip_sock::__anon18::tcb
+tcp_accept	tcp.c	/^uint64 tcp_accept(struct tcb *tcb, struct tcb *new_tcb,$/;"	f
+tcp_buf	tcp.h	/^struct tcp_buf {$/;"	s
+tcp_hdr	tcp.h	/^struct tcp_hdr {$/;"	s
+tcp_init_socket	tcp.c	/^void tcp_init_socket(struct fileh *f)$/;"	f
+tcp_length	tcp.h	/^	uint16  tcp_length;$/;"	m	struct:tcp_phdr
+tcp_listen	tcp.c	/^uint64 tcp_listen(struct tcb *tcb)$/;"	f
+tcp_phdr	tcp.h	/^struct tcp_phdr {$/;"	s
+tcp_recv	tcp.c	/^uint64 tcp_recv(struct net_dev *nd, uint32 src, uint32 dst,$/;"	f
+tcp_send	tcp.c	/^uint64 tcp_send(struct tcb *tcb, uint8 *data, uint64 len, uint64 flags)$/;"	f
+tcp_states	tcp.c	/^const char *tcp_states[TCP_STATES] = {$/;"	v
+tdma	ide.h	/^	uint8	tdma;$/;"	m	struct:hdd_ident
+test_frame	frame.c	/^bool test_frame(void *addr)$/;"	f
+this_task	proc.h	/^	struct task *this_task;			\/\/ 0xe0$/;"	m	struct:task	typeref:struct:task::task
+tick	cpu.c	/^uint64 tick = 0;$/;"	v
+timer_int	cpu.c	/^void timer_int()$/;"	f
+timeval	cpu.h	/^struct timeval {$/;"	s
+to	frame.h	/^	void *to;$/;"	m	struct:phys_mem_slot
+tod	cpu.c	/^void tod()$/;"	f
+top_of_mem	frame.c	/^unsigned long high_mem_start=0, top_of_mem=0, free_page_size=0, total_frames=0;$/;"	v
+tos	ip.h	/^	uint8 tos;$/;"	m	struct:ip_hdr
+tot_sec	disk.h	/^	uint32	tot_sec;$/;"	m	struct:part
+total_frames	frame.c	/^unsigned long high_mem_start=0, top_of_mem=0, free_page_size=0, total_frames=0;$/;"	v
+tpio	ide.h	/^	uint8	tpio;$/;"	m	struct:hdd_ident
+true	klibc.h	33;"	d
+true	libc.h	/^	typedef enum { false, true } bool;$/;"	e	enum:__anon16
+tss	proc.h	/^	struct regs tss;				\/\/ 0x00$/;"	m	struct:task	typeref:struct:task::regs
+tss_64	proc.h	/^struct tss_64 {$/;"	s
+tss_flush	cpu.c	/^void tss_flush(uint16 tsss)$/;"	f
+ttl	ip.h	/^	uint8 ttl;$/;"	m	struct:ip_hdr
+tv_sec	cpu.h	/^	uint64	tv_sec;$/;"	m	struct:timeval
+tv_usec	cpu.h	/^	uint64	tv_usec;$/;"	m	struct:timeval
+tx	pcnet.h	/^	struct pcnet_tx_32		*tx;$/;"	m	struct:pcnet_private	typeref:struct:pcnet_private::pcnet_tx_32
+tx	tcp.h	/^	uint64 tx;		\/\/ bytes we've sent$/;"	m	struct:tcb
+type	cpu.h	/^	unsigned	type:4;$/;"	m	struct:idt_entry
+type	dev.h	/^	uint64	type;$/;"	m	struct:dev
+type	file.h	/^	uint64	family,type,protocol;		\/\/ sys_socket params saved for forking a new socket$/;"	m	struct:fileh
+type	ip.h	/^	uint8 type;$/;"	m	struct:icmp_hdr
+type	mboot.h	/^	unsigned int type;$/;"	m	struct:memory_map
+type	net.h	/^	int					 type;$/;"	m	struct:net_dev
+u	mboot.h	/^	} u;$/;"	m	struct:multiboot_info	typeref:union:multiboot_info::__anon7
+udp	ip.h	/^		uint64 udp;$/;"	m	union:ip_sock::__anon18
+uint16	klibc.h	/^typedef unsigned short	uint16;$/;"	t
+uint16	task2.c	/^typedef	unsigned short	uint16;$/;"	t	file:
+uint32	klibc.h	/^typedef unsigned int 	uint32;$/;"	t
+uint32	task2.c	/^typedef	unsigned int	uint32;$/;"	t	file:
+uint64	klibc.h	/^typedef unsigned long 	uint64;$/;"	t
+uint64	task2.c	/^typedef	unsigned long	uint64;$/;"	t	file:
+uint8	klibc.h	/^typedef unsigned char	uint8;$/;"	t
+un	pci.h	/^	} un;$/;"	m	struct:pcibar	typeref:union:pcibar::__anon10
+unit	eth.h	/^	uint8	unit;$/;"	m	struct:eth_dev
+unlock_frames	frame.c	/^void unlock_frames(void)$/;"	f
+unlock_pool	mem.c	/^void unlock_pool(unsigned long pool)$/;"	f
+unlock_tasks	proc.c	/^inline void unlock_tasks(void)$/;"	f
+update_arp_entry	arp.c	/^void update_arp_entry(uint32 ip, uint8 mac[6], struct net_dev *nd)$/;"	f
+upper	net.h	/^	struct net_proto	*upper;$/;"	m	struct:net_dev	typeref:struct:net_dev::net_proto
+urg	tcp.h	/^	unsigned    urg:1;$/;"	m	struct:tcp_hdr
+urg_ptr	tcp.h	/^	uint16  urg_ptr;$/;"	m	struct:tcp_hdr
+user	page.h	/^	unsigned	user:1;			\/\/ 2$/;"	m	struct:__anon5
+v_addr	page.h	/^v_addr;$/;"	t	typeref:union:__anon4
+va_arg	klibc.h	19;"	d
+va_arg	libc.h	6;"	d
+va_end	klibc.h	20;"	d
+va_end	libc.h	7;"	d
+va_list	klibc.h	17;"	d
+va_list	libc.h	4;"	d
+va_start	klibc.h	18;"	d
+va_start	libc.h	5;"	d
+vendor0	ide.h	/^	uint16	vendor0;$/;"	m	struct:hdd_ident
+vendor1	ide.h	/^	uint16	vendor1;$/;"	m	struct:hdd_ident
+vendor2	ide.h	/^	uint16	vendor2;$/;"	m	struct:hdd_ident
+vendor3	ide.h	/^	uint8	vendor3;$/;"	m	struct:hdd_ident
+vendor4	ide.h	/^	uint8	vendor4;$/;"	m	struct:hdd_ident
+vendor5	ide.h	/^	uint8	vendor5;$/;"	m	struct:hdd_ident
+vendor6	ide.h	/^	uint8	vendor6;$/;"	m	struct:hdd_ident
+vendor_id	pci.h	/^	uint16	vendor_id;			$/;"	m	struct:pcicfg
+version	ip.h	/^	unsigned version:4;$/;"	m	struct:ip_hdr
+vfprintf	libc.c	/^void vfprintf(FILE *f, const char *format, va_list ap)$/;"	f
+vga	dev.c	/^unsigned short *vga;$/;"	v
+vprintf	klibc.c	/^void vprintf(const char *format, va_list ap)$/;"	f
+vprintf	libc.c	/^void vprintf(const char *format, va_list ap)$/;"	f
+wait	libc.c	/^pid_t wait(int *status)$/;"	f
+wait4	libc.c	/^pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage)$/;"	f
+when	arp.h	/^	uint32	when;$/;"	m	struct:arp_entry
+window	tcp.h	/^	uint16  window;$/;"	m	struct:tcp_hdr
+window	tcp.h	/^	uint16 window;$/;"	m	struct:tcb
+write	char.h	/^	uint64 (*write)(struct char_dev *, unsigned char *, uint64);$/;"	m	struct:char_ops
+write	file.h	/^	uint64 (*write)(struct fileh *, const unsigned char *, uint64);$/;"	m	struct:fs_ops
+write	libc.c	/^ssize_t write(int fd, const void *buf, size_t count)$/;"	f
+write	mem.h	/^	int write;$/;"	m	struct:ring_head
+write	net.h	/^	uint64 (*write)(struct fileh *fh, struct net_dev *, unsigned char *, uint64, uint32 dst_ip);$/;"	m	struct:net_ops
+write	page.h	/^	unsigned	write:1;		\/\/ 1$/;"	m	struct:__anon5
+writeBCR	pcnet.c	/^void writeBCR(uint32 base, uint32 index, uint32 val)$/;"	f
+writeCSR	pcnet.c	/^void writeCSR(uint32 base, uint32 index, uint32 val)$/;"	f
+write_msr	cpu.c	/^void write_msr(uint32 msr, uint64 value)$/;"	f
+write_one	block.h	/^	uint64 (*write_one)(struct block_dev *d, uint8 *data, uint64 sector);$/;"	m	struct:block_ops
+zeroes	pcnet.h	/^	uint8 zeroes:4;$/;"	m	struct:pcnet_rx_32
+zeros	pcnet.h	/^	uint8 zeros:4;		\/\/ 12 - 15$/;"	m	struct:pcnet_rx_16

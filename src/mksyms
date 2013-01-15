@@ -1,0 +1,2 @@
+#!/bin/sh
+cat bochs.sym | fgrep -v '.' | sort | awk -f mksyms.awk >syms.c

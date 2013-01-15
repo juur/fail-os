@@ -1,0 +1,55 @@
+acpi.o: acpi.c acpi.h klibc.h errno.h
+ahci.o: ahci.c ahci.h pci.h klibc.h errno.h dev.h block.h char.h mem.h \
+ proc.h cpu.h page.h symtable.h
+arp.o: arp.c arp.h klibc.h errno.h net.h file.h proc.h cpu.h page.h mem.h \
+ symtable.h
+block.o: block.c block.h klibc.h errno.h dev.h char.h cpu.h page.h mem.h \
+ proc.h symtable.h
+cpu.o: cpu.c klibc.h errno.h cpu.h page.h proc.h dev.h block.h char.h \
+ mem.h symtable.h net.h file.h frame.h
+crt0.o: crt0.c libc.h syscall.h
+dev.o: dev.c dev.h klibc.h errno.h block.h char.h mem.h proc.h cpu.h \
+ page.h symtable.h net.h file.h
+dummy-syms.o: dummy-syms.c symtable.h
+end.o: end.c
+eth.o: eth.c klibc.h errno.h dev.h block.h char.h pci.h mem.h proc.h \
+ cpu.h page.h symtable.h eth.h net.h file.h arp.h ip.h tcp.h
+file.o: file.c file.h klibc.h errno.h proc.h cpu.h page.h mem.h \
+ symtable.h block.h dev.h char.h net.h
+frame.o: frame.c klibc.h errno.h cpu.h page.h frame.h proc.h
+ide.o: ide.c klibc.h errno.h dev.h block.h char.h pci.h ide.h mem.h \
+ proc.h cpu.h page.h symtable.h disk.h
+init.o: init.c klibc.h errno.h mboot.h acpi.h ppp.h slip.h net.h file.h \
+ proc.h cpu.h page.h char.h block.h frame.h mem.h symtable.h intr.h dev.h \
+ pci.h ram.h ramfs.h syscall.h ip.h tcp.h
+ip.o: ip.c ip.h net.h klibc.h errno.h file.h proc.h cpu.h page.h tcp.h \
+ mem.h symtable.h
+klibc.o: klibc.c klibc.h errno.h dev.h block.h char.h mem.h proc.h cpu.h \
+ page.h symtable.h
+libc.o: libc.c libc.h syscall.h
+mem.o: mem.c klibc.h errno.h mem.h proc.h cpu.h page.h symtable.h frame.h \
+ dev.h block.h char.h
+net.o: net.c net.h klibc.h errno.h file.h proc.h cpu.h page.h ip.h tcp.h \
+ mem.h symtable.h syscall.h
+page.o: page.c klibc.h errno.h page.h mem.h proc.h cpu.h symtable.h \
+ frame.h
+pci.o: pci.c pci.h klibc.h errno.h dev.h block.h char.h mem.h proc.h \
+ cpu.h page.h symtable.h eth.h net.h file.h
+pcnet.o: pcnet.c pcnet.h eth.h klibc.h errno.h net.h file.h proc.h cpu.h \
+ page.h pci.h dev.h block.h char.h mem.h symtable.h ip.h tcp.h arp.h
+ppp.o: ppp.c net.h klibc.h errno.h file.h proc.h cpu.h page.h dev.h \
+ block.h char.h mem.h symtable.h ppp.h
+proc.o: proc.c proc.h klibc.h errno.h cpu.h page.h mem.h symtable.h \
+ frame.h elf64.h file.h
+ram.o: ram.c klibc.h errno.h block.h ram.h mem.h proc.h cpu.h page.h \
+ symtable.h
+ramfs.o: ramfs.c klibc.h errno.h ramfs.h file.h proc.h cpu.h page.h dev.h \
+ block.h char.h mem.h symtable.h task2.h
+slip.o: slip.c slip.h klibc.h errno.h net.h file.h proc.h cpu.h page.h \
+ char.h block.h dev.h mem.h symtable.h
+syms.o: syms.c symtable.h
+syscall.o: syscall.c klibc.h errno.h cpu.h page.h proc.h syscall.h
+task2.o: task2.c syscall.h libc.h
+task3.o: task3.c
+tcp.o: tcp.c ip.h net.h klibc.h errno.h file.h proc.h cpu.h page.h tcp.h \
+ mem.h symtable.h
