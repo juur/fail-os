@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# requires qemu-system-x86_64 on your $PATH
+# disk.raw should be formatted with mkfs.failfs
+
+qemu-system-x86_64 \
+	-nodefaults \
+	-serial mon:stdio \
+	-display none \
+	-vga none \
+	-cpu host \
+	-accel kvm \
+	-m 256 \
+	-machine pc \
+	-kernel src/kernel \
+	-hda disk.raw \
+	-no-user-config \
+	$*
