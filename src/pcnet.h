@@ -14,21 +14,21 @@
 #define	RX_RLEN			0x0
 
 struct CSR15_mode {
-	uint8 DRX:1;
-	uint8 DTX:1;
-	uint8 LOOP:1;
-	uint8 DXMTFCS:1;
-	uint8 FCOLL:1;
-	uint8 DRTY:1;
-	uint8 INTL:1;
-	uint8 PORTSEL:2;
-	uint8 TSEL:1;
-	uint8 MENDECL:1;
-	uint8 DAPC:1;
-	uint8 DLINKTST:1;
-	uint8 DRCVPA:1;
-	uint8 DRCVBC:1;
-	uint8 PROM:1;
+	unsigned DRX:1;
+	unsigned DTX:1;
+	unsigned LOOP:1;
+	unsigned DXMTFCS:1;
+	unsigned FCOLL:1;
+	unsigned DRTY:1;
+	unsigned INTL:1;
+	unsigned PORTSEL:2;
+	unsigned TSEL:1;
+	unsigned MENDECL:1;
+	unsigned DAPC:1;
+	unsigned DLINKTST:1;
+	unsigned DRCVPA:1;
+	unsigned DRCVBC:1;
+	unsigned PROM:1;
 }
 #ifdef __GNUC__ 
 	__attribute__ ((__packed__)) 
@@ -36,15 +36,15 @@ struct CSR15_mode {
 ;
 
 struct pcnet_init_16 {
-	uint16 MODE;
-	uint8  PADR[6];
-	uint64 LADRF;
-	uint32 RDRA:24;
-	uint8  res0:4;
-	uint8  RLEN:4;
-	uint32 TDRA:24;
-	uint8  res1:4;
-	uint8  TLEN:4;
+	uint16_t MODE;
+	uint8_t  PADR[6];
+	uint64_t LADRF;
+	uint32_t RDRA:24;
+	unsigned  res0:4;
+	unsigned  RLEN:4;
+	uint32_t TDRA:24;
+	unsigned  res1:4;
+	unsigned  TLEN:4;
 }
 #ifdef __GNUC__ 
 	__attribute__ ((__packed__)) 
@@ -53,16 +53,16 @@ struct pcnet_init_16 {
 
 
 struct pcnet_init_32 {
-	uint16 MODE;		// 00 - 15
-	uint8 res0:4;		// 16 - 19
-	uint8 RLEN:4;		// 20 - 23
-	uint8 res1:4;		// 24 - 27
-	uint8 TLEN:4;		// 28 - 31
-	uint8 PADR[6];		// 00 - 23
-	uint16 res2;		// 24 - 31
-	uint64 LADRF;		// 00 - 63
-	uint32 RDRA;		// 00 - 31
-	uint32 TDRA;		// 00 - 31
+	uint16_t MODE;		// 00 - 15
+	unsigned res0:4;		// 16 - 19
+	unsigned RLEN:4;		// 20 - 23
+	unsigned res1:4;		// 24 - 27
+	unsigned TLEN:4;		// 28 - 31
+	uint8_t PADR[6];		// 00 - 23
+	uint16_t res2;		// 24 - 31
+	uint64_t LADRF;		// 00 - 63
+	uint32_t RDRA;		// 00 - 31
+	uint32_t TDRA;		// 00 - 31
 } 
 #ifdef __GNUC__ 
 	__attribute__ ((__packed__)) 
@@ -70,23 +70,23 @@ struct pcnet_init_32 {
 ;
 
 struct pcnet_rx_32 {
-	uint32 RBADR;		// 00 - 31
-	uint16 BCNT:12;		// 00 - 11
-	uint8 ones:4;		// 12 - 15
-	uint8 res1;			// 16 - 23
-	uint8 ENP:1;		// 24
-	uint8 STP:1;		// 25
-	uint8 BUFF:1;		// 26
-	uint8 CRC:1;		// 27
-	uint8 OFLO:1;		// 28
-	uint8 FRAM:1;		// 29
-	uint8 ERR:1;		// 30
-	uint8 OWN:1;		// 31
-	uint16 MCNT:12;		// 00 - 11
-	uint8 zeroes:4;
-	uint8 RPC;
-	uint8 RCC;
-	uint32 res2;		// 00 - 31
+	uint32_t RBADR;		// 00 - 31
+	unsigned BCNT:12;		// 00 - 11
+	unsigned ones:4;		// 12 - 15
+	unsigned res1;			// 16 - 23
+	unsigned ENP:1;		// 24
+	unsigned STP:1;		// 25
+	unsigned BUFF:1;		// 26
+	unsigned CRC:1;		// 27
+	unsigned OFLO:1;		// 28
+	unsigned FRAM:1;		// 29
+	unsigned ERR:1;		// 30
+	unsigned OWN:1;		// 31
+	uint16_t MCNT:12;		// 00 - 11
+	unsigned zeroes:4;
+	unsigned RPC;
+	unsigned RCC;
+	uint32_t res2;		// 00 - 31
 } 
 #ifdef __GNUC__ 
 	__attribute__ ((__packed__)) 
@@ -94,29 +94,29 @@ struct pcnet_rx_32 {
 ;
 
 struct pcnet_tx_32 {
-	uint32 TBADR;
+	uint32_t TBADR;
 	// TMD1
-	uint16 BCNT:12;		// 00 - 11
-	uint8 ones:4;		// 12 - 15
-	uint8 res1;			// 16 - 23
-	uint8 ENP:1;		// 24
-	uint8 STP:1;		// 25
-	uint8 DEF:1;		// 26
-	uint8 ONE:1;		// 27
-	uint8 MORE:1;		// 28
-	uint8 ADD_NO_FCS:1;	// 29
-	uint8 ERR:1;		// 30
-	uint8 OWN:1;		// 31
+	uint16_t BCNT:12;		// 00 - 11
+	unsigned ones:4;		// 12 - 15
+	unsigned res1;			// 16 - 23
+	unsigned ENP:1;		// 24
+	unsigned STP:1;		// 25
+	unsigned DEF:1;		// 26
+	unsigned ONE:1;		// 27
+	unsigned MORE:1;		// 28
+	unsigned ADD_NO_FCS:1;	// 29
+	unsigned ERR:1;		// 30
+	unsigned OWN:1;		// 31
 	// TMD2
-	uint8 TRC:4;		// 00 - 03
-	uint16 RES:12;		// 04 - 15
-	uint16 TDR:10;		// 16 - 25
-	uint8 RTRY:1;		// 26
-	uint8 LCAR:1;		// 27
-	uint8 LCOL:1;		// 28
-	uint8 EXDEF:1;		// 29
-	uint8 UFLO:1;		// 30
-	uint8 BUFF:1;		// 31
+	unsigned TRC:4;		// 00 - 03
+	uint16_t RES:12;		// 04 - 15
+	uint16_t TDR:10;		// 16 - 25
+	unsigned RTRY:1;		// 26
+	unsigned LCAR:1;		// 27
+	unsigned LCOL:1;		// 28
+	unsigned EXDEF:1;		// 29
+	unsigned UFLO:1;		// 30
+	unsigned BUFF:1;		// 31
 } 
 #ifdef __GNUC__ 
 	__attribute__ ((__packed__)) 
@@ -128,8 +128,8 @@ struct pcnet_private {
 	struct pcnet_rx_32		*rx;
 	struct pcnet_tx_32		*tx;
 	struct pci_dev			*dev;
-	uint32 chip_version_up;
-	uint32 chip_version_lo;
+	uint32_t chip_version_up;
+	uint32_t chip_version_lo;
 	struct eth_dev			*eth;
 };
 
@@ -179,19 +179,19 @@ struct pcnet_private {
 #define	BCR2_INTLEVEL	0x80
 
 struct pcnet_rx_16 {
-	uint32 RBADR:24;	// 00 - 31
-	uint8 ENP:1;		// 24
-	uint8 STP:1;		// 25
-	uint8 BUFF:1;		// 26
-	uint8 CRC:1;		// 27
-	uint8 OFLO:1;		// 28
-	uint8 FRAM:1;		// 29
-	uint8 ERR:1;		// 30
-	uint8 OWN:1;		// 31
-	uint16 BCNT:12;		// 00 - 11
-	uint8 ones:4;		// 12 - 15
-	uint16 MCNT:12;		// 00 - 11
-	uint8 zeros:4;		// 12 - 15
+	uint32_t RBADR:24;	// 00 - 31
+	unsigned ENP:1;		// 24
+	unsigned STP:1;		// 25
+	unsigned BUFF:1;		// 26
+	unsigned CRC:1;		// 27
+	unsigned OFLO:1;		// 28
+	unsigned FRAM:1;		// 29
+	unsigned ERR:1;		// 30
+	unsigned OWN:1;		// 31
+	uint16_t BCNT:12;		// 00 - 11
+	unsigned ones:4;		// 12 - 15
+	uint16_t MCNT:12;		// 00 - 11
+	unsigned zeros:4;		// 12 - 15
 } 
 #ifdef __GNUC__ 
 	__attribute__ ((__packed__)) 
@@ -199,28 +199,28 @@ struct pcnet_rx_16 {
 ;
 
 struct pcnet_tx_16 {
-	uint32 TBADR:24;	// 00 - 23
+	uint32_t TBADR:24;	// 00 - 23
 	
 	// TMD1
-	uint8 ENP:1;		// 24
-	uint8 STP:1;		// 25
-	uint8 DEF:1;		// 26
-	uint8 ONE:1;		// 27
-	uint8 MORE:1;		// 28
-	uint8 ADD_NO_FCS:1;	// 29
-	uint8 ERR:1;		// 30
-	uint8 OWN:1;		// 31
+	unsigned ENP:1;		// 24
+	unsigned STP:1;		// 25
+	unsigned DEF:1;		// 26
+	unsigned ONE:1;		// 27
+	unsigned MORE:1;		// 28
+	unsigned ADD_NO_FCS:1;	// 29
+	unsigned ERR:1;		// 30
+	unsigned OWN:1;		// 31
 
-	uint16 BCNT:12;		// 00 - 11
-	uint8 ones:4;		// 12 - 15
+	uint16_t BCNT:12;		// 00 - 11
+	unsigned ones:4;		// 12 - 15
 	// TMD2
-	uint16 TDR:10;		// 16 - 25
-	uint8 RTRY:1;		// 26
-	uint8 LCAR:1;		// 27
-	uint8 LCOL:1;		// 28
-	uint8 EXDEF:1;		// 29
-	uint8 UFLO:1;		// 30
-	uint8 BUFF:1;		// 31
+	uint16_t TDR:10;		// 16 - 25
+	unsigned RTRY:1;		// 26
+	unsigned LCAR:1;		// 27
+	unsigned LCOL:1;		// 28
+	unsigned EXDEF:1;		// 29
+	unsigned UFLO:1;		// 30
+	unsigned BUFF:1;		// 31
 } 
 #ifdef __GNUC__ 
 	__attribute__ ((__packed__)) 

@@ -27,34 +27,34 @@ void print_pcnet(struct pcnet_private *p)
 	}
 }
 
-uint64 pcnet_open(struct eth_dev *e)
+__attribute__((nonnull)) uint64_t pcnet_open(struct eth_dev *e)
 {
 	return 0;
 }
 
-uint64 pcnet_close(struct eth_dev *e)
+__attribute__((nonnull)) uint64_t pcnet_close(struct eth_dev *e)
 {
 	return 0;
 }
 
 struct eth_frame {
-	uint8	dst[6];
-	uint8	src[6];
-	uint16	len;
-	uint8	data[1500];
+	uint8_t	dst[6];
+	uint8_t	src[6];
+	uint16_t	len;
+	uint8_t	data[1500];
 } __attribute__((packed));
 
-void print_mac(uint8 t[6])
+void print_mac(uint8_t t[6])
 {
 	int i,max=6;
 	for(i=0;i<max;i++) {
-		printf("%x", (uint32)(0 + (t[i] & 0xff)));
+		printf("%x", (uint32_t)(0 + (t[i] & 0xff)));
 		if(i<max-1) printf(":");
 	}
 }
 
-void send_frame(struct pcnet_tx_32 *b, uint8 src[6], uint8 dst[6],
-		uint8 *d, uint64 len)
+__attribute__((nonnull)) void send_frame(struct pcnet_tx_32 *b, uint8_t src[6], uint8_t dst[6],
+		const char *d, uint16_t len)
 {
 	struct eth_frame *f = (struct eth_frame *)(0L + b->TBADR);
 	//int i;
@@ -64,7 +64,7 @@ void send_frame(struct pcnet_tx_32 *b, uint8 src[6], uint8 dst[6],
 	if(len>1500) len = 1500;
 
 	memcpy(&f->data, d, len);
-	f->len = htons(0x0800);
+	f->len = htons(len + 6 + 6 + 2/*0x0800*/);
 
 	memcpy(f->src,src,6);
 	memcpy(f->dst,dst,6);
@@ -72,7 +72,7 @@ void send_frame(struct pcnet_tx_32 *b, uint8 src[6], uint8 dst[6],
 	b->BCNT = SECOND_COMP(len + 6 + 6 + 2);
 }
 
-uint64 pcnet_send(struct eth_dev *e, uint8 *d, uint64 len, uint8 dst[6])
+__attribute__((nonnull)) uint64_t pcnet_send(struct eth_dev *e, char *d, uint16_t len, uint8_t dst[6])
 {
 	struct pcnet_private *p = (struct pcnet_private *)e->phys;
 	int i;
@@ -85,8 +85,7 @@ uint64 pcnet_send(struct eth_dev *e, uint8 *d, uint64 len, uint8 dst[6])
 	for(i = 0 ; i < DRE_COUNT ; i++) {
 		if(!p->tx[i].TBADR) {
 			p->tx[i].ones = 0xf;
-			p->tx[i].TBADR = (uint32)(uint64)kmalloc_align(1544, 
-					"pcnet_tx_32", NULL);
+			p->tx[i].TBADR = (uint32_t)(uint64_t)kmalloc_align(1544, "pcnet_tx_32", NULL, 0);
 		}
 		if(!p->tx[i].OWN) {
 			send_frame(&p->tx[i], e->addr, dst, d, len);
@@ -100,11 +99,11 @@ uint64 pcnet_send(struct eth_dev *e, uint8 *d, uint64 len, uint8 dst[6])
 	return 0;
 }
 
-void handle_frame(struct eth_dev *e, struct net_dev *nd,
+__attribute__((nonnull)) void handle_frame(struct eth_dev *e, struct net_dev *nd,
 		struct pcnet_rx_32 *f)
 {
 	//int i;
-	uint8 *b = (uint8 *)(0L + f->RBADR);
+	uint8_t *b = (uint8_t *)(0L + f->RBADR);
 	struct eth_frame *tmp;
 	struct ip_hdr *iph;
 
@@ -116,7 +115,7 @@ void handle_frame(struct eth_dev *e, struct net_dev *nd,
 	   f->ERR, f->OWN, f->BCNT, f->MCNT);
 	   */
 
-	tmp = kmalloc(f->BCNT, "eth_frame", NULL);
+	tmp = kmalloc(f->BCNT, "eth_frame", NULL, 0);
 	memcpy(tmp, b, f->BCNT);
 	tmp->len = ntohs(tmp->len);
 	//	printf("src: ");
@@ -133,15 +132,15 @@ void handle_frame(struct eth_dev *e, struct net_dev *nd,
 			update_arp_entry( ntohl(iph->src), tmp->src, nd );
 			break;
 		case ETHPROTO_ARP:
-			arp_handle(nd, (uint8 *)&tmp->data, f->MCNT-(6+6+2));
+			arp_handle(nd, (uint8_t *)&tmp->data, f->MCNT-(6+6+2));
 			break;
 	}
 
-	nd->upper->ops->recv(nd, nd->upper, (uint8 *)&tmp->data, f->MCNT-(6+6+2));
+	nd->upper->ops->recv(nd, nd->upper, (char *)&tmp->data, f->MCNT-(6+6+2));
 	kfree(tmp);
 }
 
-uint64 pcnet_poll(struct eth_dev *e, struct net_dev *nd)
+__attribute__((nonnull)) uint64_t pcnet_poll(struct eth_dev *e, struct net_dev *nd)
 {
 	struct pcnet_private *p = (struct pcnet_private *)e->phys;
 	int i;
@@ -159,46 +158,49 @@ uint64 pcnet_poll(struct eth_dev *e, struct net_dev *nd)
 	return 0;
 }
 
-struct eth_ops pcnet_ops = {
+const struct eth_ops pcnet_ops = {
+	"pcnet",
 	pcnet_open,
 	pcnet_close,
 	pcnet_poll,
 	pcnet_send
 };
 
-void writeCSR(uint32 base, uint32 index, uint32 val)
+void writeCSR(uint32_t base, uint32_t index, uint32_t val)
 {
 	outportl(base + RAP, index);
 	outportl(base + RDP, val);
 }
 
-uint32 readCSR(uint32 base, uint32 index)
+uint32_t readCSR(uint32_t base, uint32_t index)
 {
 	outportl(base + RAP, index);
 	return inportl(base + RDP);
 }
 
-void writeBCR(uint32 base, uint32 index, uint32 val)
+void writeBCR(uint32_t base, uint32_t index, uint32_t val)
 {
 	outportl(base + RAP, index);
 	outportl(base + BDP, val);
 }
 
-uint32 readBCR(uint32 base, uint32 index)
+uint32_t readBCR(uint32_t base, uint32_t index)
 {
 	outportl(base + RAP, index);
 	return inportl(base + BDP);
 }
 
-uint64 init_nic_pcnet(struct pci_dev *d)
+#define BUF_SIZE 1544
+
+__attribute__((nonnull)) uint64_t init_nic_pcnet(struct pci_dev *d)
 {
-	uint32 io = d->bars[0].addr;
-	uint16 t16;
-	uint32 i;
+	uint32_t io = d->bars[0].addr;
+	uint16_t t16;
+	uint32_t i;
 	struct pcnet_private *priv = NULL;
 	struct eth_dev *eth;
 
-	priv = (struct pcnet_private *)kmalloc_align(sizeof(struct pcnet_private), "pcnet_private", NULL);
+	priv = (struct pcnet_private *)kmalloc_align(sizeof(struct pcnet_private), "pcnet_private", NULL, 0);
 	if(priv == NULL) {
 		printf("init_nic: cannot allocate pcnet_private\n");
 		goto fail;
@@ -206,22 +208,19 @@ uint64 init_nic_pcnet(struct pci_dev *d)
 
 	priv->dev = d;
 
-	priv->init = (struct pcnet_init_32 *)kmalloc_align(sizeof(struct pcnet_init_32), "pcnet_init", 
-			NULL);
+	priv->init = (struct pcnet_init_32 *)kmalloc_align(sizeof(struct pcnet_init_32), "pcnet_init", NULL, 0);
 	if(priv->init == NULL) {
 		printf("init_nic: cannot allocate pcnet_init\n");
 		goto fail_free_private;
 	}
 
-	priv->rx = (struct pcnet_rx_32 *)kmalloc_align(sizeof(struct pcnet_rx_32) * DRE_COUNT, 
-			"pcnet_rx", NULL);
+	priv->rx = (struct pcnet_rx_32 *)kmalloc_align(sizeof(struct pcnet_rx_32) * DRE_COUNT, "pcnet_rx", NULL, 0);
 	if(priv->rx == NULL) {
 		printf("init_nic: cannot allocate pcnet_rx\n");
 		goto fail_free_init;
 	}
 
-	priv->tx = (struct pcnet_tx_32 *)kmalloc_align(sizeof(struct pcnet_tx_32) * DRE_COUNT, 
-			"pcnet_tx", NULL);
+	priv->tx = (struct pcnet_tx_32 *)kmalloc_align(sizeof(struct pcnet_tx_32) * DRE_COUNT, "pcnet_tx", NULL, 0);
 	if(priv->tx == NULL) {
 		printf("init_nic: cannot allocate pcnet_tx\n");
 		goto fail_free_rx;
@@ -271,12 +270,12 @@ uint64 init_nic_pcnet(struct pci_dev *d)
 	priv->init->RLEN = TX_TLEN;
 	priv->init->TLEN = RX_RLEN;
 	priv->init->LADRF = 0x0;
-	priv->init->RDRA = (uint32)(uint64)priv->rx;
-	priv->init->TDRA = (uint32)(uint64)priv->tx;
+	priv->init->RDRA = (uint32_t)(uint64_t)priv->rx;
+	priv->init->TDRA = (uint32_t)(uint64_t)priv->tx;
 
 	for(i=0;i<DRE_COUNT;i++) {
-		priv->rx[i].RBADR = (uint32)(uint64)kmalloc_align(1544, "pcnet rx", NULL);
-		priv->rx[i].BCNT = SECOND_COMP(1544);
+		priv->rx[i].RBADR = (uint32_t)(uint64_t)kmalloc_align(BUF_SIZE, "pcnet rx", NULL, 0);
+		priv->rx[i].BCNT = (0x7FF & SECOND_COMP(BUF_SIZE)); /* bit truncation warning */
 		priv->rx[i].ones = 0xf;
 		priv->rx[i].OWN = 1;
 		priv->tx[i].TBADR = 0;
@@ -284,8 +283,8 @@ uint64 init_nic_pcnet(struct pci_dev *d)
 	}
 
 	// Tell the NIC where the init block is
-	writeCSR(io, 1, ((uint32)(uint64)priv->init) & 0x0000ffff);
-	writeCSR(io, 2, (((uint32)(uint64)priv->init) & 0xffff0000) >> 16);
+	writeCSR(io, 1, ((uint32_t)(uint64_t)priv->init) & 0x0000ffff);
+	writeCSR(io, 2, (((uint32_t)(uint64_t)priv->init) & 0xffff0000) >> 16);
 	// Switch NIC state to INIT
 	writeCSR(io, 0, (readCSR(io, 0) | CSR0_INIT) & ~ CSR0_STOP);
 	printf(" INIT");

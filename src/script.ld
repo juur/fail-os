@@ -1,27 +1,27 @@
 OUTPUT_FORMAT("elf64-x86-64")
 ENTRY(loader)
-phys = 0x00100000;
+phys_text	= 0x00100000;
 
 SECTIONS
 {
-	.text phys : { 
+	.text phys_text : { 
 		kernel_start = .;
 		code = .;
 		mboot_hdr.o
-		*(.text)
+		*(.text*)
 	}
-	.data : {
+	.data : ALIGN(16) {
 		data = .;
-		*(*.data)
-		*(*.rodata)
+		*(*.data*)
+		*(*.rodata*)
 		data_end = .;	
 	}
-	.bss : {
+	.bss : ALIGN(16) {
 		bss = .;
-		*(*.bss) 
+		*(*.bss*) 
 	}
 	.eh_frame : {
-		*(*.eh_frame)
+		*(*.eh_frame*)
 	}
 	kernel_end = .;
 }

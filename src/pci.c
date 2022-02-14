@@ -5,26 +5,26 @@
 struct pci_dev *pci_devs = NULL;
 extern pt_t *kernel_pd;
 
-void pci_write_conf32(uint8 bus, uint8 dev, uint8 func, uint8 reg, uint32 val)
+void pci_write_conf32(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg, uint32_t val)
 {
-	uint32 port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
+	uint32_t port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
 
 	outportl(0xcf8, port);
 	outportl(0xcfc, val);
 }
 
-void pci_write_conf16(uint8 bus, uint8 dev, uint8 func, uint8 reg, uint16 val)
+void pci_write_conf16(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg, uint16_t val)
 {
-	uint32 port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
+	uint32_t port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
 
 	outportl(0xcf8, port);
-	outportw((uint16)(0xcfc + (reg&2)), val);
+	outportw((uint16_t)(0xcfc + (reg&2)), val);
 }
 
-uint32 pci_read_conf32(uint8 bus, uint8 dev, uint8 func, uint8 reg)
+uint32_t pci_read_conf32(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg)
 {
-	uint32 ret;
-	uint32 port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
+	uint32_t ret;
+	uint32_t port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
 
 	outportl(0xcf8, port);
 
@@ -32,35 +32,35 @@ uint32 pci_read_conf32(uint8 bus, uint8 dev, uint8 func, uint8 reg)
 	return ret;
 }
 
-uint16 pci_read_conf16(uint8 bus, uint8 dev, uint8 func, uint8 reg)
+uint16_t pci_read_conf16(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg)
 {
-	uint16 ret;
-	uint32 port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
+	uint16_t ret;
+	uint32_t port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
 
 	outportl(0xcf8, port);
 
-	ret = inportw((uint16)(0xcfc + (reg&2)));
+	ret = inportw((uint16_t)(0xcfc + (reg&2)));
 	return ret;
 }
 
-uint8 pci_read_conf8(uint8 bus, uint8 dev, uint8 func, uint8 reg)
+uint8_t pci_read_conf8(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg)
 {
-	uint8 ret;
-	uint32 port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
+	uint8_t ret;
+	uint32_t port = (0x80000000U)|(bus<<16)|(dev<<11)|(func<<8)|(reg);
 
 	outportl(0xcf8, port);
 
-	ret = inportb((uint16)(0xcfc + (reg&3)));
+	ret = inportb((uint16_t)(0xcfc + (reg&3)));
 	return ret;
 }
 
-extern uint64 pci_int_handler;
+extern uint64_t pci_int_handler;
 
 struct pci_dev *add_pci_device(int bus, int dev, int func)
 {
 	struct pci_dev *ret;
-	uint32 vend_id,dev_id,class,subclass,prog,rev_id,subsys,subsysvend,header,intr,intrl;
-	uint32 bar_save,bar_addr,bits,pref;
+	uint32_t vend_id,dev_id,class,subclass,prog,rev_id,subsys,subsysvend,header,intr,intrl;
+	uint32_t bar_save,bar_addr,bits,pref;
 	int bar;
 	int tmp,off;
 
@@ -99,7 +99,7 @@ struct pci_dev *add_pci_device(int bus, int dev, int func)
 		return NULL;
 	}
 
-	ret = kmalloc(sizeof(struct pci_dev),"pcidev", NULL);
+	ret = kmalloc(sizeof(struct pci_dev),"pcidev", NULL, 0);
 	if(!ret) return NULL;
 
 	ret->cfg.vendor_id = vend_id;
@@ -161,10 +161,11 @@ struct pci_dev *add_pci_device(int bus, int dev, int func)
 			off = 0;
 
 			while(tmp>0) {
-				create_page_entry_4k(kernel_pd,
+				if(!create_page_entry_4k(kernel_pd,
 						ret->bars[bar].addr + off,
 						ret->bars[bar].addr + off,
-						PEF_P|PEF_W, NULL);
+						PEF_P|PEF_W, NULL))
+					goto fail;
 				tmp -= PGSIZE_4K;
 				off += PGSIZE_4K;
 			}
@@ -195,7 +196,7 @@ struct pci_dev *add_pci_device(int bus, int dev, int func)
 			switch(ret->cfg.device_id) {
 				case PCI_DEVICE_PIIX3:
 				case PCI_DEVICE_PIIX4:
-					if(ret->cfg.class_code == PCI_CLASS_MASS_STORAGE); {
+					if(ret->cfg.class_code == PCI_CLASS_MASS_STORAGE) {
 						init_ide(ret);
 						goto unknown;
 						break;
@@ -216,6 +217,9 @@ struct pci_dev *add_pci_device(int bus, int dev, int func)
 	return(ret);
 unknown:
 	return(ret);
+fail:
+	if(ret) kfree(ret);
+	return NULL;
 
 }
 
@@ -223,13 +227,15 @@ void print_pci_dev(struct pci_dev *d)
 {
 	int i;
 
-	printf("pci_dev: %x:%x [%x,%x,%x] REV:%x", 
+	printf("pci_dev: %x:%x [%x,%x,%x] REV:%x %x:%x", 
 			d->cfg.vendor_id, 
 			d->cfg.device_id, 
 			d->cfg.class_code,
 			d->cfg.subclass,
 			d->cfg.progif,
-			d->cfg.rev
+			d->cfg.rev,
+			d->cfg.sub_vendor_id,
+			d->cfg.sub_id
 		  );
 
 	if(d->cfg.int_line || d->cfg.int_pin) {

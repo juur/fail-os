@@ -4,53 +4,53 @@
 #include "klibc.h"
 #include "dev.h"
 
-uint32 pci_read_conf32(uint8 bus, uint8 dev, uint8 func, uint8 reg);
-uint16 pci_read_conf16(uint8 bus, uint8 dev, uint8 func, uint8 reg);
-uint8 pci_read_conf8(uint8 bus, uint8 dev, uint8 func, uint8 reg);
-void pci_write_conf32(uint8 bus, uint8 dev, uint8 func, uint8 reg, uint32 val);
-void pci_write_conf16(uint8 bus, uint8 dev, uint8 func, uint8 reg, uint16 val);
+uint32_t pci_read_conf32(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg);
+uint16_t pci_read_conf16(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg);
+uint8_t pci_read_conf8(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg);
+void pci_write_conf32(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg, uint32_t val);
+void pci_write_conf16(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg, uint16_t val);
 
 #define PCI_NUM_BARS	6
 
 typedef struct pcicfg {
-	uint16	vendor_id;			
+	uint16_t	vendor_id;			
 #define PCI_VENDOR_ID	0x0
-	uint16	device_id;
+	uint16_t	device_id;
 #define PCI_DEVICE_ID	0x2
-	uint16	cmd_reg;
+	uint16_t	cmd_reg;
 #define PCI_CMD_REG		0x4
-	uint16	status_reg;
+	uint16_t	status_reg;
 #define PCI_STATUS_REG	0x6	
 	unsigned	rev:8;
 #define PCI_REV_ID		0x8
-	uint8	progif;
-	uint8	subclass;
-	uint8	class_code;
+	uint8_t	progif;
+	uint8_t	subclass;
+	uint8_t	class_code;
 #define PCI_CLASS_CODE	0x9
-	uint8	pad0;
-	uint8	pad1;
-	uint8	header_type;
+	uint8_t	pad0;
+	uint8_t	pad1;
+	uint8_t	header_type;
 #define PCI_HEADER_TYPE	0xe
 #define PCI_HT_MULTI	(1<<7)
-	uint8	pad2;
-	uint32	bar[PCI_NUM_BARS];
+	uint8_t	pad2;
+	uint32_t	bar[PCI_NUM_BARS];
 #define	PCI_BAR_0		0x10
 #define	PCI_BAR(x)	(PCI_BAR_0+((x)*0x4))
-	uint32	pad3;
-	uint16	sub_vendor_id;
+	uint32_t	pad3;
+	uint16_t	sub_vendor_id;
 #define	PCI_SUB_VENDOR_ID	0x2c
-	uint16	sub_id;
+	uint16_t	sub_id;
 #define PCI_SUB_ID		0x2e
-	uint32	pad4;
+	uint32_t	pad4;
 	unsigned	pad5:8;
 	unsigned	res0:24;
-	uint32	res1;
-	uint8	int_line;
+	uint32_t	res1;
+	uint8_t	int_line;
 #define	PCI_INT_LINE	0x3c
-	uint8	int_pin;
+	uint8_t	int_pin;
 #define PCI_INT_PIN		0x3d
-	uint8	pad6;
-	uint8	pad7;
+	uint8_t	pad6;
+	uint8_t	pad7;
 } 
 #ifdef __GNUC__
 __attribute__((packed)) 
@@ -63,14 +63,15 @@ pcicfg_t;
 #define PCI_CMD_INTX_DISABLE	0x400
 
 typedef struct pcibar {
-	uint32 addr;
-	uint32 len;
+	uint32_t addr;
+	uint32_t len;
 	union {
 		struct {
+			uint8_t pad;
 		} io;
 		struct {
-			uint8 bits;
-			uint8 prefs;
+			uint8_t bits;
+			uint8_t prefs;
 		} mem;
 	} un;
 	bool mem;
@@ -78,7 +79,7 @@ typedef struct pcibar {
 
 struct pci_dev {
 	struct pci_dev *next;
-	uint8 bus, dev, func;
+	uint8_t bus, dev, func;
 	pcicfg_t cfg;
 	pcibar_t bars[PCI_NUM_BARS];
 };
@@ -87,7 +88,7 @@ extern struct pci_dev *pci_devs;
 
 struct pci_dev *add_pci_device(int bus, int dev, int func);
 void print_pci_dev(struct pci_dev *d);
-uint64 init_nic_pcnet(struct pci_dev *d);
+uint64_t init_nic_pcnet(struct pci_dev *d);
 void init_ahci(struct pci_dev *d);
 void init_ide(struct pci_dev *);
 

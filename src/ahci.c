@@ -28,71 +28,102 @@ struct _CAP {
 struct GHC {
 	union {
 		struct _CAP	a;
-		uint32	b;
+		uint32_t	b;
 	} CAP;
-	uint32	GHC;
-	uint32	IS;
-	uint32	PI;
-	uint32	VS;
-	uint32	CCC_CTL;
-	uint32	CCC_PORTS;
-	uint32	EM_LOC;
-	uint32	EM_CTL;
-	uint32	CAP2;
-	uint32	BOHC;
+	uint32_t	GHC;
+	uint32_t	IS;
+	uint32_t	PI;
+	uint32_t	VS;
+	uint32_t	CCC_CTL;
+	uint32_t	CCC_PORTS;
+	uint32_t	EM_LOC;
+	uint32_t	EM_CTL;
+	uint32_t	CAP2;
+	uint32_t	BOHC;
 } __attribute__((packed));
 
 struct _PxCMD {
-	uint8 ST:1;
-	uint8 SUD:1;
-	uint8 POD:1;
-	uint8 CLO:1;
-	uint8 FRE:1;
-	uint8 res:3;
-	uint8 CCS:5;
-	uint8 MPSS:1;
-	uint8 FR:1;
-	uint8 CR:1;
-	uint8 CPS:1;
-	uint8 PMA:1;
-	uint8 HPCP:1;
-	uint8 MPSP:1;
-	uint8 CPD:1;
-	uint8 ESP:1;
-	uint8 FBSCP:1;
-	uint8 APSTE:1;
-	uint8 ATAPI:1;
-	uint8 DLAE:1;
-	uint8 ALPE:1;
-	uint8 ASP:1;
-	uint8 ICC:4;
+	unsigned ST:1;
+	unsigned SUD:1;
+	unsigned POD:1;
+	unsigned CLO:1;
+	unsigned FRE:1;
+	unsigned res:3;
+	unsigned CCS:5;
+	unsigned MPSS:1;
+	unsigned FR:1;
+	unsigned CR:1;
+	unsigned CPS:1;
+	unsigned PMA:1;
+	unsigned HPCP:1;
+	unsigned MPSP:1;
+	unsigned CPD:1;
+	unsigned ESP:1;
+	unsigned FBSCP:1;
+	unsigned APSTE:1;
+	unsigned ATAPI:1;
+	unsigned DLAE:1;
+	unsigned ALPE:1;
+	unsigned ASP:1;
+	unsigned ICC:4;
+} __attribute__((packed));
+
+#define PXCMD_ICC_DEVSLEEP	0x8
+#define PXCMD_ICC_SLUMBER	0x6
+#define PXCMD_ICC_PARTIAL	0x2
+#define PXCMD_ICC_ACTIVE	0x1
+#define PXCMD_ICC_IDLE		0x0
+
+#define PXSSTS_DET_NODEV	0x0
+#define PXSSTS_DET_NOPHY	0x1
+#define PXSSTS_DET_DEVPHY	0x3
+#define PXSSTS_DET_OFFLINE	0x4
+
+struct SSTS {
+	unsigned det:4;
+	unsigned spd:4;
+	unsigned ipm:4;
+	unsigned res:20;
+} __attribute__((packed));
+
+struct SIG {
+	unsigned sector:8;
+	unsigned lba_low:8;
+	unsigned lba_mid:8;
+	unsigned lba_high:8;
 } __attribute__((packed));
 
 struct PORT {
 	struct	CommandHeader *PxCLB; // Contains 32
-	uint64	PxFB;
-	uint32	PxIS;
-	uint32	PxIE;
-	union	{
+	uint64_t	PxFB; /* void* */
+	uint32_t	PxIS;
+	uint32_t	PxIE;
+	union {
 		struct _PxCMD a;
-		uint32	b;
+		uint32_t		b;
 	} __attribute__((packed)) PxCMD;
-	uint32	res0;
-	uint32	PxTFD;
-	uint32	PxSIG;
-	uint32	PxSSTS;
-	uint32	PxSCTL;
-	uint32	PxSERR;
-	uint32	PxSACT;
-	uint32	PxCI;
-	uint32	PxSNTF;
-	uint32	PxFBS;
-	uint8	res1[44];
-	uint8	PxVS[16];
+	uint32_t	res0;
+	uint32_t	PxTFD;
+	union {
+		struct SIG a;
+		uint32_t   b;
+	} __attribute__((packed)) PxSIG;
+	union {	
+		struct SSTS a;
+		uint32_t    b;
+	} __attribute__((packed)) PxSSTS;
+	uint32_t	PxSCTL;
+	uint32_t	PxSERR;
+	uint32_t	PxSACT;
+	uint32_t	PxCI;
+	uint32_t	PxSNTF;
+	uint32_t	PxFBS;
+	uint8_t		res1[44];
+	uint8_t		PxVS[16];
 } __attribute__((packed));
 
 struct BOCH {
-
+	char pad0;
 } __attribute__((packed));
 
 struct CommandTable;
@@ -110,24 +141,24 @@ struct CommandHeader {
 	int PMP:4;
 	int PRDTL:16;
 	// DW1
-	uint32 PRDBC;
+	uint32_t PRDBC;
 	// DW2
 	struct CommandTable *CTBA; // 06-00 reserved
-	uint32 dw_res[4];
+	uint32_t dw_res[4];
 } __attribute__((packed));
 
 struct PRDT {
-	uint64	DBA;
-	uint32	dw2_res;
-	uint32	DBC:22;
-	uint32	res:9;
+	uint64_t	DBA;
+	uint32_t	dw2_res;
+	uint32_t	DBC:22;
+	uint32_t	res:9;
 	int		I:1;
 } __attribute__((packed));
 
 struct CommandTable {
-	uint8	CFIS[64];
-	uint8	ACMD[16];
-	uint8	res[32];
+	uint8_t	CFIS[64];
+	uint8_t	ACMD[16];
+	uint8_t	res[32];
 	// struct 	PRDT[CommandHeader.PRDTL-1];
 } __attribute__((packed));
 
@@ -138,12 +169,11 @@ struct CommandTable {
 
 void init_ahci(struct pci_dev *d)
 {
-	uint32 mem = d->bars[5].addr;
+	uint32_t mem = d->bars[5].addr;
 	struct GHC *ghc;
 	struct PORT *port;
 	struct _PxCMD cmd;
-	int i;
-	uint8 sector, lba_low, lba_mid, lba_high;
+	int num,i;
 
 	ghc = (struct GHC *)(0L + mem);
 
@@ -155,11 +185,12 @@ void init_ahci(struct pci_dev *d)
 	ghc->GHC |= GHC_HR;
 	ghc->GHC |= GHC_AE;
 
-	printf("init_ahci: CAP: %x CAP2: %x GHC: %x\n"
+	printf("init_ahci: CAP: %x CAP2: %x GHC: %x BOHC: %x\n"
 			"init_ahci: CAP.NP: %x CAP.S64A: %x CAP.NCS: %x\n",
 			ghc->CAP.b,
 			ghc->CAP2,
 			ghc->GHC,
+			ghc->BOHC,
 			ghc->CAP.a.NP,
 			ghc->CAP.a.S64A,
 			ghc->CAP.a.NCS
@@ -170,21 +201,26 @@ void init_ahci(struct pci_dev *d)
 			ghc->VS
 		  );
 
-	for(i=0 ; i < ghc->CAP.a.NP ; i++) {
-		if(!((1 << i) & ghc->PI)) continue;
-		printf("init_ahci: port[%x]: ", i);
-		port = (struct PORT *)(0L + mem + 0x100 + (i * 0x80));
+	for(num = 0; num < ghc->CAP.a.NP; num++) {
+		if(!((1 << num) & ghc->PI)) continue;
+		printf("init_ahci: port[%x]: ", num);
+		port = (struct PORT *)(0L + mem + 0x100 + (num * 0x80));
 
-		if( (port->PxSSTS & 0xf) != 0x3 ) {
+		if( port->PxSSTS.a.det != PXSSTS_DET_DEVPHY ) {
 			printf("DET failed\n");
 			continue;
 		}
 
 		cmd = port->PxCMD.a;
+		printf("cmd=%x ", port->PxCMD.b);
 
 		if( !(cmd.ST || cmd.CR || cmd.FRE || cmd.FR) ) {
-			printf("port not idle\n");
-			continue;
+			printf("port not idle %d%d%d%d ",
+					cmd.ST,
+					cmd.CR,
+					cmd.FRE,
+					cmd.FR
+					);
 		}
 
 		printf("PxIS: %x ", port->PxIS);
@@ -192,30 +228,52 @@ void init_ahci(struct pci_dev *d)
 				port->PxCMD.b,
 				port->PxCMD.a.ATAPI ? "Y" : "N",
 				port->PxCMD.a.POD);
+		
+		printf("\ninit_ahci: port[%x]: CH %p ", num, (void *)port->PxCLB);
 
-		sector = port->PxSIG & 0xff;
-		lba_low = (port->PxSIG >> 8) & 0xff;
-		lba_mid = (port->PxSIG >> 16) & 0xff;
-		lba_high = (port->PxSIG >> 24) & 0xff;
+		struct SIG pxsig;
+		uint32_t pxsigtmp = port->PxSIG.b;
 
-		printf("\ninit_ahci: port[%x]: PxSIG: %x [%x %x.%x.%x] ", 
-				i,
-				port->PxSIG,
-				sector, lba_low, lba_mid, lba_high);
+		if (pxsigtmp != 0xffffffff) {
+			pxsig = *(struct SIG *)&pxsigtmp;
 
-		printf("PxSSTS: %x ",
-				port->PxSSTS);
+			printf("PxSIG: [%x %x.%x.%x] ", 
+					pxsig.sector, 
+					pxsig.lba_low, pxsig.lba_mid, pxsig.lba_high);
+		}
 
-		port->PxCLB = (struct CommandHeader *)kmalloc_align(
-				(sizeof(struct CommandHeader) * 32), "PxCLB", NULL);
-		if(port->PxCLB == NULL) { printf("malloc failed PxCLB\n"); continue; }
-		port->PxFB = (uint64)kmalloc_align(4096, "PxFB", NULL);
-		if(port->PxFB == 0) { printf("malloc failed PxCLB\n"); 
-			kfree(port->PxCLB); continue; }
+		printf("PxSSTS{ DET:%x SPD:%x IPM:%x } ",
+				port->PxSSTS.a.det,
+				port->PxSSTS.a.spd,
+				port->PxSSTS.a.ipm);
 
+		if((port->PxCLB = (struct CommandHeader *)kmalloc_align((sizeof(struct CommandHeader) * 32), "PxCLB", NULL, 0)) == NULL) { 
+			printf("malloc failed PxCLB\n"); 
+			continue; 
+		}
+
+		if((port->PxFB = (uint64_t)kmalloc_align(4096, "PxFB", NULL,0)) == 0) {
+			printf("malloc failed PxCLB\n"); 
+			kfree(port->PxCLB); 
+			continue; 
+		}
+
+		port->PxCLB->CFL = 4;
+		
 		port->PxCMD.a.FRE = 1;
 		port->PxSERR = 0;
 		port->PxCMD.a.ST = 1;
+
+		for(i=0;i<10000000;i++) ;
+
+		pxsigtmp = port->PxSIG.b;
+		if (pxsigtmp != 0xffffffff) {
+			pxsig = *(struct SIG *)&pxsigtmp;
+
+			printf("PxSIG: [%x %x.%x.%x] ", 
+					pxsig.sector, 
+					pxsig.lba_low, pxsig.lba_mid, pxsig.lba_high);
+		}
 
 		printf("\n");
 	}

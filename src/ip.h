@@ -2,19 +2,20 @@
 #define _IP_H
 
 #include "net.h"
+#include "dev.h"
 
 struct ip_hdr {
 	unsigned hlen:4;
 	unsigned version:4;
-	uint8 tos;
-	uint16 len;
-	uint16 id;
-	uint16 offset;
-	uint8 ttl;
-	uint8 proto;
-	uint16 checksum;
-	uint32 src;
-	uint32 dst;
+	uint8_t tos;
+	uint16_t len;
+	uint16_t id;
+	uint16_t offset;
+	uint8_t ttl;
+	uint8_t proto;
+	uint16_t checksum;
+	uint32_t src;
+	uint32_t dst;
 }
 #ifdef __GNUC__
 __attribute__((packed))
@@ -25,9 +26,9 @@ __attribute__((packed))
 #define	ICMP_ECHO_REQUEST	8
 
 struct icmp_hdr {
-	uint8 type;
-	uint8 code;
-	uint16 check;
+	uint8_t type;
+	uint8_t code;
+	uint16_t check;
 } 
 #ifdef __GNUC__
 	__attribute__((packed))
@@ -49,21 +50,21 @@ extern struct net_proto_ops	ip_proto_ops;
 #define	AF_INET			2
 
 struct in_addr {
-	uint32 s_addr;
+	uint32_t s_addr;
 };
 
-#define INADDR_ANY	((uint32)0x0)
+#define INADDR_ANY	((uint32_t)0x0)
 
 struct sockaddr_in {
-	uint16 	sin_family;
-	uint16	sin_port;
+	uint16_t 	sin_family;
+	uint16_t	sin_port;
 	struct in_addr sin_addr;
 };
 /*
 struct tcp_state {
-	uint64	state;
-	uint32	last_seq;
-	uint32	last_ack;
+	uint64_t	state;
+	uint32_t	last_seq;
+	uint32_t	last_ack;
 };
 
 */
@@ -74,16 +75,29 @@ struct ip_sock;
 
 struct ip_sock {
 	struct fileh *f;
-	uint64 proto;
-	uint64 state;
+	uint64_t proto;
+	uint64_t state;
 	struct sockaddr_in local;
 	struct sockaddr_in remote;
 	struct sockaddr_in pending[1];
 	union {
 		struct tcb *tcp;
-		uint64 udp;
-		uint64 icmp;
+		uint64_t udp;
+		uint64_t icmp;
 	} s;
+};
+
+#define IOC_GIFADDR	0x1000
+#define IOC_SIFADDR	0x1001
+#define IOC_GIFNETMASK	0x1002
+#define IOC_SIFNETMASK	0x1003
+
+struct ifreq {
+	char name[DEVNAME];
+	union {
+		struct sockaddr_in addr;
+		struct sockaddr_in netmask;
+	} r;
 };
 
 #define IPS_UNDEF		0x0
@@ -91,13 +105,13 @@ struct ip_sock {
 #define IPS_LISTEN		0x2
 #define IPS_CONNECT		0x3
 
-uint16 checksum(uint16 *data, uint32 len);
-uint64 ip_send(struct net_dev *nd, uint32 src, uint32 dst, uint8 proto, uint8 *data, uint16 len, uint16 id, uint16 flag);
-struct net_dev *find_dev_route(uint32 dst);
-struct fileh *find_listen_ip(struct sockaddr_in *sin, uint32 proto);
-uint64 ip_accept(struct fileh *f, struct fileh *newf, struct sockaddr_in *sin, uint64 *len);
-uint64 ip_listen(struct fileh *f, uint64 listen);
-uint64 ip_bind(struct fileh *f, struct sockaddr_in *sa, uint64 len);
-void ip_init_socket(struct fileh *f, uint64 type, uint64 proto);
+uint16_t checksum(uint16_t *data, uint32_t len);
+uint64_t ip_send(struct net_dev *nd, uint32_t src, uint32_t dst, uint8_t proto, int8_t *data, uint16_t len, uint16_t id, uint16_t flag);
+struct net_dev *find_dev_route(uint32_t dst);
+struct fileh *find_listen_ip(struct sockaddr_in *sin, uint32_t proto);
+int ip_accept(struct fileh *f, struct fileh *newf, struct sockaddr_in *sin, socklen_t *len);
+int ip_listen(struct fileh *f, int32_t listen);
+int ip_bind(struct fileh *f, struct sockaddr_in *sa, socklen_t len);
+void ip_init_socket(struct fileh *f, int32_t type, int32_t proto);
 
 #endif

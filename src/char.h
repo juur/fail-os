@@ -9,18 +9,21 @@ struct char_dev;
 /* generic driver */
 
 struct char_ops {
-	uint64 (*read)(struct char_dev *, unsigned char *, uint64);
-	uint64 (*write)(struct char_dev *, unsigned char *, uint64);
-	bool (*init)(struct char_dev *);
-	uint64 (*pending)(struct char_dev *);
+	const char *const name;
+
+	ssize_t (*read)(struct char_dev *, char *, size_t)__attribute__((nonnull));
+	ssize_t (*write)(struct char_dev *, const char *, size_t)__attribute__((nonnull));
+	int     (*init)(struct char_dev *)__attribute__((nonnull));
+	ssize_t (*pending)(struct char_dev *)__attribute__((nonnull));
 };
 
 /* specific char */
 
 struct char_dev {
-	uint64	devid;			// major|minor
-	struct char_ops	*ops;	// block ops
-	void	*private;		// private structure
+	uint64_t	devid;					// major|minor
+	const struct char_ops	*ops;	// block ops
+	void	*priv;					// private structure
 };
 
 #endif
+// vim: set ft=c:

@@ -5,17 +5,17 @@ phys = 0x40000000;
 SECTIONS
 {
 	.text phys : { 
-		*(.text)
+		*(.text*)
 	}
 	.data : {
-		*(*.data)
-		*(*.rodata)
+		*(*.data*)
+		*(*.rodata*)
 	}
 	.bss : {
-		*(*.bss) 
+		*(*.bss*) 
 	}
 	.eh_frame : {
-		*(*.eh_frame)
+		*(*.eh_frame*)
 	}
 	_end = .;
 }

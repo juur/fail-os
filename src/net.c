@@ -5,7 +5,7 @@
 
 struct net_dev *netdevs;
 
-struct net_dev *find_dev_ip(uint32 ip)
+struct net_dev *find_dev_ip(uint32_t ip)
 {
 	struct net_dev *ret;
 
@@ -17,7 +17,7 @@ struct net_dev *find_dev_ip(uint32 ip)
 	return NULL;
 }
 
-struct fileh *find_listen(uint16 family, struct sockaddr *sa, uint16 proto)
+struct fileh *find_listen(uint16_t family, struct sockaddr *sa, uint16_t proto)
 {
 	switch(family)
 	{
@@ -29,13 +29,13 @@ struct fileh *find_listen(uint16 family, struct sockaddr *sa, uint16 proto)
 	}
 }
 
-uint64 do_accept(struct task *this_task, struct fileh *f, struct sockaddr *sa, uint64 *len)
+int do_accept(struct task *this_task, struct fileh *f, struct sockaddr *sa, socklen_t *len)
 {
-	uint64 new_sock;
-	uint64 ret;
+	int64_t new_sock;
+	uint64_t ret;
 	struct fileh *newf;
 
-	if(!(f->flags & (FS_SOCKET|FS_LISTEN)) == (FS_SOCKET|FS_LISTEN)) return -1;
+	if((f->flags & (FS_SOCKET|FS_LISTEN)) != (FS_SOCKET|FS_LISTEN)) return -1;
 
 	new_sock = sys_socket(f->family, f->type, f->protocol);
 	if(new_sock == -1) return -1;
@@ -46,8 +46,9 @@ uint64 do_accept(struct task *this_task, struct fileh *f, struct sockaddr *sa, u
 	{
 		case AF_INET:
 			ret = ip_accept(f, newf, (struct sockaddr_in *)sa, len);
+			break;
 		default:
-			ret =  -1;
+			ret = -1;
 	}
 
 	if(!ret) return new_sock;
@@ -55,9 +56,9 @@ uint64 do_accept(struct task *this_task, struct fileh *f, struct sockaddr *sa, u
 	return ret;
 }
 
-uint64 do_listen(struct task *this_task, struct fileh *f, uint64 listen)
+int do_listen(struct task *this_task, struct fileh *f, int32_t listen)
 {
-	if(!(f->flags & (FS_SOCKET|FS_BOUND)) == (FS_SOCKET|FS_BOUND)) return -1;
+	if((f->flags & (FS_SOCKET|FS_BOUND)) != (FS_SOCKET|FS_BOUND)) return -1;
 	
 	switch(f->family)
 	{
@@ -68,9 +69,9 @@ uint64 do_listen(struct task *this_task, struct fileh *f, uint64 listen)
 	}
 }
 
-uint64 do_bind(struct task *this_task, struct fileh *f, struct sockaddr *sa, uint64 len)
+int do_bind(struct task *this_task, struct fileh *f, struct sockaddr *sa, socklen_t len)
 {
-	printf("do_bind: %x, %x, %x, %x\n", this_task, f, sa, len);
+	printf("do_bind: %p, %p, %p, %x\n", (void *)this_task, (void *)f, (void *)sa, len);
 
 	if(!(f->flags & FS_SOCKET)) return -1;
 	if(f->flags & FS_BOUND) return -1;
@@ -85,11 +86,11 @@ uint64 do_bind(struct task *this_task, struct fileh *f, struct sockaddr *sa, uin
 	}
 }
 
-struct fileh *do_socket(struct task *this_task, uint64 family, uint64 type, uint64 proto)
+struct fileh *do_socket(struct task *this_task, uint64_t family, uint64_t type, uint64_t proto)
 {
 	struct fileh *ret;
 
-	ret = (struct fileh *)kmalloc(sizeof(struct fileh), "fileh_socket", this_task);
+	ret = (struct fileh *)kmalloc(sizeof(struct fileh), "fileh_socket", this_task, 0);
 	if(!ret) return NULL;
 
 	ret->task = this_task;
@@ -116,15 +117,15 @@ fail:
 
 void print_nd(struct net_dev *nd)
 {
-	printf("s:%x priv:%x up:%x ops:%x t:%x\n",
+	printf("s:%x priv:%p up:%p ops:%p t:%x\n",
 			nd->state,
 			nd->priv,
-			nd->upper,
-			nd->ops,
+			(void *)nd->upper,
+			(void *)nd->ops,
 			nd->type);
 }
 
-uint64 init_netdev(struct net_dev *nd, void *phys, 
+uint64_t init_netdev(struct net_dev *nd, void *phys, 
 		int type, struct net_proto *up)
 {
 	if(!nd) return -1;

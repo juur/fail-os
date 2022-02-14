@@ -1,8 +1,11 @@
 #ifndef _PAGE_H
 #define _PAGE_H
 
+#include "klibc.h"
+
+#define KERN_MEM (64ULL*0x1000000ULL)
+
 #define TABLE_ENTRIES	512
-#define	PAGE_SIZE	0x1000
 
 typedef struct {
 	unsigned	offset:12;
@@ -11,11 +14,7 @@ typedef struct {
 	unsigned	pml3_offset:9;
 	unsigned	pml4_offset:9;
 	unsigned	sign_extend:16;
-} 
-#ifdef __GNUC__
-__attribute__((packed))
-#endif
-kb_pe;
+} __attribute__((packed)) kb_pe;
 
 typedef struct {
 	unsigned	offset:21;
@@ -23,33 +22,21 @@ typedef struct {
 	unsigned	pml3_offset:9;
 	unsigned	pml4_offset:9;
 	unsigned	sign_extend:16;
-} 
-#ifdef __GNUC__
-__attribute__((packed))
-#endif
-mb_pe;
+} __attribute__((packed)) mb_pe;
 
 typedef struct {
 	unsigned	offset:30;
 	unsigned	pml3_offset:9;
 	unsigned	pml4_offset:9;
 	unsigned	sign_extend:16;
-} 
-#ifdef __GNUC__
-__attribute__((packed))
-#endif
-gb_pe;
+} __attribute__((packed)) gb_pe;
 
 typedef union {
 	kb_pe k;
 	mb_pe m;
 	gb_pe g;
-	uint64 addr;
-} 
-#ifdef __GNUC__
-__attribute__((packed))
-#endif
-v_addr;
+	uint64_t addr;
+} __attribute__((packed)) v_addr;
 
 #define PEF_P		0x001
 #define	PEF_W		0x002
@@ -62,7 +49,10 @@ v_addr;
 #define PEF_LAST	0x080
 #define	PEF_G		0x100
 #define PEF_COW		0x200
-#define	PEF_NX		0x400
+#define	PEF_AVL1	0x400
+#define	PEF_AVL2	0x800
+
+#define	PEF_NX		(1<<64)
 
 typedef struct {
 	unsigned	present:1;		// 0
@@ -79,29 +69,25 @@ typedef struct {
 	unsigned	cow:1;			// 9: 1 bit of AVL
 	unsigned	avl:2;			// 10,11: 2 free bits i AVL
 
-	uint64		base:40;		// 12,..,50; for lowest PML 12=pat
+	uint64_t	base:40;		// 12,..,50; for lowest PML 12=pat
 
 	unsigned	avail:11;		// 51,..,62
 
 	unsigned	nx:1;			// 63
-} 
-#ifdef __GNUC__
-__attribute__((packed))
-#endif
-pe_t;
+} __attribute__((packed)) pe_t;
 
 #define PT_SIZE	512
 
 typedef union { 
 	pe_t table_pe[PT_SIZE]; 
-	uint64 table_u64[PT_SIZE];
+	uint64_t table_u64[PT_SIZE];
 }  
 #ifdef __GNUC__
 __attribute__((packed))
 #endif
 pt_t;
 
-#define GET_PTP(x)      (pt_t *)((uint64)(x)->base << 12)
+#define GET_PTP(x)      (pt_t *)((uint64_t)(x)->base << 12)
 #define SET_PTP(x,y)    ((x)->base = ((y) >> 12))
 
 #define GET_PE(x,y,z)   ((x)->table_pe[(y).k.z])
@@ -117,18 +103,21 @@ pt_t;
 
 struct task;
 
-bool create_page_entry_1g(pt_t *pt4, uint64 _virt, uint64 _phys, int flag, struct task *owner);
-bool create_page_entry_2m(pt_t *pt4, uint64 _virt, uint64 _phys, int flag, struct task *owner);
-bool create_page_entry_4k(pt_t *pt4, uint64 _virt, uint64 _phys, int flag, struct task *owner);
-unsigned long get_phys_address(pt_t *pd, uint64 _virt);
-pe_t *get_pe(pt_t *pd, uint64 _virt);
-void clone_mm(pt_t *old_pt4, pt_t *new_pt4, void *owner);
-void print_mm(pt_t *pt4);
-uint64 get_pe_size(pt_t *pd, uint64 _virt);
-uint64 grow_page(struct task *ctsk, uint64 addr, pt_t *pt);
+bool create_page_entry_1g(pt_t *pt4, uint64_t _virt, uint64_t _phys, int flag, struct task *owner)__attribute__((nonnull(1)));
+bool create_page_entry_2m(pt_t *pt4, uint64_t _virt, uint64_t _phys, int flag, struct task *owner)__attribute__((nonnull(1)));
+bool create_page_entry_4k(pt_t *pt4, uint64_t _virt, uint64_t _phys, int flag, struct task *owner)__attribute__((nonnull(1)));
+unsigned long get_phys_address(const pt_t *pd, uint64_t _virt);
+pe_t *get_pe(pt_t *pd, uint64_t _virt);
+void clone_mm(pt_t *old_pt4, pt_t *new_pt4, void *owner, bool cow_existing)__attribute__((nonnull(1,2)));
+void print_mm(const pt_t *pt4)__attribute__((nonnull));
+void free_mm(pt_t *pt4)__attribute__((nonnull));
+uint64_t get_pe_size(const pt_t *pd, uint64_t _virt);
+int grow_page(struct task *ctsk, void *addr, pt_t *pt)__attribute__((nonnull(3)));
 
 #define PGSIZE_4K	(1024*4)
 #define	PGSIZE_2M	(1024*1024*2)
 #define	PGSIZE_1G	(1024*1024*1024)
+#define	PAGE_SIZE	PGSIZE_4K
 
 #endif
+// vim: set ft=c:

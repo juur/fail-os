@@ -1,4 +1,4 @@
 struct symtable {
-	        void            *location;
-	        const char      *function;
+	void *location;
+	const char *function;
 };

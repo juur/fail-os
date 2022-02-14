@@ -3,6 +3,6 @@
 
 #include "pci.h"
 
-void init_ahci(struct pci_dev *d);
+void init_ahci(struct pci_dev *d) __attribute__((nonnull));
 
 #endif

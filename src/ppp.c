@@ -5,9 +5,9 @@
 
 extern bool memdebug;
 
-uint8 ppp_byte(struct char_dev *cd);
+uint8_t ppp_byte(struct char_dev *cd);
 
-uint64 ppp_init(struct net_dev *nd, void *phys, int type, struct net_proto *up)
+uint64_t ppp_init(struct net_dev *nd, void *phys, int type, struct net_proto *up)
 {
 	struct char_dev *cd;
 	struct ppp_private *priv; 
@@ -24,7 +24,7 @@ uint64 ppp_init(struct net_dev *nd, void *phys, int type, struct net_proto *up)
 	return 0;
 }
 
-uint64 ppp_wbyte(struct char_dev *cd, uint8 byte)
+uint64_t ppp_wbyte(struct char_dev *cd, unsigned char byte)
 {
 	//	char esc = HDLC_ESCAPE;
 
@@ -34,13 +34,13 @@ uint64 ppp_wbyte(struct char_dev *cd, uint8 byte)
 	//		cd->ops->write(cd, &esc, 1);
 	//		byte += 0x20;
 	//	}
-	cd->ops->write(cd, &byte, 1);
+	cd->ops->write(cd, (char *)&byte, 1);
 
 	return 0;
 }
 
-uint64 lcp_init_reply(uint8 *buf, uint8 code, uint8 id, uint8 *cnt,
-		uint16 *len, uint16 proto)
+uint64_t lcp_init_reply(uint8_t *buf, uint8_t code, uint8_t id, uint8_t *cnt,
+		uint16_t *len, uint16_t proto)
 {
 	buf[0] = HDLC_PPP_ADDR;
 	buf[1] = HDLC_PPP_CMD;
@@ -56,8 +56,8 @@ uint64 lcp_init_reply(uint8 *buf, uint8 code, uint8 id, uint8 *cnt,
 	return 0;
 }
 
-uint64 lcp_add(uint8 *buf, uint8 *cnt, uint16 *len, uint8 ptype, uint8 plen, 
-		uint8 *pdata)
+uint64_t lcp_add(uint8_t *buf, uint8_t *cnt, uint16_t *len, uint8_t ptype, uint8_t plen, 
+		uint8_t *pdata)
 {
 	int i;
 
@@ -74,7 +74,7 @@ uint64 lcp_add(uint8 *buf, uint8 *cnt, uint16 *len, uint8 ptype, uint8 plen,
 	return 0;
 }
 
-uint64 lcp_close(uint8 *buf, uint8 *cnt, uint16 *len)
+uint64_t lcp_close(uint8_t *buf, uint8_t *cnt, uint16_t *len)
 {
 	buf[6] = (((*len)-4) >> 8) & 0xff;
 	buf[7] = ((*len)-4) & 0xff;
@@ -82,9 +82,9 @@ uint64 lcp_close(uint8 *buf, uint8 *cnt, uint16 *len)
 	return 0;
 }
 
-uint64 send_lcp(struct char_dev *cd, uint8 *buf, uint16 len)
+uint64_t send_lcp(struct char_dev *cd, uint8_t *buf, uint16_t len)
 {
-	//uint8 term = HDLC_FLAG;
+	//uint8_t term = HDLC_FLAG;
 
 	printf("send_lcp: %x%x %x %x %x%x\n", 
 			buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
@@ -100,16 +100,16 @@ uint64 send_lcp(struct char_dev *cd, uint8 *buf, uint16 len)
 	return len;
 }
 
-uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)
+uint64_t process_lcp(uint16_t proto, struct net_dev *nd, struct char_dev *cd)
 {
-	uint8	code, id;
-	uint16	len, seek;
-	uint8	*parms, *tmp;
-	uint8	ptype, plen;
-	uint32	data32;
-	uint8	lcp_cnt = 0;
-	uint16	lcp_len = 0;
-	uint8	*ret;
+	uint8_t	code, id;
+	uint16_t	len, seek;
+	uint8_t	*parms, *tmp;
+	uint8_t	ptype, plen;
+	uint32_t	data32;
+	uint8_t	lcp_cnt = 0;
+	uint16_t	lcp_len = 0;
+	uint8_t	*ret;
 	int		i;
 	static bool fail = false, fail2 = false;
 
@@ -124,9 +124,9 @@ uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)
 	len -= 4;
 	seek = len;
 
-	parms = (uint8 *)kmalloc((uint64)len, "lcp.parms", NULL);
+	parms = (uint8_t *)kmalloc((uint64_t)len, "lcp.parms", NULL);
 	tmp = parms;
-	ret = (uint8 *)kmalloc((uint64)len, "lcp.ret", NULL);
+	ret = (uint8_t *)kmalloc((uint64_t)len, "lcp.ret", NULL);
 
 	for(i=0;i<len;i++)
 	{
@@ -134,7 +134,7 @@ uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)
 		tmp++;
 	}
 
-	lcp_init_reply(ret, (uint8)LCP_CONF_ACK, id, &lcp_cnt, &lcp_len, proto);
+	lcp_init_reply(ret, (uint8_t)LCP_CONF_ACK, id, &lcp_cnt, &lcp_len, proto);
 	switch(code)
 	{
 		case LCP_CONF_REQ:
@@ -155,20 +155,20 @@ uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)
 								printf("magic: ");
 								data32 = 0;
 								for(i=0;i<=3;i++) {
-									data32 |= (uint32)parms[seek++] << (i*8);
+									data32 |= (uint32_t)parms[seek++] << (i*8);
 								}
 								printf("magic: %x ", data32);
 								lcp_add(ret, &lcp_cnt, &lcp_len, ptype, 4, 
-										(uint8 *)&data32);
+										(uint8_t *)&data32);
 								break;
 							case LCPC_ASYNCMAP:
 								data32 = 0;
 								for(i=0;i<=3;i++) {
-									data32 |= (uint32)parms[seek++] << (i*8);
+									data32 |= (uint32_t)parms[seek++] << (i*8);
 								}
 								printf("asyncmap: %x ", data32);
 								lcp_add(ret, &lcp_cnt, &lcp_len, ptype, 4,
-										(uint8 *)&data32);
+										(uint8_t *)&data32);
 								break;
 							default:
 								seek += (plen-2);
@@ -183,11 +183,11 @@ uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)
 							case IPCPC_IPADDR:
 								data32 = 0;
 								for(i=0;i<=3;i++) {
-									data32 |= (uint32)parms[seek++] << (i*8);
+									data32 |= (uint32_t)parms[seek++] << (i*8);
 								}
 								printf("ip: %x ", data32);
 								lcp_add(ret, &lcp_cnt, &lcp_len, ptype, 4,
-										(uint8 *)&data32);
+										(uint8_t *)&data32);
 								break;
 							default:
 								seek += (plen-2);
@@ -215,17 +215,17 @@ uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)
 
 	if(proto == PID_LCP && !fail) {
 		fail = true;
-		ret = (uint8 *)kmalloc(100, "lcp.init", NULL);
+		ret = (uint8_t *)kmalloc(100, "lcp.init", NULL);
 		lcp_init_reply(ret, LCP_CONF_REQ, 10, &lcp_cnt, &lcp_len, proto);
-		lcp_add(ret, &lcp_cnt, &lcp_len, LCPC_ASYNCMAP, 4, (uint8 *)&data32);
+		lcp_add(ret, &lcp_cnt, &lcp_len, LCPC_ASYNCMAP, 4, (uint8_t *)&data32);
 		lcp_close(ret, &lcp_cnt, &lcp_len);
 		send_lcp(cd, ret, lcp_len);
 		kfree(ret);
 	} else if(proto == PID_IPCP && !fail2) {
 		fail2 = true;
-		ret = (uint8 *)kmalloc(100, "ipcp.init", NULL);
+		ret = (uint8_t *)kmalloc(100, "ipcp.init", NULL);
 		lcp_init_reply(ret, LCP_CONF_REQ, 10, &lcp_cnt, &lcp_len, proto);
-		lcp_add(ret, &lcp_cnt, &lcp_len, IPCPC_IPADDR, 4, (uint8 *)&data32);
+		lcp_add(ret, &lcp_cnt, &lcp_len, IPCPC_IPADDR, 4, (uint8_t *)&data32);
 		lcp_close(ret, &lcp_cnt, &lcp_len);
 		send_lcp(cd, ret, lcp_len);
 		kfree(ret);
@@ -235,12 +235,12 @@ uint64 process_lcp(uint16 proto, struct net_dev *nd, struct char_dev *cd)
 	return 0;
 }
 
-uint64 ppp_process(struct net_dev *nd)
+uint64_t ppp_process(struct net_dev *nd)
 {
 	struct ppp_private *priv;
 	struct char_dev *cd;
-	uint8 byte;
-	uint16 proto;
+	uint8_t byte;
+	uint16_t proto;
 
 	priv = (struct ppp_private *)nd->priv;
 	cd = priv->hw;
@@ -251,11 +251,11 @@ uint64 ppp_process(struct net_dev *nd)
 	//	do {
 	//		byte = ppp_byte(cd);
 	//		if(!cd->ops->pending(cd)) return 0;
-	//	} while(byte != (uint8)HDLC_FLAG);
+	//	} while(byte != (uint8_t)HDLC_FLAG);
 	byte = ppp_byte(cd);
-	if(byte != (uint8)HDLC_PPP_ADDR) printf("ppp_process: HDLC_PPP_ADDR\n");
+	if(byte != (uint8_t)HDLC_PPP_ADDR) printf("ppp_process: HDLC_PPP_ADDR\n");
 	byte = ppp_byte(cd);
-	if(byte != (uint8)HDLC_PPP_CMD) printf("ppp_process: HDLC_PPP_CMD\n");
+	if(byte != (uint8_t)HDLC_PPP_CMD) printf("ppp_process: HDLC_PPP_CMD\n");
 	byte = ppp_byte(cd);
 	if(!(byte & 0x1)) {
 		proto = byte << 8;
@@ -286,11 +286,11 @@ uint64 ppp_process(struct net_dev *nd)
 	return 0;
 }
 
-uint8 ppp_byte(struct char_dev *cd)
+uint8_t ppp_byte(struct char_dev *cd)
 {
-	uint8 byte;
+	uint8_t byte;
 
-	cd->ops->read(cd, &byte, 1);
+	cd->ops->read(cd, (char *)&byte, 1);
 
 	//	if(byte == HDLC_ESCAPE) {
 	//		cd->ops->read(cd, (char *)&byte, 1);
@@ -302,24 +302,25 @@ uint8 ppp_byte(struct char_dev *cd)
 	return byte;
 }
 
-uint64 ppp_read(struct fileh *fh, struct net_dev *nd, unsigned char *dst, uint64 len, 
-		uint64 wut)
+uint64_t ppp_read(struct fileh *fh, struct net_dev *nd, unsigned char *dst, uint64_t len, 
+		uint64_t wut)
 {
 	return 0;
 }
 
-uint64 ppp_write(struct fileh *fh, struct net_dev *nd, unsigned char *src, uint64 len, 
-		uint32 wut)
+uint64_t ppp_write(struct fileh *fh, struct net_dev *nd, char *src, uint64_t len, 
+		uint32_t wut)
 {
 	return 0;
 }
 
-uint64 ppp_init_sock(struct fileh *fh, struct net_dev *nd)
+uint64_t ppp_init_sock(struct fileh *fh, struct net_dev *nd)
 {
 	return 0;
 }
 
 struct net_ops ppp_net_ops = {
+	"ppp",
 	ppp_write,
 	ppp_init,
 	ppp_init_sock,

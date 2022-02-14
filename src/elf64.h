@@ -1,28 +1,30 @@
 #ifndef _ELF64_H
 #define _ELF64_H
 
+#include "klibc.h"
+
 typedef struct
 {
-	uint8	ei_mag[4];		// 0,1,2,3
-	uint8	ei_class;		// 4
-	uint8	ei_data;		// 5
-	uint8	ei_version;		// 6
-	uint8	ei_osabi;		// 7
-	uint8	ei_abiversion;	// 8
-	uint8	ei_pad[7];		// 9,10,11,12,13,14,15
-	uint16	e_type;
-	uint16	e_machine;
-	uint32	e_version;
-	uint64	e_entry;
-	uint64	e_phoff;
-	uint64	e_shoff;
-	uint32	e_flags;
-	uint16	e_ehsize;
-	uint16	e_phentsize;
-	uint16	e_phnum;
-	uint16	e_shentsize;
-	uint16	e_shnum;
-	uint16	e_shstrndx;
+	uint8_t	ei_mag[4];		// 0,1,2,3
+	uint8_t	ei_class;		// 4
+	uint8_t	ei_data;		// 5
+	uint8_t	ei_version;		// 6
+	uint8_t	ei_osabi;		// 7
+	uint8_t	ei_abiversion;	// 8
+	uint8_t	ei_pad[7];		// 9,10,11,12,13,14,15
+	uint16_t	e_type;
+	uint16_t	e_machine;
+	uint32_t	e_version;
+	uint64_t	e_entry;
+	uint64_t	e_phoff;
+	uint64_t	e_shoff;
+	uint32_t	e_flags;
+	uint16_t	e_ehsize;
+	uint16_t	e_phentsize;
+	uint16_t	e_phnum;
+	uint16_t	e_shentsize;
+	uint16_t	e_shnum;
+	uint16_t	e_shstrndx;
 } 
 #ifdef __GNUC__
 __attribute__((packed))
@@ -87,14 +89,14 @@ extern const char *ELFetype[ET_MAX];
 
 typedef struct
 {
-	uint32	p_type;
-	uint32	p_flags;
-	uint64	p_offset;
-	uint64	p_vaddr;
-	uint64	p_paddr;
-	uint64	p_filesz;
-	uint64	p_memsz;
-	uint64	p_align;
+	uint32_t	p_type;
+	uint32_t	p_flags;
+	uint64_t	p_offset;
+	uint64_t	p_vaddr;
+	uint64_t	p_paddr;
+	uint64_t	p_filesz;
+	uint64_t	p_memsz;
+	uint64_t	p_align;
 } elf64_phdr;
 
 struct elf_segment {
@@ -143,16 +145,16 @@ extern const char *bits_ELF_PF[];
 
 typedef struct
 {
-	uint32	sh_name;
-	uint32	sh_type;
-	uint64	sh_flags;
-	uint64	sh_addr;
-	uint64	sh_offset;
-	uint64	sh_size;
-	uint32	sh_link;
-	uint32	sh_info;
-	uint64	sh_addrinfo;
-	uint64	sh_entsize;
+	uint32_t	sh_name;
+	uint32_t	sh_type;
+	uint64_t	sh_flags;
+	uint64_t	sh_addr;
+	uint64_t	sh_offset;
+	uint64_t	sh_size;
+	uint32_t	sh_link;
+	uint32_t	sh_info;
+	uint64_t	sh_addrinfo;
+	uint64_t	sh_entsize;
 } elf64_shdr;
 
 struct elf_section {
@@ -203,10 +205,13 @@ struct elf {
 	elf64_hdr	h;
 	struct	elf_section *sh;
 	struct	elf_segment *ph;
-	uint64	lowaddr;
-	uint64	highaddr;
-	void	*page_start;
-	uint64	frames;
+
+	uint64_t	 lowaddr;
+	uint64_t	 highaddr;
+	uint8_t		*page_start;
+	uint64_t	 frames;
+	uint64_t	 lock;
 };
 
 #endif
+// vim: set ft=c:

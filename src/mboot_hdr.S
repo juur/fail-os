@@ -1,6 +1,6 @@
-[bits 32]
+	bits 32
 
-extern	main
+;extern	main
 extern	loader
 
 extern	code
@@ -19,7 +19,7 @@ KERN_END	equ	kernel_end
 KERN_START	equ	kernel_start
 
 section	.text
-align	4
+align	8
 
 mbh:	
 	dd	MB_MAGIC
@@ -30,3 +30,5 @@ mbh:
 	dd	DATA
 	dd	KERN_END
 	dd	loader
+
+; vim:set ft=nasm:

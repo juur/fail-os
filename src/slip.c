@@ -9,51 +9,51 @@
 #define	SLIP_ESC_ESC	0335
 
 
-uint64 slip_send_packet(uint8 *p, uint64 len, struct char_dev *cd)
+uint64_t slip_send_packet(const char *p, uint64_t len, struct char_dev *cd)
 {
-	uint8 tmp;
+	uint8_t tmp;
 
 	//printf("slip_send: %x l:%x\n", p, len);
 
 	if( len > SLIP_MAX_PACKET ) len = SLIP_MAX_PACKET;
 
-	tmp = SLIP_END; cd->ops->write(cd, &tmp, 1);
+	tmp = SLIP_END; cd->ops->write(cd, (char *)&tmp, 1);
 
 
 	while(len--)
 	{
 	//	printf("%x ", *p);
-		switch(*p)
+		switch((unsigned char)*p)
 		{
 			case SLIP_END:
-				tmp = SLIP_ESC; cd->ops->write(cd, &tmp, 1);
-				tmp = SLIP_ESC_END; cd->ops->write(cd, &tmp, 1);
+				tmp = SLIP_ESC; cd->ops->write(cd, (char *)&tmp, 1);
+				tmp = SLIP_ESC_END; cd->ops->write(cd, (char *)&tmp, 1);
 				break;
 			case SLIP_ESC:
-				tmp = SLIP_ESC; cd->ops->write(cd, &tmp, 1);
-				tmp = SLIP_ESC_ESC; cd->ops->write(cd, &tmp, 1);
+				tmp = SLIP_ESC; cd->ops->write(cd, (char *)&tmp, 1);
+				tmp = SLIP_ESC_ESC; cd->ops->write(cd, (char *)&tmp, 1);
 				break;
 			default:
-				cd->ops->write(cd, p, 1);
+				cd->ops->write(cd, (char *)p, 1);
 				break;
 		}
 		p++;
 	}
-	tmp = SLIP_END; cd->ops->write(cd, &tmp, 1);
+	tmp = SLIP_END; cd->ops->write(cd, (char *)&tmp, 1);
 
 	//printf("\n");
 
 	return len;
 }
 
-uint64 slip_recv_packet(uint8 *p, uint64 len, struct char_dev *cd)
+uint64_t slip_recv_packet(char *p, uint64_t len, struct char_dev *cd)
 {
-	uint64 received = 0;
-	uint8 byte;
+	uint64_t received = 0;
+	uint8_t byte;
 
 	while(1)
 	{
-		cd->ops->read(cd, &byte, 1);
+		cd->ops->read(cd, (char *)&byte, 1);
 		switch(byte)
 		{
 			case SLIP_END:
@@ -63,7 +63,7 @@ uint64 slip_recv_packet(uint8 *p, uint64 len, struct char_dev *cd)
 				}
 				else break;
 			case SLIP_ESC:
-				cd->ops->read(cd, &byte, 1);
+				cd->ops->read(cd, (char *)&byte, 1);
 				switch(byte)
 				{
 					case SLIP_ESC_END:
@@ -73,6 +73,7 @@ uint64 slip_recv_packet(uint8 *p, uint64 len, struct char_dev *cd)
 						byte = SLIP_ESC;
 						break;
 				}
+				/* FALL THROUGH */
 			default:
 				if(received < len) {
 					p[received++] = byte;
@@ -82,7 +83,7 @@ uint64 slip_recv_packet(uint8 *p, uint64 len, struct char_dev *cd)
 	}
 }
 
-uint64 slip_init(struct net_dev *nd, void *phys, int type, 
+uint64_t slip_init(struct net_dev *nd, void *phys, int type, 
 		struct net_proto *np)
 {
 	struct char_dev *cd;
@@ -104,13 +105,13 @@ uint64 slip_init(struct net_dev *nd, void *phys, int type,
 	return 0;
 }
 
-uint64 slip_process(struct net_dev *nd)
+uint64_t slip_process(struct net_dev *nd)
 {
 	struct slip_private *priv;
 	struct char_dev *cd;
 	struct char_ops *ops;
-	uint8 *packet;
-	uint64 len;
+	char *packet;
+	uint64_t len;
 
 	priv = (struct slip_private *)nd->priv;
 	cd = priv->hw;
@@ -120,7 +121,7 @@ uint64 slip_process(struct net_dev *nd)
 
 //	printf("slip_process\n");
 
-	packet = (uint8 *)kmalloc(SLIP_MAX_PACKET, "slippacket", NULL);
+	packet = (char *)kmalloc(SLIP_MAX_PACKET, "slippacket", NULL);
 	if(!packet) return -1;
 
 	len = slip_recv_packet(packet, SLIP_MAX_PACKET, cd);
@@ -134,10 +135,10 @@ uint64 slip_process(struct net_dev *nd)
 	return 0;
 }
 
-uint64 slip_write(struct fileh *fh, struct net_dev *nd, unsigned char *src, uint64 len,
-		uint32 wut)
+uint64_t slip_write(struct fileh *fh, struct net_dev *nd, char *src, uint64_t len,
+		uint32_t wut)
 {
-	uint64 i;
+	uint64_t i;
 	struct slip_private *priv;
 	struct char_dev *cd;
 	struct char_ops *ops;
@@ -158,19 +159,20 @@ uint64 slip_write(struct fileh *fh, struct net_dev *nd, unsigned char *src, uint
 	}
 //	printf("\n");
 
-	len = slip_send_packet((uint8 *)src, len, cd);
+	len = slip_send_packet(src, len, cd);
 
 //	printf("slip_write: done\n");
 
 	return 0;
 }
 
-uint64 slip_init_sock(struct fileh *fh, struct net_dev *nd)
+uint64_t slip_init_sock(struct fileh *fh, struct net_dev *nd)
 {
 	return 0;
 }
 
 struct net_ops slip_net_ops = {
+	"slip",
 	slip_write,
 	slip_init,
 	slip_init_sock,

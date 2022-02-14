@@ -41,7 +41,7 @@ void dump_tcbs()
 	printf("dump_tcbs: done\n");
 }
 
-struct tcb *find_tcbs(uint32 src, uint32 dst, uint16 src_port, uint16 dst_port)
+struct tcb *find_tcbs(uint32_t src, uint32_t dst, uint16_t src_port, uint16_t dst_port)
 {
 	struct tcb *t;
 	for( t = tcbs ; t ; t=t->next )
@@ -61,8 +61,8 @@ struct tcb *find_tcbs(uint32 src, uint32 dst, uint16 src_port, uint16 dst_port)
 	return NULL;
 }
 /*
-   void tcp_rst(uint32 src, uint16 src_port, uint32 dst, uint32 dst_port,
-   uint32 seq_num, uint32 ack_num)
+   void tcp_rst(uint32_t src, uint16_t src_port, uint32_t dst, uint32_t dst_port,
+   uint32_t seq_num, uint32_t ack_num)
    {
    struct tcp_hdr *hdr;
    struct tcp_phdr *phdr;
@@ -81,30 +81,34 @@ struct tcb *find_tcbs(uint32 src, uint32 dst, uint16 src_port, uint16 dst_port)
    hdr->ack = 1;
    hdr->window = 0;
    phdr->tcp_length = htons(hdr->data_offset<<2);
-   hdr->chksum = checksum((uint16 *)phdr, sizeof(struct tcp_phdr));
+   hdr->chksum = checksum((uint16_t *)phdr, sizeof(struct tcp_phdr));
 
    ip_send(NULL, src, dst, IPPROTO_TCP,
-   (uint8 *)hdr, sizeof(struct tcp_hdr), 0, 0);
+   (uint8_t *)hdr, sizeof(struct tcp_hdr), 0, 0);
    }
    */
-uint64 tcp_listen(struct tcb *tcb)
+uint64_t tcp_listen(struct tcb *tcb)
 {
 	if(!tcb) return -1;
 	tcb->state = LISTEN;
 	return 0;
 }
 
-uint64 tcp_accept(struct tcb *tcb, struct tcb *new_tcb,
+uint64_t tcp_accept(struct tcb *tcb, struct tcb *new_tcb,
 		struct sockaddr_in *src_in, struct sockaddr_in *dst_in)
 {
 	//struct fileh *f;
 	//struct tcp_hdr *hdr;
 	//struct tcp_phdr *phdr;
 	struct net_dev *nd;
-	uint32 src,dst;
-	uint64 ret;
+	uint32_t src,dst;
+	uint64_t ret;
 
-	printf("tcp_accept: %x/%x %x %x\n", tcb, new_tcb, src_in, dst_in);
+	printf("tcp_accept: %p/%p %p %p\n", 
+			(void *)tcb, 
+			(void *)new_tcb, 
+			(void *)src_in, 
+			(void *)dst_in);
 
 	if(!tcb || !new_tcb) return -1;
 	//f = ips->f;
@@ -167,15 +171,15 @@ uint64 tcp_accept(struct tcb *tcb, struct tcb *new_tcb,
 	   hdr->window = htons(1000);
 	   hdr->ack_num = htonl(ips->s.tcp->last_ack = ips->s.tcp->last_seq + 1);
 	   hdr->seq_num = htonl(ips->s.tcp->last_seq = 
-	   (uint32)((uint64)ips+r+(uint64)hdr+ips+hdr->ack_num));
+	   (uint32_t)((uint64_t)ips+r+(uint64_t)hdr+ips+hdr->ack_num));
 
 	   phdr->tcp_length = htons(hdr->data_offset<<2);
 
-	   hdr->chksum = checksum((uint16 *)phdr, sizeof(struct tcp_phdr));
+	   hdr->chksum = checksum((uint16_t *)phdr, sizeof(struct tcp_phdr));
 
 	   ip_send(ips->f->sdev.net_dev, ips->local.sin_addr.s_addr,
 	   ips->pending[r].sin_addr.s_addr, IPPROTO_TCP,
-	   (uint8 *)hdr, sizeof(struct tcp_hdr), 0, 0);
+	   (uint8_t *)hdr, sizeof(struct tcp_hdr), 0, 0);
 
 	   ips->s.tcp->state = ESTABLISHED;
 
@@ -209,16 +213,16 @@ hdr->syn = 1;
 hdr->window = htons(1000);
 hdr->seq_num = htonl(++tcb->last_seq);
 phdr->tcp_length = htons(hdr->data_offset<<2);
-hdr->chksum = checksum((uint16 *)phdr, sizeof(struct tcp_phdr));
+hdr->chksum = checksum((uint16_t *)phdr, sizeof(struct tcp_phdr));
 
-ip_send(NULL, tcb->src, tcb->dst, IPPROTO_TCP, (uint8 *)hdr, 
+ip_send(NULL, tcb->src, tcb->dst, IPPROTO_TCP, (uint8_t *)hdr, 
 sizeof(struct tcp_hdr), 0, 0);
 
 kfree(phdr);
 return 0;
 }
 
-void tcp_ack(struct tcb *tcb, struct tcp_hdr *in_hdr, uint64 len)
+void tcp_ack(struct tcb *tcb, struct tcp_hdr *in_hdr, uint64_t len)
 {
 struct tcp_phdr *phdr;
 struct tcp_hdr *hdr;
@@ -242,21 +246,21 @@ hdr->window = htons(1000);
 hdr->ack_num = htonl(tcb->last_ack = tcb->last_seq = 
 in_hdr->seq_num + (len - in_hdr->data_offset<<2) + 1);
 phdr->tcp_length = htons(hdr->data_offset<<2);
-hdr->chksum = checksum((uint16 *)phdr, sizeof(struct tcp_phdr));
+hdr->chksum = checksum((uint16_t *)phdr, sizeof(struct tcp_phdr));
 
-ip_send(NULL, tcb->src, tcb->dst, IPPROTO_TCP, (uint8 *)hdr, 
+ip_send(NULL, tcb->src, tcb->dst, IPPROTO_TCP, (uint8_t *)hdr, 
 sizeof(struct tcp_hdr), 0, 0);
 
 kfree(phdr);
 return 0;
 }
 */
-uint64 tcp_send(struct tcb *tcb, uint8 *data, uint64 len, uint64 flags)
+uint64_t tcp_send(struct tcb *tcb, int8_t *data, uint64_t len, uint64_t flags)
 {
 	struct tcp_phdr *phdr;
 	struct tcp_hdr *hdr;
 
-	phdr = (struct tcp_phdr *)kmalloc(sizeof(struct tcp_phdr) + len, "tcp_send", tcb->sock->task);
+	phdr = (struct tcp_phdr *)kmalloc(sizeof(struct tcp_phdr) + len, "tcp_send", tcb->sock->task, 0);
 
 	if(!phdr) {
 		printf("tcp_send: unable to allocate memory\n");
@@ -275,15 +279,15 @@ uint64 tcp_send(struct tcb *tcb, uint8 *data, uint64 len, uint64 flags)
 	hdr->dst_port = htons(tcb->dst_port);
 	hdr->data_offset = 20>>2;
 
-	if(flags & TCP_ACK) hdr->ack = 1;
-	if(flags & TCP_SYN) hdr->syn = 1;
-	if(flags & TCP_RST) hdr->rst = 1;
-	if(flags & TCP_FIN) hdr->fin = 1;
+	if(flags & TCP_ACK) hdr->ack = 1; else hdr->ack = 0;
+	if(flags & TCP_SYN) hdr->syn = 1; else hdr->syn = 0;
+	if(flags & TCP_RST) hdr->rst = 1; else hdr->rst = 0;
+	if(flags & TCP_FIN) hdr->fin = 1; else hdr->fin = 0;
 
 	hdr->window = htons(tcb->window);
 
 	if(hdr->ack) {
-		hdr->ack_num = htonl(tcb->dst_ack = (uint32)(tcb->rx + tcb->dst_seq));
+		hdr->ack_num = htonl(tcb->dst_ack = (uint32_t)(tcb->rx + tcb->dst_seq));
 	}
 
 	if(hdr->syn) {
@@ -297,7 +301,7 @@ uint64 tcp_send(struct tcb *tcb, uint8 *data, uint64 len, uint64 flags)
 	}
 
 	phdr->tcp_length = htons((hdr->data_offset + len) << 2);
-	hdr->chksum = checksum((uint16 *)phdr, sizeof(struct tcp_phdr) + len);
+	hdr->chksum = checksum((uint16_t *)phdr, sizeof(struct tcp_phdr) + len);
 
 	printf("tcp_send: %x:%u -> %x:%u seq:%x ack:%x %s%s%s%s\n",
 			tcb->src, tcb->src_port, tcb->dst, tcb->dst_port,
@@ -309,7 +313,7 @@ uint64 tcp_send(struct tcb *tcb, uint8 *data, uint64 len, uint64 flags)
 			(hdr->rst ? "RST ": "")
 		  );
 
-	ip_send(NULL, tcb->src, tcb->dst, IPPROTO_TCP, (uint8 *)hdr,
+	ip_send(NULL, tcb->src, tcb->dst, IPPROTO_TCP, (char *)hdr,
 			TCP_HDR + len, 0, 0);
 
 	kfree(phdr);
@@ -324,7 +328,7 @@ void tcp_init_socket(struct fileh *f)
 	ips->proto = IPPROTO_TCP;
 
 	if(ips->s.tcp == NULL) {
-		ips->s.tcp = (struct tcb *)kmalloc(sizeof(struct tcb), "tcb", f->task);
+		ips->s.tcp = (struct tcb *)kmalloc(sizeof(struct tcb), "tcb", f->task, 0);
 		ips->s.tcp->next = tcbs;
 		tcbs = ips->s.tcp;
 	}
@@ -335,18 +339,18 @@ void tcp_init_socket(struct fileh *f)
 }
 
 
-uint64 tcp_recv(struct net_dev *nd, uint32 src, uint32 dst,
-		uint8 *data, uint64 len, struct ip_hdr *iph)
+uint64_t tcp_recv(struct net_dev *nd, uint32_t src, uint32_t dst,
+		int8_t *data, uint64_t len, struct ip_hdr *iph)
 {
-	uint8 *tcp_data;
+	//void *tcp_data;
 	struct tcp_hdr *hdr = (struct tcp_hdr *)data;
 	struct fileh *listen;
 	struct sockaddr_in sin;
 	struct ip_sock *ips;
 	struct tcb *tcb;
-	uint64 hdr_len = hdr->data_offset << 2;
+	uint64_t hdr_len = hdr->data_offset << 2;
 
-	tcp_data = data + hdr_len;
+	//tcp_data = data + hdr_len;
 
 	hdr->src_port = ntohs(hdr->src_port);
 	hdr->dst_port = ntohs(hdr->dst_port);
@@ -427,7 +431,7 @@ uint64 tcp_recv(struct net_dev *nd, uint32 src, uint32 dst,
 	{
 		case ESTABLISHED:
 			//tcp_ack(tcb, hdr, len);
-			printf("tcp_recv: hdr=%u tot=%u diff=%u\n", hdr_len, len, 
+			printf("tcp_recv: hdr=%lx tot=%lx diff=%u\n", hdr_len, len, 
 					hdr->seq_num - tcb->dst_seq);
 			if(len - hdr_len) {
 				tcb->rx += len - hdr_len;

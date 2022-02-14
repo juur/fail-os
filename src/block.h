@@ -8,24 +8,29 @@ struct block_dev;
 /* the "driver" e.g. ramdisk, read/write_one = 1 sector */
 
 struct block_ops {
-	uint64 (*read_one)(struct block_dev *d, uint8 *data, uint64 sector);
-	uint64 (*write_one)(struct block_dev *d, uint8 *data, uint64 sector);
-	void (*init)(struct block_dev *);
-	uint64 (*read)(struct block_dev *d, uint8 *data, uint64 off, uint64 len);
+	const char *const name;
+
+	ssize_t (*read_one)(struct block_dev *d, char *data, off_t sector)__attribute__((nonnull));
+	ssize_t (*write_one)(struct block_dev *d, const char *data, off_t sector)__attribute__((nonnull));
+	int (*init)(struct block_dev *)__attribute__((nonnull));
+	ssize_t (*read)(struct block_dev *d, char *data, size_t, off_t)__attribute__((nonnull));
 };
 
 /* the specific block dev, e.g. /dev/ram1 */
 
 struct block_dev {
-	struct	bio_req		*req;
-	struct 	block_ops	*ops;		// block ops
-	uint64				 bsize;
-	uint64				 bcount;
-	uint64				 devid;		// major|minor
-	void				*private;	// private structure
+	struct	bio_req			*req;
+	const struct block_ops	*ops;		// block ops
+
+	uint32_t  bsize;
+	dev_t     devid;   // major|minor
+	uint64_t  bcount;
+	void	 *priv;	   // private structure
 };
 
-uint64 block_read(struct block_dev *dev, uint8 *dst, uint64 len, uint64 off);
+ssize_t block_read(struct block_dev *, char *, size_t, off_t)__attribute__((nonnull));
+ssize_t block_write(struct block_dev *, const char *, size_t, off_t)__attribute__((nonnull));
 void bio_poll(void);
 
 #endif
+// vim: set ft=c:

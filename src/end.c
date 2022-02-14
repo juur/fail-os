@@ -1,1 +1,1 @@
-unsigned long end_of_kernel;
+unsigned char end_of_kernel;

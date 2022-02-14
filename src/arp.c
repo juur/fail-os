@@ -4,9 +4,9 @@
 
 struct arp_entry *arptable;
 
-void print_mac(uint8 *t);
+void print_mac(uint8_t *t);
 
-struct arp_entry *find_arp_entry(uint32 ip)
+struct arp_entry *find_arp_entry(uint32_t ip)
 {
 	struct arp_entry *t;
 
@@ -18,13 +18,13 @@ struct arp_entry *find_arp_entry(uint32 ip)
 	return NULL;
 }
 
-void update_arp_entry(uint32 ip, uint8 mac[6], struct net_dev *nd)
+void update_arp_entry(uint32_t ip, uint8_t mac[6], struct net_dev *nd)
 {
 	struct arp_entry *t;
 
 	if(!(t = find_arp_entry(ip)))
 	{
-		t = kmalloc(sizeof(struct arp_entry), "arp_entry", NULL);
+		t = kmalloc(sizeof(struct arp_entry), "arp_entry", NULL, 0);
 		if(!t) {
 			printf("update_arp_entry: kmalloc failed\n");
 			return;
@@ -49,7 +49,7 @@ void arp_scan()
 	}
 }
 
-void arp_handle(struct net_dev *nd, uint8 *data, uint64 len)
+void arp_handle(struct net_dev *nd, uint8_t *data, uint64_t len)
 {
 	struct arp_header *hdr = (struct arp_header *)data;
 	printf("arp_handle: htype=%x, ptype=%x, hlen=%x, plen=%x, oper=%x\n",

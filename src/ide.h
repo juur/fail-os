@@ -1,6 +1,9 @@
 #ifndef _IDE_H
 #define _IDE_H
 
+#include "klibc.h"
+#include "block.h"
+
 // PCI config space
 
 #define IDETIM_PRI	0x40
@@ -27,11 +30,11 @@
 #define	BMIDTP_SEC	0x0c
 
 struct PRD {
-	uint8	base;
-	uint16	cnt;
-	uint8	res0;
-	uint8	res1:7;
-	uint8	EOT:1;
+	uint8_t	base;
+	uint16_t	cnt;
+	uint8_t	res0;
+	uint8_t	res1:7;
+	uint8_t	EOT:1;
 };
 
 #define PRI_CMD_BLOCK	0x01f0
@@ -59,71 +62,70 @@ struct PRD {
 #define	READY_STAT	0x40
 #define	BUSY_STAT	0x80
 
-extern const char *bits_IDE_STAT[];
-
 #define	WIN_READ_SECTORS	0x20
+#define WIN_WRITE_SECTORS   0x30
 #define	WIN_IDENTIFY		0xec
 
 struct hdd_ident {
-	uint16	config;
-	uint16	cyl;
-	uint16	res0;
-	uint16	heads;
-	uint16	bytes_per_track;
-	uint16	bytes_per_sector;
-	uint16	sectors;
-	uint16	vendor0;
-	uint16	vendor1;
-	uint16	vendor2;
-	uint8	serial[20];
-	uint16	buf_type;
-	uint16	bif_size;
-	uint16	ecc_bytes;
-	uint8	rev[8];
-	uint8	model[40];
-	uint8	max_multsect;
-	uint8	vendor3;
-	uint16	dword_io;
-	uint8	vendor4;
-	uint8	capability;
-	uint16	reserved50;
-	uint8	vendor5;
-	uint8	tpio;
-	uint8	vendor6;
-	uint8	tdma;
-	uint16	field_value;
-	uint16	cur_cyl;
-	uint16	cur_heads;
-	uint16	cur_sectors;
-	uint16	cur_capacity0;
-	uint16	cur_capacity1;
-	uint8	multisect;
-	uint8	multisect_valid;
-	uint32	lba_capacity;
-	uint16	dma_1word;
-	uint16	dma_mword;
-	uint16	eide_pio_modes;
-	uint16	eide_dma_min;
-	uint16	eide_dma_time;
-	uint16	eide_pio;
-	uint16	eide_pio_iordy;
-	uint16	dummy0[12];
-	uint16	command_sets;
-	uint16	dummy1[5];
-	uint16	dma_ultra;
-	uint16	dummy2[38];
-	uint16	security;
-	uint16	reserved[127];
+	uint16_t	config;
+	uint16_t	cyl;
+	uint16_t	res0;
+	uint16_t	heads;
+	uint16_t	bytes_per_track;
+	uint16_t	bytes_per_sector;
+	uint16_t	sectors;
+	uint16_t	vendor0;
+	uint16_t	vendor1;
+	uint16_t	vendor2;
+	uint8_t	serial[20];
+	uint16_t	buf_type;
+	uint16_t	bif_size;
+	uint16_t	ecc_bytes;
+	uint8_t	rev[8];
+	uint8_t	model[40];
+	uint8_t	max_multsect;
+	uint8_t	vendor3;
+	uint16_t	dword_io;
+	uint8_t	vendor4;
+	uint8_t	capability;
+	uint16_t	reserved50;
+	uint8_t	vendor5;
+	uint8_t	tpio;
+	uint8_t	vendor6;
+	uint8_t	tdma;
+	uint16_t	field_value;
+	uint16_t	cur_cyl;
+	uint16_t	cur_heads;
+	uint16_t	cur_sectors;
+	uint16_t	cur_capacity0;
+	uint16_t	cur_capacity1;
+	uint8_t	multisect;
+	uint8_t	multisect_valid;
+	uint32_t	lba_capacity;
+	uint16_t	dma_1word;
+	uint16_t	dma_mword;
+	uint16_t	eide_pio_modes;
+	uint16_t	eide_dma_min;
+	uint16_t	eide_dma_time;
+	uint16_t	eide_pio;
+	uint16_t	eide_pio_iordy;
+	uint16_t	dummy0[12];
+	uint16_t	command_sets;
+	uint16_t	dummy1[5];
+	uint16_t	dma_ultra;
+	uint16_t	dummy2[38];
+	uint16_t	security;
+	uint16_t	reserved[127];
 };
 
 struct disk_dev {
-	struct block_dev *bdev;
+	struct block_dev *bdev; /* parent */
 	int	cnt;
 	int	port;
-	uint16 c,h,s;
-	uint32 lba;
-	uint16 bsect;
-	uint8  mult;
+	uint16_t c,h,s;
+	uint32_t lba;
+	uint16_t bsect;
+	uint8_t  mult;
 };
 
 #endif
@@ -135,3 +137,5 @@ struct disk_dev {
  * The 32-bit data port feature is enabled for all timings, not just enhanced 
  * timing.
  */
+
+// vim: set ft=c:

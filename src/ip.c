@@ -4,25 +4,38 @@
 
 struct fileh *listen = NULL;
 
+struct ip4_route {
+	struct ip4_route *next;
+	uint32_t dst;
+	uint32_t mask;
+	uint32_t gw;
+	uint32_t weight;
+	struct net_dev *dev;
+};
 
-uint64 ip_init(struct net_proto *np)
+struct ip4_route *ip4_table;
+
+
+
+uint64_t ip_init(struct net_proto *np)
 {
 	listen = NULL;
+	ip4_table = NULL;
 	return 0;
 }
 
-struct fileh *find_listen_ip(struct sockaddr_in *sin, uint32 proto)
+struct fileh *find_listen_ip(struct sockaddr_in *sin, uint32_t proto)
 {
 	struct fileh *f;
 	struct ip_sock *ips;
 
 	/*
-	printf("find_listen_ip: {%u, %u, %u} %u\n",
-			sin->sin_family,
-			sin->sin_port,
-			sin->sin_addr.s_addr,
-			proto);
-			*/
+	   printf("find_listen_ip: {%u, %u, %u} %u\n",
+	   sin->sin_family,
+	   sin->sin_port,
+	   sin->sin_addr.s_addr,
+	   proto);
+	   */
 
 	for( f = listen ; f ; f=f->listen_next )
 	{
@@ -42,7 +55,7 @@ struct fileh *find_listen_ip(struct sockaddr_in *sin, uint32 proto)
 	return NULL;
 }
 
-void dump_listen()
+void dump_listen(void)
 {
 	struct fileh *f;
 	struct ip_sock *ips;
@@ -51,7 +64,7 @@ void dump_listen()
 	{
 		if(f->family != AF_INET) continue;
 		ips = (struct ip_sock *)f->priv;
-		printf("dump_listen: p:%u local={%u,%u,%u} state=%u\n",
+		printf("dump_listen: p:%lx local={%u,%u,%u} state=%lx\n",
 				ips->proto,
 				ips->local.sin_family,
 				ips->local.sin_port,
@@ -60,7 +73,7 @@ void dump_listen()
 	}
 }
 
-uint64 add_listen(struct fileh *f)
+uint64_t add_listen(struct fileh *f)
 {
 	f->listen_next = listen;
 	listen = f;
@@ -68,7 +81,7 @@ uint64 add_listen(struct fileh *f)
 	return 0;
 }
 
-uint64 ip_accept(struct fileh *f, struct fileh *newf, struct sockaddr_in *sin, uint64 *len)
+int ip_accept(struct fileh *f, struct fileh *newf, struct sockaddr_in *sin, socklen_t *len)
 {
 	struct ip_sock *ips = (struct ip_sock *)f->priv;
 	struct ip_sock *new_ips = (struct ip_sock *)newf->priv;
@@ -92,7 +105,7 @@ uint64 ip_accept(struct fileh *f, struct fileh *newf, struct sockaddr_in *sin, u
 	return 0;
 }
 
-uint64 ip_listen(struct fileh *f, uint64 listen)
+int ip_listen(struct fileh *f, int32_t listen)
 {
 	struct ip_sock *ips = (struct ip_sock *)f->priv;
 	if(ips->state != IPS_SOCKET) return -1;
@@ -111,12 +124,12 @@ uint64 ip_listen(struct fileh *f, uint64 listen)
 	else return add_listen(f);
 }
 
-uint64 ip_bind(struct fileh *f, struct sockaddr_in *sa, uint64 len)
+int ip_bind(struct fileh *f, struct sockaddr_in *sa, socklen_t len)
 {
 	struct ip_sock *ips = (struct ip_sock *)f->priv;
 	struct net_dev *dev;
 
-	printf("ip_bind: %x, %x, %x\n", f, sa, len);
+	printf("ip_bind: %p, %p, %x\n", (void *)f, (void *)sa, len);
 
 	if(len != sizeof(struct sockaddr_in)) return -1;
 
@@ -127,16 +140,16 @@ uint64 ip_bind(struct fileh *f, struct sockaddr_in *sa, uint64 len)
 
 	f->flags |= FS_BOUND;
 
-//	printf("ip_bound: bound (dev=%x)\n", f->sdev.net_dev);
+	//	printf("ip_bound: bound (dev=%x)\n", f->sdev.net_dev);
 
 	return 0;
 }
 
-void ip_init_socket(struct fileh *f, uint64 type, uint64 proto)
+void ip_init_socket(struct fileh *f, int32_t type, int32_t proto)
 {
 	struct ip_sock *ip_sock;
 
-	ip_sock = (struct ip_sock *)kmalloc(sizeof (struct ip_sock), "ip_sock", f->task);
+	ip_sock = (struct ip_sock *)kmalloc(sizeof (struct ip_sock), "ip_sock", f->task, 0);
 	if(!ip_sock) return;
 
 	f->priv = ip_sock;
@@ -148,7 +161,7 @@ void ip_init_socket(struct fileh *f, uint64 type, uint64 proto)
 			tcp_init_socket(f);
 			break;
 		default:
-			printf("ip_init_socket: unsupported type: %x\n");
+			printf("ip_init_socket: unsupported type: %x\n", type);
 			goto fail;
 			break;
 	}
@@ -160,27 +173,32 @@ fail:
 	f->priv = NULL;
 }
 
-struct net_dev *find_dev_route(uint32 dst)
+struct net_dev *find_dev_route(uint32_t dst)
 {
-	struct net_dev *n;
+	// struct net_dev *n;
+	struct ip4_route *r;
 
-	for( n = netdevs ; n ; n=n->next )
+	for( r = ip4_table ; r ; r=r->next )
 	{
-		if(n->state != NET_READY) continue;
-		if(n->ip.addr == 0) continue;
-		return n;
+		if((dst & r->mask) == r->dst) break;
 	}
 
-	return NULL;
+	// handle sending to IPs on host here / add them to the table
+
+	if( r == NULL ) return NULL;
+
+	if( r->dev ) return(r->dev);
+
+	return find_dev_route(r->gw);
 }
 
-uint64 ip_send(struct net_dev *nd, uint32 src, uint32 dst, 
-		uint8 proto, uint8 *data, uint16 len, uint16 id, uint16 flag)
+uint64_t ip_send(struct net_dev *nd, uint32_t src, uint32_t dst, 
+		uint8_t proto, char *data, uint16_t len, uint16_t id, uint16_t flag)
 {
 	struct ip_hdr tmp;
-	uint8 *snd;
-	uint16 hlen = (uint16)sizeof(struct ip_hdr);
-	uint16 totlen = hlen + len;
+	char *snd;
+	uint16_t hlen = (uint16_t)sizeof(struct ip_hdr);
+	uint16_t totlen = hlen + len;
 
 	if(nd == NULL && src != INADDR_ANY) {
 		nd = find_dev_ip(src);
@@ -198,10 +216,10 @@ uint64 ip_send(struct net_dev *nd, uint32 src, uint32 dst,
 	}
 
 	/*
-	printf("ip_send: {src:%x, dst:%x} l:%x\n", 
-			src, dst,
-			len);
-*/
+	   printf("ip_send: {src:%x, dst:%x} l:%x\n", 
+	   src, dst,
+	   len);
+	   */
 
 	memset(&tmp, 0, hlen);
 
@@ -217,12 +235,12 @@ uint64 ip_send(struct net_dev *nd, uint32 src, uint32 dst,
 	if(flag & IPF_DF) tmp.offset |= IPF_DF;
 	tmp.offset = htons(tmp.offset);
 
-	snd = (uint8 *)kmalloc((uint64)totlen, "ip_send", NULL);
+	snd = (char *)kmalloc((uint64_t)totlen, "ip_send", NULL, 0);
 
 	memcpy(snd, 		&tmp, hlen);
 	memcpy(snd+hlen, 	data, len);
 
-	((struct ip_hdr *)snd)->checksum = checksum((uint16 *)snd, hlen);
+	((struct ip_hdr *)snd)->checksum = checksum((uint16_t *)snd, hlen);
 
 	nd->ops->write(NULL, nd, snd, totlen, NETPROTO_IP);
 
@@ -230,21 +248,21 @@ uint64 ip_send(struct net_dev *nd, uint32 src, uint32 dst,
 	return 0;
 }
 
-uint64 icmp_recv(struct net_dev *nd, uint32 src, uint32 dst, 
-		uint8 *data, uint64 len, struct ip_hdr *iph)
+uint64_t icmp_recv(struct net_dev *nd, uint32_t src, uint32_t dst, 
+		char *data, uint64_t len, struct ip_hdr *iph)
 {
-	uint8 *icmp_data;
+	//void *icmp_data;
 	struct icmp_hdr *hdr = (struct icmp_hdr *)data;
-	uint8 *tmp;
+	char *tmp;
 	struct icmp_hdr *tmp_h;
 
-	icmp_data = data + sizeof(struct icmp_hdr);
+	//icmp_data = data + sizeof(struct icmp_hdr);
 
 	switch(hdr->type)
 	{
 		case ICMP_ECHO_REQUEST:
-			printf("icmp_recv: ICMP_ECHO_REQUEST: len=%x\n", len);
-			tmp = (uint8 *)kmalloc(len, "icmphdr", NULL);
+			printf("icmp_recv: ICMP_ECHO_REQUEST: len=%lx\n", len);
+			tmp = (char *)kmalloc(len, "icmphdr", NULL, 0);
 
 			len -= sizeof(struct icmp_hdr);
 
@@ -256,11 +274,11 @@ uint64 icmp_recv(struct net_dev *nd, uint32 src, uint32 dst,
 			memcpy(tmp+sizeof(struct icmp_hdr), 
 					data+sizeof(struct icmp_hdr), len);
 
-			tmp_h->check = checksum((uint16 *)tmp, 
-					(uint32)(sizeof(struct icmp_hdr)+len));
+			tmp_h->check = checksum((uint16_t *)tmp, 
+					(uint32_t)(sizeof(struct icmp_hdr)+len));
 
-			ip_send(nd, dst, src, IPPROTO_ICMP, (uint8 *)tmp, 
-					(uint16)(sizeof(struct icmp_hdr)+len), iph->id, IPF_DF);
+			ip_send(nd, dst, src, IPPROTO_ICMP, tmp, 
+					(uint16_t)(sizeof(struct icmp_hdr)+len), iph->id, IPF_DF);
 			kfree(tmp);
 			break;
 		default:
@@ -271,11 +289,11 @@ uint64 icmp_recv(struct net_dev *nd, uint32 src, uint32 dst,
 	return 0;
 }
 
-uint64 ip_recv(struct net_dev *nd, struct net_proto *np, 
-		uint8 *data, uint64 len)
+uint64_t ip_recv(struct net_dev *nd, struct net_proto *np, 
+		char *data, uint64_t len)
 {
 	struct ip_hdr *hdr = (struct ip_hdr *)data;
-	uint16 payload;
+	uint16_t payload;
 
 	hdr->len = ntohs(hdr->len);
 	hdr->id = ntohs(hdr->id);
@@ -300,7 +318,7 @@ uint64 ip_recv(struct net_dev *nd, struct net_proto *np,
 	   );
 	   */
 	if(hdr->len > len ) {
-		printf("ip_recv: bad header len: %x vs %x\n",
+		printf("ip_recv: bad header len: %lx vs %x\n",
 				len, hdr->len);
 		return -1;
 	}
@@ -324,21 +342,60 @@ uint64 ip_recv(struct net_dev *nd, struct net_proto *np,
 	return 0;
 }
 
+uint64_t ip_ioctl(struct fileh *f, int cmd, void *arg)
+{
+	struct dev *d;
+	struct ifreq *req;
+	struct net_dev *nd;
+
+	if(arg == NULL) return -1;
+	req = (struct ifreq *)arg;
+	d = find_dev_name(req->name, DEV_NULL);
+	if(d == NULL) return -1;
+
+	// check missing
+	nd = d->op.net_dev;
+
+	switch(cmd)
+	{
+		case IOC_GIFADDR:
+			return (uint64_t)nd->ip.addr;
+			break;
+		case IOC_SIFADDR:
+			nd->ip.addr = req->r.addr.sin_addr.s_addr;
+			printf("ip_ioctl: %s IFADDR=%x\n", &d->name[0], nd->ip.addr);
+			break;
+		case IOC_GIFNETMASK:
+			return (uint64_t)nd->ip.netmask;
+			break;
+		case IOC_SIFNETMASK:
+			nd->ip.netmask = req->r.netmask.sin_addr.s_addr;
+			printf("ip_ioctl: %s NETMASK=%x\n", &d->name[0], nd->ip.netmask);
+			break;
+		default:
+			printf("ip_ioctl: undefined %x\n", cmd);
+			return -1;
+	}
+	return 0;
+}
+
 struct net_proto_ops ip_proto_ops = {
+	"ipv4",
 	ip_init,
-	ip_recv
+	ip_recv,
+	ip_ioctl
 };
 
-uint16 checksum(uint16 *data, uint32 len)
+uint16_t checksum(uint16_t *data, uint32_t len)
 {
-	uint32 sum;
+	uint32_t sum;
 
 	//	printf("checksum: %x[%x]: ", data, len);
 
 	for(sum=0; len>1; len-=2)
 		sum += *data++;
 
-	if(len) sum += *(uint8*)data;
+	if(len) sum += *(uint8_t*)data;
 
 	sum = (sum >> 16) + (sum & 0xffff);
 	sum += (sum >> 16);
@@ -346,5 +403,5 @@ uint16 checksum(uint16 *data, uint32 len)
 
 	//	printf("r:%x\n", sum);
 
-	return (uint16)sum;
+	return (uint16_t)sum;
 }

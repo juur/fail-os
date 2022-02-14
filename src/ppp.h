@@ -1,10 +1,12 @@
 #ifndef _PPP_H
 #define _PPP_H
 
+#include "klibc.h"
+
 struct hdlc_ppp_hdr {
-	uint8	flag;
-	uint8	addr;
-	uint8	cont;
+	uint8_t	flag;
+	uint8_t	addr;
+	uint8_t	cont;
 };
 
 #define HDLC_FLAG		0x7e
@@ -34,3 +36,5 @@ struct ppp_private {
 extern struct net_ops ppp_net_ops;
 
 #endif
+
+// vim: set ft=c:

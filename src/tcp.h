@@ -4,10 +4,10 @@
 #include "ip.h"
 
 struct tcp_hdr {
-	uint16  src_port;
-	uint16  dst_port;
-	uint32  seq_num;
-	uint32  ack_num;
+	uint16_t  src_port;
+	uint16_t  dst_port;
+	uint32_t  seq_num;
+	uint32_t  ack_num;
 
 	unsigned    res:3;
 	unsigned    ns:1;
@@ -22,9 +22,9 @@ struct tcp_hdr {
 	unsigned    ece:1;
 	unsigned    cwr:1;
 
-	uint16  window;
-	uint16  chksum;
-	uint16  urg_ptr;
+	uint16_t  window;
+	uint16_t  chksum;
+	uint16_t  urg_ptr;
 }
 #ifdef __GNUC__
 __attribute__((packed))
@@ -32,11 +32,11 @@ __attribute__((packed))
 ;
 
 struct tcp_phdr {
-	uint32  src;
-	uint32  dst;
-	uint8   res;
-	uint8   protocol;
-	uint16  tcp_length;
+	uint32_t  src;
+	uint32_t  dst;
+	uint8_t   res;
+	uint8_t   protocol;
+	uint16_t  tcp_length;
 	struct  tcp_hdr hdr;
 }
 #ifdef __GNUC__
@@ -82,32 +82,32 @@ struct tcb {
 	struct tcp_buf	*send_q;
 	struct tcb		*parent;
 
-	uint64 tx;		// bytes we've sent
-	uint64 rx;		// bytes they've sent
+	uint64_t tx;		// bytes we've sent
+	uint64_t rx;		// bytes they've sent
 
-	uint32 src_seq; // our initial seq
-	uint32 dst_seq; // their initial seq
+	uint32_t src_seq; // our initial seq
+	uint32_t dst_seq; // their initial seq
 
-	uint32 src_ack; // their ack of us
-	uint32 dst_ack;	// our ack of them
+	uint32_t src_ack; // their ack of us
+	uint32_t dst_ack;	// our ack of them
 
-	uint32 src;		// our IP
-	uint32 dst;		// their IP
+	uint32_t src;		// our IP
+	uint32_t dst;		// their IP
 
-	uint32 state;
-	uint16 src_port;	// our port
-	uint16 dst_port;	// their port
+	uint32_t state;
+	uint16_t src_port;	// our port
+	uint16_t dst_port;	// their port
 
-	uint16 window;
+	uint16_t window;
 };
 
-void dump_tcbs();
-uint64 tcp_accept(struct tcb *tcb, struct tcb *new_tcb,
+void dump_tcbs(void);
+uint64_t tcp_accept(struct tcb *tcb, struct tcb *new_tcb,
 		        struct sockaddr_in *src_in, struct sockaddr_in *dst_in);
-uint64 tcp_listen(struct tcb *tcb);
+uint64_t tcp_listen(struct tcb *tcb);
 void tcp_init_socket(struct fileh *f);
-uint64 tcp_recv(struct net_dev *nd, uint32 src, uint32 dst, uint8 *data, 
-		uint64 len, struct ip_hdr *iph);
-uint64 tcp_send(struct tcb *tcb, uint8 *data, uint64 len, uint64 flags);
+uint64_t tcp_recv(struct net_dev *nd, uint32_t src, uint32_t dst, int8_t *data, 
+		uint64_t len, struct ip_hdr *iph);
+uint64_t tcp_send(struct tcb *tcb, int8_t *data, uint64_t len, uint64_t flags);
 
 #endif

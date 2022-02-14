@@ -1,2 +1,9 @@
-all:	
-	make -C src
+TARGETS := all clean
+SUBDIRS := src utils
+
+$(TARGETS): $(SUBDIRS)
+
+$(SUBDIRS):
+	$(MAKE) -C $@ $(MAKECMDGOALS)
+
+.PHONY: $(TARGETS) $(SUBDIRS)
