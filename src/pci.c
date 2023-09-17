@@ -1,9 +1,9 @@
-#include "pci.h"
-#include "mem.h"
-#include "eth.h"
+#include <frame.h>
+#include <pci.h>
+#include <mem.h>
+#include <eth.h>
 
 struct pci_dev *pci_devs = NULL;
-extern pt_t *kernel_pd;
 
 void pci_write_conf32(uint8_t bus, uint8_t dev, uint8_t func, uint8_t reg, uint32_t val)
 {
@@ -161,10 +161,11 @@ struct pci_dev *add_pci_device(int bus, int dev, int func)
 			off = 0;
 
 			while(tmp>0) {
+				set_frame((void *)((uintptr_t)ret->bars[bar].addr + off));
 				if(!create_page_entry_4k(kernel_pd,
-						ret->bars[bar].addr + off,
-						ret->bars[bar].addr + off,
-						PEF_P|PEF_W, NULL))
+						(void *)((uintptr_t)ret->bars[bar].addr + off),
+						(void *)((uintptr_t)ret->bars[bar].addr + off),
+						PEF_P|PEF_W, 0))
 					goto fail;
 				tmp -= PGSIZE_4K;
 				off += PGSIZE_4K;
@@ -185,9 +186,11 @@ struct pci_dev *add_pci_device(int bus, int dev, int func)
 	switch(ret->cfg.vendor_id) {
 		case PCI_VENDOR_AMD:
 			switch(ret->cfg.device_id) {
+#ifdef WANT_PCNET
 				case PCI_DEVICE_PCNET:
 					init_nic_pcnet(ret);
 					break;
+#endif
 				default:
 					goto unknown;
 			}
@@ -196,16 +199,20 @@ struct pci_dev *add_pci_device(int bus, int dev, int func)
 			switch(ret->cfg.device_id) {
 				case PCI_DEVICE_PIIX3:
 				case PCI_DEVICE_PIIX4:
+#ifdef WANT_IDE
 					if(ret->cfg.class_code == PCI_CLASS_MASS_STORAGE) {
 						init_ide(ret);
 						goto unknown;
 						break;
 					}
+#endif
 					goto unknown;
 					break;
+#ifdef WANT_AHCI
 				case PCI_DEVICE_828011_AHCI:
 					init_ahci(ret);
 					break;
+#endif
 				default:
 					goto unknown;
 			}

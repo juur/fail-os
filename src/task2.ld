@@ -17,5 +17,5 @@ SECTIONS
 	.eh_frame : {
 		*(*.eh_frame*)
 	}
-	_end = .;
+	_task2_end = .;
 }

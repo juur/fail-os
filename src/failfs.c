@@ -1,24 +1,28 @@
-#include "klibc.h"
-#include "file.h"
-#include "block.h"
-#include "mem.h"
-#include "dev.h"
-
 #define FAILFS_C
 #ifndef _KERNEL
 #define _KERNEL
 #endif
-#include "failfs.h"
 
-extern time_t sys_time(void *);
+#include <klibc.h>
+#include <file.h>
+#include <block.h>
+#include <mem.h>
+#include <dev.h>
+#include <failfs.h>
+#include <syscall.h>
 
-__attribute__((nonnull)) static ssize_t failfs_read(struct fileh *f, char *dst, size_t len, off_t from)
+const unsigned char ffs_magic[FFS_MAGIC_LEN] = "FAILFS";
+
+__attribute__((nonnull))
+static ssize_t failfs_read(struct fileh *f, char *dst, size_t len, off_t from)
 {
 	ssize_t bytes_read, bytes_left, rc;
 	off_t offset;
 	char *buf, *ptr;
 	ffs_data_block *dblk;
 	const struct block_ops *bops;
+
+	printf("failfs_read:\n");
 
 	if((buf = kmalloc(f->inode->st_blksize, "buf", NULL, 0)) == NULL) {
 		rc = -ENOMEM;
@@ -96,7 +100,8 @@ static inline int first_zero_bit(uint64_t i)
 	i = ~i;
 	return num_of_set_bit64((i&(-i))-1);
 }
-
+ 
+__attribute__((nonnull))
 static ino_t find_free_inode(struct mount *const mnt)
 {
 	struct failfs_private *ffs = mnt->super;
@@ -105,13 +110,13 @@ static ino_t find_free_inode(struct mount *const mnt)
 		if(ffs->free_block[i] != ~(0UL)) {
 			return (i*64) + first_zero_bit(ffs->free_block[i]);
 		}
-	return 0;
+	return -1;
 }
 
 __attribute__((nonnull))
 static ssize_t failfs_write(_Unused struct fileh *f, _Unused const char *src, _Unused size_t len, _Unused off_t from)
 {
-	return -1L;
+	return -1;
 }
 
 __attribute__((nonnull(2,3,4,7))) 
@@ -119,58 +124,69 @@ static ino_t failfs_open(_Unused struct task *const t,_Unused  struct mount *con
 		_Unused struct fileh *const fh,_Unused  const int flags, _Unused const mode_t mode, void **priv)
 {
 	*priv = NULL;
-	return file->ino;
+	//printf("failfs_open\n");
+	return file->self_ino;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
+
 __attribute__((nonnull)) 
-static int sync_free_block(const struct failfs_private *const p, struct block_dev *const dev)
+static long sync_free_block(const struct failfs_private *p, struct block_dev *dev)
 {
-	ffs_free_block **fb;
-	int rc = 0;
 	const int fb_len = (p->super.block_size - sizeof(ffs_free_block));
 	const int num_fb = p->super.num_blocks / (fb_len * 64);
 
-	if( (fb = kmalloc(num_fb * sizeof(ffs_free_block *),"fb",NULL,KMF_ZERO)) == NULL ) {
-		rc = -ENOMEM;
-		goto fail;
-	}
+	uint8_t i;
+	long rc = -ENOMEM;
 
-	for( int i = 0; i < num_fb; i++ )
+	if (num_fb > 20 || num_fb <=0)
+		return -ENOMEM;
+
+	ffs_free_block *(*fb)[num_fb] = NULL;
+
+	if ( (fb = kmalloc(num_fb * sizeof(ffs_free_block *), "fb", NULL, KMF_ZERO)) == NULL )
+		return -ENOMEM;
+
+	for ( i = 0; i < num_fb; i++ )
 	{
-		if ( (fb[i] = kmalloc(sizeof(ffs_free_block) + fb_len,"fb_ent",NULL,0)) == NULL ) {
-			rc = -ENOMEM;
+		if ( ((*fb)[i] = kmalloc(sizeof(ffs_free_block)/* + fb_len*/, "fb_ent", NULL, 0)) == NULL )
 			goto fail;
-		}
 
-		*fb[i] = (ffs_free_block){
+		*(*fb)[i] = (ffs_free_block){
 			.magic = "FAILFS",
 				.block_type = FFS_BT_FREE,
-				.len = fb_len,
-				.next = (i + 1 == num_fb) ? 0 : p->super.free_block + i + 1,
-				.prev = (i == 0) ? 0 : p->super.free_block + i - 1,
-				.flags = 0
+				.len        = fb_len,
+				.next       = (i + 1 == num_fb) ? 0 : p->super.free_block + i + 1,
+				.prev       = (i == 0) ? 0 : p->super.free_block + i - 1,
+				.flags      = 0
 		};
 	}
 
-	const char *tmp = (const char *)(p->free_block);
+	const unsigned long *tmp = p->free_block;
 
-	for( int i = 0; i < num_fb; i++, tmp += fb_len )
-		memcpy(fb[i]->data, tmp, fb_len);
-
-	for( int i = 0; i < num_fb; i++ )
-		if((rc = dev->ops->write_one(dev, (const char *)fb[i], p->super.free_block + i)) < 0)
+	for ( i = 0; i < num_fb; i++, tmp += fb_len ) {
+		memcpy((*fb)[i]->data, tmp, fb_len);
+		if ((rc = dev->ops->write_one(dev, (const char *)(*fb)[i], p->super.free_block + i)) < 0)
 			goto fail;
+	}
+
+	rc = 0;
 
 fail:
-	if(fb) {
-		for( int i = 0; i < num_fb; i++ )
-			if(fb[i]) 
-				kfree(fb[i]);
+	if (fb) {
+		for ( i = 0; i < num_fb; i++ ) {
+			kfree((*fb)[i]);
+			(*fb)[i] = NULL;
+		}
 		kfree(fb);
+		fb = NULL;
 	}
 
 	return rc;
 }
+
+#pragma GCC diagnostic pop
 
 /* S_IFDIR */
 __attribute__((nonnull(2,3,4)))
@@ -181,10 +197,10 @@ static ino_t failfs_mkdir(struct task *const t, struct mount *mnt, struct fsent 
 	void *buf   = NULL;
     struct failfs_private *ffspriv = mnt->super;
 	ino_t ino = -ENOSYS;
-	int rc = 0;
+	long rc = 0;
 
-	if((ino = find_free_inode(mnt)) <= 0) {
-		ino = ENOSPC;
+	if((ino = find_free_inode(mnt)) == (ino_t)-1) {
+		ino = -ENOSPC;
 		goto fail;
 	}
 
@@ -204,7 +220,7 @@ static ino_t failfs_mkdir(struct task *const t, struct mount *mnt, struct fsent 
 	ffb->ctime      = sys_time(NULL);
 	ffb->mtime      = sys_time(NULL);
 	if(cwd->fs->dev->devid == mnt->dev->devid)
-		ffb->parent     = cwd->ino;
+		ffb->parent     = cwd->self_ino;
 	ffb->child      = NULL_INO;
 	ffb->nlink		= 1;
 	strncpy(ffb->name, name, 128);
@@ -217,7 +233,7 @@ static ino_t failfs_mkdir(struct task *const t, struct mount *mnt, struct fsent 
 	ffspriv->free_block[ino/64] |= (1 << (ino & 0x3F));
 
 	if((rc = sync_free_block(mnt->super, mnt->dev)) < 0) {
-		printf("failfs_mkdir: unable to sync superblock to disk: %d: %s\n", rc, strerror(rc));
+		printf("failfs_mkdir: unable to sync superblock to disk: %ld: %s\n", rc, strerror(rc));
 		ffspriv->free_block[ino/64] &= ~(1 << (ino & 0x3F));
 	}
 
@@ -225,32 +241,35 @@ fail:
 	if(buf)
 		kfree(buf);
 
-	return (ino == 0) ? -ENOSPC : ino;
+	return ino;
 }
 
 /* S_IFREG|S_IFBLK|S_IFCHR */
 __attribute__((nonnull(2,3,7))) 
-static ino_t failfs_create(struct task *const t, struct mount *const mnt,
-		_Unused struct fileh *const fh, _Unused const int flags, 
-		const mode_t mode, const dev_t rdev, _Unused void **priv)
+static ino_t failfs_create(struct task *t, struct mount *mnt, _Unused struct fileh *fh, _Unused int flags, 
+		mode_t mode, dev_t rdev, _Unused void **priv)
 {
 	ino_t n_ino = NULL_INO;
-	int rc      = 0;
+	long rc     = 0;
 	void *buf   = NULL;
 	ffs_file_block *ffb = NULL;
     struct failfs_private *ffspriv = mnt->super;
 
+	//printf("failfs_create:\n");
+
 	if(S_ISDIR(mode)) {
+		//printf("failfs_create: -EISDIR\n");
 		return -EISDIR;
 		goto fail;
 	}
 
-	if((n_ino = find_free_inode(mnt)) <= 0) {
+	if((n_ino = find_free_inode(mnt)) == (ino_t)-1) {
+		//printf("failfs_create: no free inode\n");
 		n_ino = -ENOSPC;
 		goto fail;
 	}
 
-	printf("failfs_create: n_ino=%ld\n", n_ino);
+	//printf("failfs_create: n_ino=%ld\n", n_ino);
 
 	if((ffb = buf = kmalloc(mnt->dev->bsize, "buf", NULL, KMF_ZERO)) == NULL) {
 		n_ino = -ENOMEM;
@@ -281,7 +300,7 @@ static ino_t failfs_create(struct task *const t, struct mount *const mnt,
 	ffspriv->free_block[n_ino/64] |= (1 << (n_ino & 0x3F));
 
 	if((rc = sync_free_block(mnt->super, mnt->dev)) < 0) {
-		printf("failfs_create: unable to sync superblock to disk: %d: %s\n", rc, strerror(rc));
+		printf("failfs_create: unable to sync superblock to disk: %ld: %s\n", rc, strerror(rc));
         ffspriv->free_block[n_ino/64] &= ~(1 << (n_ino & 0x3F));
     }
 
@@ -289,28 +308,30 @@ fail:
 	if(buf) 
 		kfree(buf);
 
-	return (n_ino == NULL_INO) ? -ENOSPC : n_ino;
+	return n_ino;
 }
 
 __attribute__((nonnull(2)))
-static int failfs_close(_Unused struct task *t,_Unused struct fileh *fh)
+static long failfs_close(_Unused struct task *t,_Unused struct fileh *fh)
 {
 	return 0;
 }
 
 __attribute__((nonnull))
-static int failfs_sync_fsent(struct fsent *const fsent, const int mode)
+static long failfs_sync_fsent(struct fsent *const fsent, const int mode)
 {
 	void *buf;
-    int rc = 0;
+    long rc = 0;
 	ino_t ino;
     struct failfs_private *priv = fsent->fs->super;
 
-	ino = fsent->ino;
-	printf("failfs_sync_fsent: ino=%ld mode=%d\n", ino, mode);
+	ino = fsent->self_ino;
+	//printf("failfs_sync_fsent: ino=%ld[%s,%s] mode=%s\n", ino, fsent->name, fsent->fs->ops->name,
+	//		mode == SYNC_READ ? "SYNC_READ" : "SYNC_WRITE");
 
-    if(ino <= 0 || (ino >= priv->super.free_block && ino < priv->first_normal_block)) {
-		printf("failfs_sync_fsent: attempt to sync super or free block as an inode: %ld\n", fsent->ino);
+    if(ino == (ino_t)-1 || (ino >= priv->super.free_block && ino < priv->first_normal_block)) {
+	//	printf("failfs_sync_fsent: attempt to sync super or free block as an inode: %ld [%d < x < %ld]\n", 
+	//			fsent->self_ino, priv->super.free_block, priv->first_normal_block);
         return -EINVAL;
 	}
 
@@ -323,7 +344,7 @@ static int failfs_sync_fsent(struct fsent *const fsent, const int mode)
             {
 				ffs_file_block *blk = buf;
 
-				if((rc = fsent->fs->dev->ops->read_one(fsent->fs->dev, buf, fsent->ino)) < 0)
+				if((rc = fsent->fs->dev->ops->read_one(fsent->fs->dev, buf, fsent->self_ino)) < 0)
 					goto fail;
 
 				if(strncmp((const char *)blk->magic, (const char *)ffs_magic, 6)) {
@@ -364,23 +385,23 @@ static int failfs_sync_fsent(struct fsent *const fsent, const int mode)
 				blk->type        = FFS_FT_LINK;
 
 				if(fsent->parent && fsent->parent->fs != fsent->fs) {
-					blk->parent = fsent->parent->ino;
+					blk->parent = fsent->parent->self_ino;
 				} else
 					blk->parent = priv->super.root_block;
 
 				if(fsent->next && fsent->next->fs != fsent->fs) {
-					blk->next = fsent->next->ino;
+					blk->next = fsent->next->self_ino;
 				} else
 					blk->next = NULL_INO;
 
 				if(fsent->child && fsent->child->fs != fsent->fs) {
-					blk->child = fsent->child->ino;
+					blk->child = fsent->child->self_ino;
 				} else
 					blk->child = NULL_INO;
 
 				blk->target = fsent->inode->st_ino; /* TODO how do we ensure !NULL ? */
 
-                if((rc = fsent->fs->dev->ops->write_one(fsent->fs->dev, buf, fsent->ino)) < 0)
+                if((rc = fsent->fs->dev->ops->write_one(fsent->fs->dev, buf, fsent->self_ino)) < 0)
                     goto fail;
 
 				rc = 0;
@@ -402,16 +423,18 @@ fail:
 
 /* S_IFLNK */
 __attribute__((nonnull(2))) 
-static int failfs_link(_Unused struct task *const tsk, struct fsent *const fsent, const ino_t ino)
+static long failfs_link(_Unused struct task *const tsk, struct fsent *const fsent, const ino_t ino)
 {
-	int rc                      = 0;
+	long rc                     = 0;
 	ino_t blk                   = 0;
 	void *buf                   = NULL;
 	ffs_file_block *ffb         = NULL;
 	struct mount *mnt           = fsent->fs;
 	struct failfs_private *priv = mnt->super;
 
-	if((rc = blk = find_free_inode(mnt)) < 0)
+	//printf("failfs_link: (%p,%s,%lu)\n", (void *)tsk, fsent->name, ino);
+
+	if((rc = blk = find_free_inode(mnt)) == -1L)
 		goto fail;
 
 	if((ffb = buf = kmalloc(mnt->dev->bsize, "buf", NULL, KMF_ZERO)) == NULL) {
@@ -424,8 +447,8 @@ static int failfs_link(_Unused struct task *const tsk, struct fsent *const fsent
 
 	ffb->block_type  = FFS_BT_FILE;
 	ffb->type        = FFS_FT_LINK;
-	ffb->parent = fsent->parent  ? fsent->parent->ino  : priv->super.root_block;
-	ffb->next   = fsent->sibling ? fsent->sibling->ino : NULL_INO;
+	ffb->parent = fsent->parent  ? fsent->parent->self_ino  : priv->super.root_block;
+	ffb->next   = fsent->sibling ? fsent->sibling->self_ino : NULL_INO;
 	ffb->child  = NULL_INO;
 	ffb->target = ino;
 
@@ -435,7 +458,7 @@ static int failfs_link(_Unused struct task *const tsk, struct fsent *const fsent
 	priv->free_block[blk/64] |= (1 << (blk & 0x3F));
 
 	if((rc = sync_free_block(mnt->super, mnt->dev)) < 0) {
-		printf("failfs_link: unable to sync superblock to disk: %d: %s\n", rc, strerror(rc));
+		//printf("failfs_link: unable to sync superblock to disk: %d: %s\n", rc, strerror(rc));
         priv->free_block[blk/64] &= ~(1 << (blk & 0x3F));
     }
 
@@ -449,16 +472,17 @@ fail:
 }
 
 __attribute__((nonnull))
-static int failfs_sync_inode(struct inode *const inode, const ino_t ino, const int mode)
+static long failfs_sync_inode(struct inode *const inode, const ino_t ino, const int mode)
 {
-	printf("failfs_sync_inode: block:%ld %s\n", ino, (mode == SYNC_READ) ? "READ" : "WRITE");
+	//printf("failfs_sync_inode: block:%ld %s\n", ino, (mode == SYNC_READ) ? "READ" : "WRITE");
 
     struct failfs_private *priv = inode->mnt->super;
 	char *buf;
-	int rc = 0;
+	long rc = 0;
 
-    if(ino <= 0 || (ino >= priv->super.free_block && ino < priv->first_normal_block)) {
-		printf("failfs_sync_inode: attempt to sync super or free block as an inode: %ld\n", ino);
+    if(ino == (ino_t)-1 || (ino >= priv->super.free_block && ino < priv->first_normal_block)) {
+		printf("failfs_sync_inode: attempt to sync super or free block as an inode: %ld [%d < x < %lu]\n", 
+				ino, priv->super.free_block, priv->first_normal_block);
         return -EBADF;
 	}
 
@@ -474,6 +498,11 @@ static int failfs_sync_inode(struct inode *const inode, const ino_t ino, const i
 					goto fail;
 
 				ffs_file_block *blk = inode->priv;
+
+				if(!blk) {
+					printf("failfs_sync_inode: inode[%ld]->prov is NULL\n", ino);
+					rc = -EINVAL;
+				}
 				
 				blk->perms   = inode->st_mode;
 				blk->nlink   = inode->st_nlink;
@@ -522,6 +551,7 @@ static int failfs_sync_inode(struct inode *const inode, const ino_t ino, const i
 				inode->st_atime   = blk.atime;
 				inode->st_ctime   = blk.ctime;
 				inode->st_mtime   = blk.mtime;
+				inode->priv       = buf;
 
 				/* we don't kfree(buf) as it's now inode->priv */
 				buf = NULL;
@@ -540,6 +570,7 @@ fail:
 	return rc;
 }
 
+/*
 __attribute__((nonnull))
 static void dump_fb(const struct failfs_private *const fb)
 {
@@ -578,9 +609,10 @@ static void dump_ffb(const ffs_file_block *const ffb)
 			ffb->type,
 			ffb->name);
 }
+*/
 
 __attribute__((nonnull))
-static int failfs_umount(struct mount *const mnt)
+static long failfs_umount(struct mount *const mnt)
 {
 	struct failfs_private *priv = (struct failfs_private *)mnt->super;
 
@@ -591,10 +623,10 @@ static int failfs_umount(struct mount *const mnt)
 }
 
 __attribute__((nonnull))
-static int failfs_mount(struct mount *const mnt)
+static long failfs_mount(struct mount *const mnt)
 {
 	ffs_superblock sb;
-	int rc;
+	long rc;
 	char *buf = NULL;
 	struct failfs_private *priv = NULL;
 
@@ -619,7 +651,7 @@ static int failfs_mount(struct mount *const mnt)
 	memcpy(&priv->super, &sb, sizeof(sb));
 
 	if((rc = mnt->dev->ops->read_one(mnt->dev, buf, sb.root_block)) < 0) {
-		printf("failfs: failed to read root_block: %d\n", rc);
+		printf("failfs: failed to read root_block: %ld\n", rc);
 		goto fail;
 	}
 
@@ -645,7 +677,7 @@ static int failfs_mount(struct mount *const mnt)
 
 		//printf("failfs: reading %u\n", sb.free_block + i);
 		if((rc = mnt->dev->ops->read_one(mnt->dev, (char *)ffb, sb.free_block + i)) < 0) {
-			printf("failfs: failed to read free block: %d\n", rc);
+			printf("failfs: failed to read free block: %ld\n", rc);
 			goto fail;
 		}
 
@@ -677,11 +709,11 @@ fail:
 }
 
 __attribute__((nonnull(2)))
-static int failfs_ioctl(_Unused struct task *const t,_Unused struct fileh *const fh, const uint64_t req, ...)
+static long failfs_ioctl(_Unused struct task *const t,_Unused struct fileh *const fh, const uint64_t req, ...)
 {
 	va_list ap;
 	va_start(ap, req);
-	int rc = -EBADF;
+	long rc = -EBADF;
 
 	switch(req)
 	{
@@ -696,16 +728,16 @@ fail:
 }
 
 __attribute__((nonnull(2,4,5)))
-static int failfs_find(_Unused struct task *const tsk, struct mount *const mnt, struct fsent *const cwd,
+static long failfs_find(_Unused struct task *const tsk, struct mount *const mnt, struct fsent *const cwd,
 		const char *const name, struct fsent **ret)
 {
 	struct failfs_private *priv = (struct failfs_private *)mnt->super;
 	ffs_file_block *ffb;
 	char *buf = NULL;
-	int rc = -ENOENT;
+	long rc = -ENOENT;
 	*ret = NULL;
 
-	printf("failfs_find: %s in %s\n", name, cwd ? cwd->name : "[root]");
+	//printf("failfs_find: %s in %s\n", name, cwd ? cwd->name : "[root]");
 
 	if(cwd == NULL && !strcmp("/", name)) {
 		if((*ret = create_fsent(mnt, NULL, priv->super.root_block, &rc, name, false)) == NULL)
@@ -718,13 +750,13 @@ static int failfs_find(_Unused struct task *const tsk, struct mount *const mnt, 
 		goto fail;
 	}
 
-	ino_t cur = cwd ? cwd->ino : priv->super.root_block;
+	ino_t cur = cwd ? cwd->self_ino : priv->super.root_block;
 	ffb = (ffs_file_block *)buf;
-	printf("failfs_find: about to read %ld\n", cur);
+	//printf("failfs_find: about to read %ld\n", cur);
 	if((rc = mnt->dev->ops->read_one(mnt->dev, buf, cur)) < 0)
 		goto fail;
 
-	dump_ffb(ffb);
+	//dump_ffb(ffb);
 
 	if(ffb->block_type != FFS_BT_FILE) {
 		rc = -EINVAL;
@@ -737,15 +769,15 @@ static int failfs_find(_Unused struct task *const tsk, struct mount *const mnt, 
 	}
 
 	cur = ffb->child;
-	printf("failfs_find: cur = %ld\n", cur);
+	//printf("failfs_find: cur = %ld\n", cur);
 
 	while(cur)
 	{
-		printf("failfs_find: about to read %ld\n", cur);
+		//printf("failfs_find: about to read %ld\n", cur);
 		if((rc = mnt->dev->ops->read_one(mnt->dev, buf, cur)) < 0)
 			goto fail;
 
-		printf("failfs_find: %s==%s\n", ffb->name, name);
+		//printf("failfs_find: %s==%s\n", ffb->name, name);
 
 		if(!strcmp(ffb->name, name)) {
 			if((*ret = create_fsent(mnt, cwd, cur, &rc, name, false)) == NULL)
@@ -761,7 +793,7 @@ static int failfs_find(_Unused struct task *const tsk, struct mount *const mnt, 
 		rc = -ENOENT;
 
 fail:
-	if(buf) kfree(buf);
+	if (buf) kfree(buf);
 	return rc;
 }
 

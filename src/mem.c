@@ -5,20 +5,19 @@
 #include "frame.h"
 #include "dev.h"
 
-uint8_t *kern_pool[KERN_POOLS];
+void *kern_pool[KERN_POOLS];
 uint64_t num_kern_pools;
 int kplock[KERN_POOLS];
 uint64_t pool_page_num;
-extern unsigned long high_mem_start, top_of_mem, free_page_size;
-extern unsigned long kernel_ds_end;
-extern unsigned long *pagebm;
 bool memdebug = false;
 bool mem_init = false;
+
 static void dump_pool(const kp_head *);
 
-__attribute__((malloc)) void *kmalloc_int(const unsigned long length, const int align)
+__attribute__((malloc))
+static void *kmalloc_int(const unsigned long length, const bool align, const bool clear)
 {
-	unsigned long ret = kernel_ds_end;
+	unsigned long ret = kern_mem_end;//kernel_ds_end;
 	unsigned long i;
 
 	if(mem_init) {
@@ -32,11 +31,16 @@ __attribute__((malloc)) void *kmalloc_int(const unsigned long length, const int 
 		//ret += PAGE_SIZE;
 	}
 
-	kernel_ds_end = ret + length;
+	/*kernel_ds_end*/ kern_mem_end = ret + length;
 
 	if(pagebm)
 		for(i = ret; i < (ret + length); i += PAGE_SIZE) 
-			set_frame((void *)i);
+			set_frame((void *)(get_phys_address(get_cr3(), (void *)i)));
+
+	if (clear)
+		memset((void *)ret, 0, length);
+
+	//printf("kmalloc_int: %lx @ %lx\n", length, ret);
 
 	return (void *)ret;
 }
@@ -78,16 +82,20 @@ static inline void unlock_pool(const unsigned long pool)
 
 void init_pool(void *const loc, const unsigned long len, const uint64_t pool)
 {
-	//char suf;
-	//int div;
+	char suf;
+	int div;
 	kp_head *h;
 	kp_node *f;
 
-	//calc_div(len, &div, &suf);
-	//printf("init_pool: loc:%x len:%d%c pool:%x\n", loc, len/div, suf, pool);
+	calc_div(len, &div, &suf);
+	//printf("init_pool: loc:%p len:%lu%c pool:%lx\n", loc, len/div, suf, pool);
 
 	h = (kp_head *)(loc);
 	f = (kp_node *)((uint64_t)loc + HEAD_SIZE);
+
+	//set_cr3(kernel_pd);
+	//printf("init_pool: head at %p first node at %p(%p)\n", (void *)h, (void *)f, (void *)get_phys_address(kernel_pd, (uintptr_t)f));
+	//print_mm(kernel_pd);
 
 	f->head = h;
 	f->flags = KP_FREE;
@@ -103,6 +111,7 @@ void init_pool(void *const loc, const unsigned long len, const uint64_t pool)
 	h->end = (uint64_t)loc + len;
 	h->pool = pool;
 	h->magic = KP_MAGIC;
+	//printf("init_pool: done\n");
 }
 
 void kmerge_free(kp_node *const a, kp_node *const b)
@@ -134,22 +143,31 @@ void kmerge_free(kp_node *const a, kp_node *const b)
 	}
 }
 
-int kfree(void *const free)
+void _kfree(void *free, const char *func, const char *file, int line)
 {
 	kp_head *h;
 	kp_node *nf;
 
+    /*
+	if (free == NULL)
+		return;
+    */
+
 	nf	= (kp_node *)((uint64_t)free - sizeof(kp_node));
 
-	if(!nf || !nf->head || !nf->len || (nf->flags & KP_FREE) || (nf->magic != KP_MAGIC) ) {
-		printf("kfree: crap sent to kfree\n");
+	if(!free || !nf || !nf->head || !nf->len || (nf->flags & KP_FREE) || (nf->magic != KP_MAGIC) ) {
+		printf("kfree: crap sent to kfree: node @ %08lx curtask=%ld from %s:%s:%d\n", 
+                (uintptr_t)nf, curtask,
+                func, file, line);
 		dump_pools();
 		while(1) hlt();
-		return -1;
+		return;
 	}
 
+    //printf("kfree: %08lx[%08lx] %s:%s:%d\n",
+      //      (uintptr_t)free, (uintptr_t)nf, file, func, line);
 
-	//printf("kf: trying to free memory @ %x, len %x node @ %x\n", free, nf->len, nf);
+    //printf("kf: trying to free memory @ %08lx, len 0x%06lx node @ %08lx\n", (uintptr_t)free, nf->len, (uintptr_t)nf);
 
 	h = nf->head;
 
@@ -175,7 +193,6 @@ int kfree(void *const free)
 	//printf("kf: head @ %x\n",h);
 
 	unlock_pool(h->pool);
-	return 0;
 }
 
 void kscan_pool(const kp_head *const h)
@@ -211,7 +228,8 @@ void kscan_pool(const kp_head *const h)
 
 /* ... -> kspare[0..align] -> knew[len] -> ... */
 
-__attribute__((malloc)) void *kmalloc_align(const unsigned long len, const char *const desc, void *const owner, int flags)
+__attribute__((malloc(_kfree,1)))
+void *kmalloc_align(const unsigned long len, const char *const desc, void *const owner, int flags)
 {
 	kp_node *kspare, *knew;
 	kp_head *hd;
@@ -219,7 +237,12 @@ __attribute__((malloc)) void *kmalloc_align(const unsigned long len, const char 
 	uint64_t data,biglen,wastelen;	
 
 	if(!mem_init) 
-		return kmalloc_int(len, 1);
+		return kmalloc_int(len, true, (flags & KMF_ZERO));
+
+    //printf("kmalloc_align: len=%lx desc=%s owner=0x%p flags=0x%x\n", len, desc ? desc : "", (void *)owner, flags);
+	
+	if (desc && strlen(desc) >= DESC_LEN-1)
+		return NULL;
 
 	biglen = len + (PAGE_SIZE*2) + NODE_SIZE;
 
@@ -286,19 +309,26 @@ __attribute__((malloc)) void *kmalloc_align(const unsigned long len, const char 
 
 		kspare->next = knew; // insert the aligned block after the first
 
-		memset(&knew->desc, 0x0, DESC_LEN);
-		strncpy((char *)&knew->desc, desc, DESC_LEN-1);
+		//memset(&knew->desc, 0x0, DESC_LEN);
+        if (desc)
+            strncpy((char *)&knew->desc, desc, DESC_LEN-1);
+        else
+            strcpy((char *)&knew->desc, "BLANK");
 
 	}
 	unlock_pool(hd->pool);
 
 	kfree((void *)NODE_DATA(kspare)); 
 
+	//printf("kmalloc_align: success %p[%p]\n", (void *)knew, (void *)NODE_DATA(knew));
+
 	return (void *)NODE_DATA(knew);
 }
 
 
-__attribute__((malloc)) void *kmalloc(const uint64_t len, const char *const desc, void *const owner, int flags)
+__attribute__((malloc(_kfree,1)))
+void *_kmalloc(const uint64_t len, const char *const desc, void *const owner, int flags,
+        const char *file, const char *func, int line)
 {
 	uint64_t j,totlen;
 	kp_head *h;
@@ -308,12 +338,15 @@ __attribute__((malloc)) void *kmalloc(const uint64_t len, const char *const desc
 	static int recurse = 0;
 
 	if(!mem_init) 
-		return kmalloc_int(len, 0);
+		return kmalloc_int(len, false, (flags & KMF_ZERO));
+
+	if (desc && strlen(desc) >= DESC_LEN-1)
+		return NULL;
 
 	if(recurse > 4) return NULL;
 	recurse++;
-	//dump_pools();
-	//printf("kmalloc: len=%lx, desc=%s, recurse=%x\n", len, desc, recurse);
+
+    //printf("kmalloc: len=%lx, desc=%s, recurse=%x\n", len, desc, recurse);
 
 	// we need to find enough for the requested data and the header
 	totlen = len + NODE_SIZE;
@@ -360,6 +393,7 @@ __attribute__((malloc)) void *kmalloc(const uint64_t len, const char *const desc
 		n = (kp_node *)((uint64_t)n + (uint64_t)len);	// move to the end of it
 
 		/* copy the header from newn to n */
+		//printf("kmalloc: copying from %p <- %p\n", (void *)n, (void *)newn);
 		*n = *newn;
 		//memcpy(n, newn, NODE_SIZE);
 
@@ -378,9 +412,12 @@ __attribute__((malloc)) void *kmalloc(const uint64_t len, const char *const desc
 		newn->len = len;
 		newn->head = h;
 		newn->owner = owner;
+
 		memset(&newn->desc, 0x0, DESC_LEN);
 		if(desc)
 			strncpy((char *)&newn->desc, desc, DESC_LEN - 1);
+        else
+            strcpy((char *)&newn->desc, "BLANK");
 
 		ret = (void *)NODE_DATA(newn);
 		//if(ret) memset(ret, 0, newn->len);
@@ -391,7 +428,7 @@ __attribute__((malloc)) void *kmalloc(const uint64_t len, const char *const desc
 	unlock_pool(j);
 
 	if(!ret) {
-		if((err = do_one_pool(NULL)) == 0) {
+		if((err = do_one_pool()) == 0) {
 			ret = kmalloc(len, desc, owner, flags);
 		}
 		if(err != 0 || !ret) {
@@ -401,40 +438,69 @@ __attribute__((malloc)) void *kmalloc(const uint64_t len, const char *const desc
 	} else {
 		if((flags & KMF_ZERO))
 			memset(ret, 0, len);
+		//printf("kmalloc: succeeded %p[%p]: %s:%s:%d\n", 
+          //      (void *)ret, (void *)newn, file, func, line);
 	}
 
 	recurse--;
 	return ret;
 }
 
+void kfree_all(const struct task *tsk)
+{
+    for (size_t i = 0; i < num_kern_pools; i++)
+        if (kern_pool[i]) {
+            kp_head *kph = (kp_head *)kern_pool[i];
+            for (kp_node *node = kph->first; node; node = node->next) {
+                if (!(node->flags & KP_FREE) && node->owner == tsk)
+                    kfree(&node->data);
+            }
+        }
+}
+
 static void dump_pool(const kp_head *const kph)
 {
-	const kp_node *n;
+	kp_node *n;
 	bool fail = false;
 	uint64_t free=0,alloc=0;
 	int div; char suf;
 	
 	n = kph->first;
 
-	printf("kp_head @ %p (len=%lx, first=%p)\n",
+	printf("kp_head @ %p (len=%lx, first=%p, end=%p)\n",
 			(void *)kph,
 			kph->len, 
-			(void *)n);
+			(void *)n,
+			(void *)kph->end);
 
 	while(n)
 	{
-		printf(" node @ %p[%lx] (flags=%s%s, l=%lx, n=%p, p=%p, o=%p)",
+		printf(" node @ %p[%p] (flags=%s%s, l=%08lx, n=%p, p=%p, o=%p[%3d]<%s>)",
 				(void *)n, NODE_DATA(n), 
 				((n->flags & KP_FREE) == KP_FREE) ? "F" : "-", 
 				((n->flags & KP_ALIGN) == KP_ALIGN) ? "A" : "-",
 				n->len, (void *)n->next, (void *)n->prev,
-				(void *)n->owner);
+				(void *)n->owner,
+                n->owner ? n->owner->pid : -1,
+                n->owner ? n->owner->name:"");
 
 		if(!(n->flags & KP_FREE)) {
 			alloc += n->len;
 			printf(" '%s'", (char *)&n->desc);
 		} else {
 			free += n->len;
+		}
+
+		if (((uintptr_t)n->next) > kph->end) {
+			fail = true;
+			printf(" fail6");
+			n->next = NULL;
+		}
+
+		if ((uintptr_t)n->next > (uintptr_t)n && (uintptr_t)n->next < (uintptr_t)n + n->len) {
+			fail = true;
+			printf(" fail8");
+			n->next = NULL;
 		}
 
 		if(n->next) {
@@ -454,12 +520,7 @@ static void dump_pool(const kp_head *const kph)
 		}
 
 
-		if((uint64_t)n->next > kph->end) {
-			fail = true;
-			printf(" fail6");
-		}
-
-		if(n->next && NODE_DATA(n) + n->len > (uint64_t)n->next) {
+		if(n->next && ((uintptr_t)NODE_DATA(n) + n->len) > (uintptr_t)n->next) {
 			fail = true;
 			printf(" fail7");
 		}
@@ -474,7 +535,7 @@ static void dump_pool(const kp_head *const kph)
 			printf(" fail5");
 		}
 
-		if(fail) while(1) hlt();
+		//if(fail) while(1) hlt();
 
 		if(n->next == n) n = NULL;
 		else n=n->next;
@@ -489,7 +550,9 @@ static void dump_pool(const kp_head *const kph)
 
 	if(fail) {
 		printf("dp: fail\n");
-		hlt();
+		while(1) {
+			hlt();
+		}
 	}
 }
 
@@ -497,6 +560,7 @@ void dump_pools()
 {
 	uint64_t i;
 
+	printf("dp: %p\n", (void *)get_cr3());
 	printf("dp: dumping pools [%lx]\n", num_kern_pools);
 
 	for( i=0; i<num_kern_pools; i++ ) {
@@ -511,8 +575,10 @@ void dump_pools()
 
 void kscan(void)
 {
-	uint64_t i;
-	for( i=0; i<num_kern_pools; i++ ) {
+    //print_kmem_stats();
+
+
+	for(size_t i=0; i<num_kern_pools; i++ ) {
 		if(!kern_pool[i]) continue;
 		kscan_pool((kp_head *)kern_pool[i]);
 	}
@@ -537,35 +603,15 @@ void print_kmem_stats(void)
 	printf("kmem: %lx/%lx\n", used, used+free);
 }
 
-int do_one_pool(struct task *const owner)
+int do_one_pool(void)
 {
 	uint64_t i = num_kern_pools;
 
 	if(i >= KERN_POOLS) return -1;
 
-	//printf("do_one_pool: owner=%p i=%lx\n",
-	//		(void *)owner,
-	//		i);
+	//printf("do_one_pool: num_kern_pools=%lx pool_page_num=%lx\n", num_kern_pools, pool_page_num);
 
-	/*
-	if (i) do {
-			tmp = (uint64_t)(kern_pool[i-1] + ((pool_page_num>>1)*PAGE_SIZE));
-			if(tmp >= top_of_mem || tmp >= USER_STACK_START) {
-				pool_page_num >>= 1;
-				continue;
-			}
-
-			tmp += (pool_page_num*PAGE_SIZE);
-
-			if(tmp >= top_of_mem || tmp >= USER_STACK_START) {
-				pool_page_num >>= 1;
-				continue;
-			}
-		} while( (tmp >= top_of_mem || tmp >= USER_STACK_START) 
-				&& (pool_page_num>=8));
-	*/
-
-	if(pool_page_num < 8) {
+	if(pool_page_num < 2) {
 		return -2;
 	}
 
@@ -573,40 +619,56 @@ int do_one_pool(struct task *const owner)
 		return -5;
 	}
 
-	kern_pool[i] = find_n_frames(pool_page_num, owner);
-	//dump_taskbm();
+	size_t num_frames = (pool_page_num * PGSIZE_2M) / PGSIZE_4K;
+	void *frames;
 
-	if(!kern_pool[i]) { 
+	/* fall back to 4k pages if we can't find any 2m aligned ones */
+	frames = find_n_frames(num_frames, 0, true);
+	if (!frames) {
+		printf("do_one_pool: warning: unable to find 2MiB aligned frames\n");
+		frames = find_n_frames(num_frames, 0, false);
+	}
+	if (!frames) {
+		printf("do_one_pool: no frames\n");
 		return -3;
-	}/* else if( (uint64_t)kern_pool[i] > top_of_mem ||
-			(uint64_t)kern_pool[i] > USER_STACK_START ||
-			(uint64_t)kern_pool[i] + (pool_page_num*PAGE_SIZE) > 
-				top_of_mem ||
-			(uint64_t)kern_pool[i] + (pool_page_num*PAGE_SIZE) > 
-				USER_STACK_START) {
-		clear_n_frames(kern_pool[i], pool_page_num);
-		kern_pool[i] = NULL;
-		//i = KERN_POOLS;
-		return -4;
-	} else {*/
-		init_pool(kern_pool[i], pool_page_num*PAGE_SIZE, i);
-	//}
+	}
 
+	//printf("do_one_pool: %lx frames[%lxb] allocated at %p[%lx]\n", num_frames, num_frames * PAGE_SIZE, 
+	//		frames, (uintptr_t)frames % PGSIZE_2M);
+
+	/* TODO save phys addr i.e. frames */
+
+	char *start;//, end, tmp;
+	size_t size;
+
+	size  = pool_page_num * PGSIZE_2M;
+	start = (void *)kern_heap_top;
+	//end   = start + size;
+
+	if (!map_region(NULL, start, frames, size, PEF_P|PEF_W|PEF_G, kernel_pd)) {
+		printf("PANIC: unable new kernel RAM pool\n");
+		while(1) hlt();
+	}
+#ifdef BACKUP_PD
+    if (backup_kernel_pd)
+	if (!map_region(NULL, start, frames, size, PEF_P|PEF_W|PEF_G, backup_kernel_pd)) {
+		printf("PANIC: unable new kernel RAM pool\n");
+		while(1) hlt();
+	}
+#endif
+	kern_heap_top += size;
+
+	kern_pool[i] = (void *)start;
+	init_pool(kern_pool[i], size, i);
 	kplock[i] = 0;
 
-	if( (pool_page_num * PAGE_SIZE) < (top_of_mem>>4) ) 
-		pool_page_num <<= 2;
+	if (pool_page_num < 10)
+		pool_page_num <<= 1;
 
 	num_kern_pools++;
-	//printf("do_one_pool: num_kern_pools=0x%lx\n", num_kern_pools);
-	//dump_pools();
 
 	return 0;
 }
-
-extern pt_t *kernel_pd;
-extern struct task **taskbm;
-extern bool boot_done;
 
 /*
 void describe_mem(uint8_t *addr)
@@ -644,24 +706,17 @@ void describe_mem(uint8_t *addr)
 
 bool is_valid(const void *const vaddr)
 {
-	bool kernel;
-	const void *paddr;
+	uintptr_t paddr;
 	const pt_t *tmp;
 
 	if(!boot_done || !kernel_pd) return true;
 
 	tmp    = get_cr3();
-	kernel = (tmp == kernel_pd ? true : false);
-	paddr  = (void *)(kernel
-			? get_phys_address(tmp, (uint64_t)vaddr)
-			: get_phys_address(tmp, (uint64_t)vaddr)
-			);
+	paddr  = get_phys_address(tmp, vaddr);
 
-	if(paddr == (void *)-1UL) return false;
+	if(paddr == -1UL) return false;
 
-	return is_useable(paddr);
-
-	return true;
+	return is_useable((void *)paddr);
 }
 
 struct ring_head *ring_init(const int length, void *const owner)
@@ -680,6 +735,9 @@ bool ring_write(struct ring_head *const rh, const uint8_t byte)
 {
 	if(rh->length == rh->data) return false;
 
+	if (memdebug)
+		printf("ring_write: rh->buffer[%x]@%p of 0x%02x\n", rh->write, (void *)rh->buffer, byte);
+
 	rh->buffer[rh->write] = byte;
 
 	rh->write++;
@@ -696,6 +754,9 @@ bool ring_write(struct ring_head *const rh, const uint8_t byte)
 bool ring_read(struct ring_head *const rh, uint8_t *const byte)
 {
 	if(rh->data == 0) return false;
+
+	if (memdebug)
+		printf("ring_read: rh->buffer[%x]@%p to %p\n", rh->read, (void *)rh->buffer, (void *)byte); 
 
 	*byte = rh->buffer[rh->read++];
 	rh->data--;
@@ -736,22 +797,58 @@ void print_ring(const struct ring_head *const rh)
 	printf("\"\n");
 }
 
-void copy_to_user(uint8_t *const dst, const struct task *const task, const uint8_t *const data, const uint64_t len)
+void memcpy_to_user(const pt_t *pt, char *dst, const char *src, size_t len)
 {
-	if(!dst || !task || !data)
-		printf("copy_to_user: NULL passed\n");
-	if(!len)
+	size_t todo = len;
+	int page_size;
+	char *page_end;
+	const char *srcp;
+	char *dstpp, *dstvp;
+
+	srcp  = src;
+	dstvp = dst;
+
+	if (!src || !pt || !dst)
 		return;
-	printf("copy_to_user: dst:%p data:%p len:%lx\n", (void *)dst, (void *)data, len);
+
+	do {
+		page_size = get_pe_size(pt, dstvp);
+		dstpp     = (char *)get_phys_address(pt, dstvp);
+		page_end  = (char *)((uintptr_t)dstpp & ~(page_size - 1)) + (page_size - 1);
+
+		//printf("memcpy_to_user: page_size=0x%x page_end=0x%lx dstvp=0x%lx dstpp=0x%lx src=0x%lx len=%lx todo=%lx\n",
+		//		page_size, page_end, dstvp, dstpp, (uintptr_t)src, len, todo);
+
+		while ( (dstpp < page_end) && todo > 0) {
+			*(dstpp++) = *(srcp++);
+			dstvp++;
+			todo--;
+		}
+
+	} while(todo > 0);
+}
+
+void dump_mem(const void *mem, size_t cnt)
+{
+	uint64_t *ptr = (uint64_t *)mem;
+
+	for (size_t i = 0; i < cnt; i++, ptr++) {
+		if ((i % 4) == 0) {
+			if (i) printf("\n");
+			printf("0x%08lx: ", (uintptr_t)ptr);
+		}
+		printf("%0lx ", *ptr);
+	}
+	printf("\n");
 }
 
 static const char *const nullsym = "_";
 
 //#include "symtable.h"
-
 //extern struct symtable syms[];
 const char *find_sym(const void *const addr)
 {
+
 	if (addr == NULL) return nullsym;
 	return nullsym;
 	/*
@@ -762,5 +859,6 @@ const char *find_sym(const void *const addr)
 		if(addr < syms[i].location) return syms[i-1].function;
 	}
 
-	return nullsym;*/
+	return nullsym;
+	*/
 }

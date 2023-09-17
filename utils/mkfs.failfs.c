@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "src/failfs.h"
+#include "failfs.h"
 
 static __attribute__((noreturn)) void show_usage()
 {

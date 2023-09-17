@@ -1,9 +1,10 @@
 #define _LIBC_C
-#include "klibc.h"
-#include "dev.h"
-#include "mem.h"
+#include <klibc.h>
+#include <dev.h>
+#include <mem.h>
 
-__attribute__((nonnull)) void itoa (char *const buffer, const int base, const uint64_t d, const bool pad, const int size)
+__attribute__((nonnull))
+static void itoa (char *const buffer, const int base, const uint64_t d, const bool pad, const int size)
 {
 	char *buf = buffer;
 	char *p = buf, *p1, *p2;
@@ -50,19 +51,20 @@ __attribute__((nonnull)) void itoa (char *const buffer, const int base, const ui
 
 static const char zeros[] = "0000000000000000";
 
-__attribute__((nonnull)) int vprintf(const char *const fmt, va_list ap)
+__attribute__((nonnull))
+static int vprintf(const char *const fmt, va_list ap)
 {
 	char c;
 	const char *p;
 	const char *format = fmt;
-	char buf[64],buf2[64];
+	char buf[64]={0};//,buf2[64]={0};
 	int len = _INT;
-	size_t padcnt = 0;
+	int padcnt = 0;
 	bool pad = false;
 	//int i,l;
 
-	memset(buf2, '0', sizeof(buf2));
-	memset(buf,  '0', sizeof(buf));
+	//memset(buf2, '0', sizeof(buf2));
+	//memset(buf,  '0', sizeof(buf));
 
 	//if (!is_valid((uint8_t *)format))
 	//	return -1;
@@ -126,7 +128,7 @@ forcex:
 padcheck:
 					if(pad) {
 //						for(i=0,l=(len<<2)-strlen(buf) ; l && i < l ; i++)
-						int l = ((padcnt ? padcnt : len*2)) - strlen(buf);
+						int l = ((padcnt ? (int)padcnt : len*2)) - strlen(buf);
 						if(l)
 							putsn(zeros, l);
 						padcnt = 0;
@@ -141,7 +143,7 @@ string:
 					else if(*p) {
 						putsn(p, strlen(p));
 
-						if(padcnt && strlen(p) < padcnt)
+						if(padcnt && (int)strlen(p) < padcnt)
 							for(padcnt = (padcnt - strlen(p)); padcnt; padcnt--)
 								putsn(" ",1);
 					}
@@ -159,7 +161,7 @@ string:
 	return 0;
 }
 
-__attribute__((nonnull)) int printf(const char *const format, ...)
+int printf(const char *const format, ...)
 {
 	va_list ap;
 
@@ -171,17 +173,14 @@ __attribute__((nonnull)) int printf(const char *const format, ...)
 
 extern struct char_dev *con_dev;
 
-__attribute__((nonnull)) int putsn(const char *const text, const size_t max)
+int putsn(const char *const text, const size_t max)
 {
 	//char *tmp = text;
 	//int cnt = 0;
-	if(!is_valid((uint8_t *)text))
-		return -1;
-
 	return con_write(con_dev, text, (uint64_t)max);
 }
 
-__attribute__((nonnull)) int puts(const char *const text)
+int puts(const char *const text)
 {
 	return putsn(text, strlen(text));
 }
@@ -192,46 +191,67 @@ int isprint(int ch)
 	return (c>31 && c<177) ? true : false;
 }
 
-__attribute__((nonnull)) void *memcpy(void *const dest, const void *const src, const size_t cnt)
+#define ULLONG_SIZE sizeof(unsigned long long)
+
+void *_memcpy(void *const dest, const void *const src, size_t cnt,
+        const char *file, const char *func, int line)
 {
-	const uint8_t *restrict sp = (uint8_t *)src;
-	uint8_t *restrict       dp = (uint8_t *)dest;
+	register size_t todo = cnt;
+	register const unsigned long long *restrict src_ptr;
+	register unsigned long long *restrict dst_ptr;
+	const unsigned char *restrict s_ptr;
+	unsigned char *d_ptr;
 
-	size_t count = cnt;
+    //printf("memcpy: (%p, %p, %lu): %s:%s:%d\n",
+    //        dest, src, cnt, file, func, line);
 
-	//if(!count || !dest || !src || !is_valid(sp) || !is_valid(dp)) return NULL;
+	s_ptr = src;
+	d_ptr = dest;
 
-	for(; count !=0; count--) *dp++ = *sp++;
+	src_ptr = src;
+	dst_ptr = dest;
+
+	if (todo > ULLONG_SIZE) {
+		for (;todo > ULLONG_SIZE; todo -= ULLONG_SIZE)
+			*(dst_ptr++) = *(src_ptr++);
+
+		s_ptr += (cnt - todo);
+		d_ptr += (cnt - todo);
+	}
+
+	for (size_t i = 0; i < todo; i++)
+		*(d_ptr++) = *(s_ptr++);
 
 	return dest;
 }
 
-__attribute__((nonnull)) void *memset(void *const dest, const int val, const size_t count)
-{
-	uint8_t *restrict temp = (uint8_t *)dest;
-	uint64_t cnt;
+#undef ULLONG_SIZE
 
-	//if(!is_valid(temp)) return NULL;
+void *memset(void *dest, int val, size_t count)
+{
+	uint8_t volatile *temp = dest;
+    const uint8_t _val = (uint8_t)val;
+    size_t cnt;
+
+	if(!count || !is_valid(dest))
+        return NULL;
 
 	for(cnt = count; cnt; cnt--)
-		*temp++ = (uint8_t)val;
+		*(temp++) = _val;
 
 	return dest;
 }
 
-__attribute__((nonnull)) char *strcpy(char *const dest, const char *const src)
+char *strcpy(char *const dest, const char *const src)
 {
 	return strncpy(dest, src, strlen(src));
 }
 
-__attribute__((nonnull)) char *strncpy(char *const dest, const char *const source, const unsigned long cnt)
+char *strncpy(char *const dest, const char *const source, const unsigned long cnt)
 {
 	char *dst = dest;
-	const char *restrict src = source;
+	const char *src = source;
 	uint64_t count = cnt;
-
-	if(!is_valid((uint8_t *)dst))
-		return NULL;
 
 	for(; count && *src!='\0'; count--) *dst++ = *src++;
 	
@@ -241,15 +261,16 @@ __attribute__((nonnull)) char *strncpy(char *const dest, const char *const sourc
 	return dest;
 }
 
-__attribute__((nonnull)) char *strdup(const char *const s)
+char *strdup(const char *const s)
 {
 	const size_t len = strlen(s) + 1;
-	char *const ret = kmalloc(len, "strdup", NULL, KMF_ZERO);
-	strcpy(ret, s);
+	char *ret = kmalloc(len, "strdup", NULL, KMF_ZERO);
+	if (ret)
+		memcpy(ret, s, len);
 	return ret;
 }
 
-__attribute__((nonnull)) char *basename(const char *path)
+char *basename(const char *path)
 {
 	size_t len = strlen(path);
 
@@ -277,7 +298,7 @@ __attribute__((nonnull)) char *basename(const char *path)
 	return ret;
 }
 
-__attribute__((nonnull)) char *dirname(const char *path)
+char *dirname(const char *path)
 {
 	size_t len = strlen(path);
 
@@ -305,43 +326,27 @@ __attribute__((nonnull)) char *dirname(const char *path)
 	return ret;
 }
 
-__attribute__((nonnull)) uint16_t *memsetw(uint16_t *const dest, const uint16_t val, const uint64_t cnt)
-{
-	uint16_t *restrict temp = (uint16_t *)dest;
-	uint64_t count = cnt;
 
-	if(!is_valid((uint8_t *)temp)) return NULL;
-
-	for(; count != 0; count--) *temp++ = val;
-	return dest;
-}
-
-__attribute__((nonnull)) size_t strlen(const char *const string)
+size_t strlen(const char *const string)
 {
 	int retval;
 	const char *str = string;
-
-	if (!is_valid((uint8_t *)str))
-		return 0;
 
 	for(retval=0; *str != '\0'; str++) retval++;
 	return retval;
 }
 
-__attribute__((nonnull)) size_t strnlen(const char *const s, const size_t maxlen)
+size_t strnlen(const char *const s, const size_t maxlen)
 {
 	size_t len = 0;
 	const char *str = s;
-
-	if (!is_valid((uint8_t *)str))
-		return 0;
 
 	for(;*str && len < maxlen; str++, len++) ;
 
 	return len;
 }
 
-__attribute__((nonnull)) int strcmp(const char *const a, const char *const b)
+int strcmp(const char *const a, const char *const b)
 {
 	return(strncmp(a,b,0));
 }
@@ -366,7 +371,7 @@ int popcountll(unsigned long long x)
   return (int)((x * h01) >> 56);
 }
 
-__attribute__((nonnull)) char *strchr(const char *const s, const int c)
+char *strchr(const char *const s, const int c)
 {
 	const char *tmp;
 
@@ -376,7 +381,7 @@ __attribute__((nonnull)) char *strchr(const char *const s, const int c)
 }
 
 static const char *const error_strings[] = {
-	"unknown",
+	"unknown", // 0
 	"EPERM",
 	"ENOENT",
 	"ESRCH",
@@ -388,7 +393,7 @@ static const char *const error_strings[] = {
 	"EBADF",
 	"ECHILD",
 	"EAGAIN",
-	"ENOMEM",
+	"ENOMEM", // 12
 	"EACCES",
 	"EFAULT",
 	"ENOTBLK",
@@ -401,7 +406,7 @@ static const char *const error_strings[] = {
 	"EINVAL",
 	"ENFILE",
 	"EMFILE",
-	"ENOTTY",
+	"ENOTTY", // 25
 	"ETXTBSY",
 	"EFBIG",
 	"ENOSPC",
@@ -410,19 +415,27 @@ static const char *const error_strings[] = {
 	"EMLINK",
 	"EPIPE",
 	"EDOM",
-	"ERANGE",
+	"ERANGE", // 34
+	"EDEADLK",
+	"ENAMETOOLONG",
+	"ENOLCK",
+	"ENOSYS",
+	"ENOTEMPTY",
+	"ELOOP",
 	NULL
 };
 static const int error_strings_len = sizeof(error_strings) / sizeof(error_strings[0]) - 1;
 
-const char *strerror(const int ec)
+const char *strerror(int ec)
 {
-	if(-ec <= 0 || -ec > error_strings_len || error_strings[-ec] == NULL)
+	if (ec < 0) ec = -ec;
+
+	if(ec <= 0 || ec > error_strings_len || error_strings[ec] == NULL)
 		return "unknown";
-	return error_strings[-ec];
+	return error_strings[ec];
 }
 
-__attribute__((nonnull(2,3))) char *strtok_r(char *const str, const char *const delim, char **saveptr)
+char *strtok_r(char *const str, const char *const delim, char **saveptr)
 {
 	char *tmp, *ret;
 
@@ -459,13 +472,11 @@ __attribute__((nonnull(2,3))) char *strtok_r(char *const str, const char *const 
 	return ret;
 }
 
-__attribute__((nonnull)) int strncmp(const char *const a, const char *const b, const uint64_t length)
+__attribute__((nonnull))
+int strncmp(const char *const a, const char *const b, const uint64_t length)
 {
 	uint64_t cnt = 0;
 	uint64_t len = length;
-
-	if(!is_valid((uint8_t *)a) || !is_valid((uint8_t *)b))
-		return 1;
 
 	if(!len) {
 		if(strlen(a) != strlen(b)) return 1;
@@ -514,7 +525,7 @@ uint32_t ntohl(uint32_t word)
 	return (uint32_t)(s[0]<<24|s[1]<<16|s[2]<<8|s[3]);
 }
 
-__attribute__((nonnull)) void print_bits(uint64_t val, const char *bits[], uint64_t max, uint8_t br)
+void print_bits(uint64_t val, const char *bits[], uint64_t max, uint8_t br)
 {
 	uint64_t off;
 	int first = 0;

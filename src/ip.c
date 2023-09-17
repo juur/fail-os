@@ -1,8 +1,7 @@
-#include "ip.h"
-#include "mem.h"
-#include "net.h"
-
-struct fileh *listen = NULL;
+#include <ip.h>
+#include <unix.h>
+#include <mem.h>
+#include <net.h>
 
 struct ip4_route {
 	struct ip4_route *next;
@@ -13,11 +12,31 @@ struct ip4_route {
 	struct net_dev *dev;
 };
 
-struct ip4_route *ip4_table;
+static struct fileh *listen = NULL;
+static struct ip4_route *ip4_table;
+
+uint16_t ipv4_checksum(uint16_t *data, uint32_t len)
+{
+	uint32_t sum;
+
+	//	printf("checksum: %x[%x]: ", data, len);
+
+	for(sum=0; len>1; len-=2)
+		sum += *data++;
+
+	if(len) sum += *(uint8_t*)data;
+
+	sum = (sum >> 16) + (sum & 0xffff);
+	sum += (sum >> 16);
+	sum = ~sum;
+
+	//	printf("r:%x\n", sum);
+
+	return (uint16_t)sum;
+}
 
 
-
-uint64_t ip_init(struct net_proto *np)
+static uint64_t ip_init(__attribute__((unused)) struct net_proto *np)
 {
 	listen = NULL;
 	ip4_table = NULL;
@@ -55,8 +74,9 @@ struct fileh *find_listen_ip(struct sockaddr_in *sin, uint32_t proto)
 	return NULL;
 }
 
-void dump_listen(void)
+static void dump_listen(void)
 {
+#if 0
 	struct fileh *f;
 	struct ip_sock *ips;
 
@@ -71,9 +91,10 @@ void dump_listen(void)
 				ips->local.sin_addr.s_addr,
 				ips->state);
 	}
+#endif
 }
 
-uint64_t add_listen(struct fileh *f)
+static uint64_t add_listen(struct fileh *f)
 {
 	f->listen_next = listen;
 	listen = f;
@@ -94,12 +115,14 @@ int ip_accept(struct fileh *f, struct fileh *newf, struct sockaddr_in *sin, sock
 
 	switch(ips->proto)
 	{
+#ifdef WANT_TCP
 		case IPPROTO_TCP:
-			if(tcp_accept(ips->s.tcp, new_ips->s.tcp, &ips->local, &ips->pending[0])) return -1;
+			if (tcp_accept(ips->s.tcp, new_ips->s.tcp, &ips->local, &ips->pending[0])) return -1;
 			memset(&ips->pending[0], 0, sizeof(struct sockaddr_in));
 			break;
+#endif
 		default:
-			return -1;
+			return -EOPNOTSUPP;
 	}
 
 	return 0;
@@ -115,9 +138,11 @@ int ip_listen(struct fileh *f, int32_t listen)
 
 	switch(ips->proto)
 	{
+#ifdef WANT_TCP
 		case IPPROTO_TCP:
 			tcp_listen(ips->s.tcp);
 			break;
+#endif
 	}
 
 	if(ret) return ret;
@@ -145,32 +170,39 @@ int ip_bind(struct fileh *f, struct sockaddr_in *sa, socklen_t len)
 	return 0;
 }
 
-void ip_init_socket(struct fileh *f, int32_t type, int32_t proto)
+int ip_init_socket(struct fileh *f, int type, int proto)
 {
-	struct ip_sock *ip_sock;
+	struct ip_sock *ip_sock = NULL;
+	int ret = 0;
 
 	ip_sock = (struct ip_sock *)kmalloc(sizeof (struct ip_sock), "ip_sock", f->task, 0);
-	if(!ip_sock) return;
+	if(!ip_sock) return -ENOMEM;
 
 	f->priv = ip_sock;
 	ip_sock->f = f;
 
 	switch(type)
 	{
+#ifdef WANT_TCP
 		case SOCK_STREAM:
 			tcp_init_socket(f);
 			break;
+#endif
 		default:
 			printf("ip_init_socket: unsupported type: %x\n", type);
+			ret = -EINVAL;
 			goto fail;
 			break;
 	}
 	ip_sock->state = IPS_SOCKET;
-	return;
+	return 0;
 
 fail:
-	kfree(ip_sock);
+	if (ip_sock)
+		kfree(ip_sock);
 	f->priv = NULL;
+
+	return ret;
 }
 
 struct net_dev *find_dev_route(uint32_t dst)
@@ -240,7 +272,7 @@ uint64_t ip_send(struct net_dev *nd, uint32_t src, uint32_t dst,
 	memcpy(snd, 		&tmp, hlen);
 	memcpy(snd+hlen, 	data, len);
 
-	((struct ip_hdr *)snd)->checksum = checksum((uint16_t *)snd, hlen);
+	((struct ip_hdr *)snd)->checksum = ipv4_checksum((uint16_t *)snd, hlen);
 
 	nd->ops->write(NULL, nd, snd, totlen, NETPROTO_IP);
 
@@ -248,7 +280,7 @@ uint64_t ip_send(struct net_dev *nd, uint32_t src, uint32_t dst,
 	return 0;
 }
 
-uint64_t icmp_recv(struct net_dev *nd, uint32_t src, uint32_t dst, 
+static uint64_t icmp_recv(struct net_dev *nd, uint32_t src, uint32_t dst, 
 		char *data, uint64_t len, struct ip_hdr *iph)
 {
 	//void *icmp_data;
@@ -274,7 +306,7 @@ uint64_t icmp_recv(struct net_dev *nd, uint32_t src, uint32_t dst,
 			memcpy(tmp+sizeof(struct icmp_hdr), 
 					data+sizeof(struct icmp_hdr), len);
 
-			tmp_h->check = checksum((uint16_t *)tmp, 
+			tmp_h->check = ipv4_checksum((uint16_t *)tmp, 
 					(uint32_t)(sizeof(struct icmp_hdr)+len));
 
 			ip_send(nd, dst, src, IPPROTO_ICMP, tmp, 
@@ -289,7 +321,7 @@ uint64_t icmp_recv(struct net_dev *nd, uint32_t src, uint32_t dst,
 	return 0;
 }
 
-uint64_t ip_recv(struct net_dev *nd, struct net_proto *np, 
+static uint64_t ip_recv(struct net_dev *nd, struct net_proto *np, 
 		char *data, uint64_t len)
 {
 	struct ip_hdr *hdr = (struct ip_hdr *)data;
@@ -301,6 +333,10 @@ uint64_t ip_recv(struct net_dev *nd, struct net_proto *np,
 	hdr->checksum = ntohs(hdr->checksum);
 	hdr->src = ntohl(hdr->src);
 	hdr->dst = ntohl(hdr->dst);
+
+	uint16_t offset = hdr->offset & IPF_OFFSET;
+	//bool hdr_df = hdr->offset & IPF_DF;
+	bool hdr_mf = hdr->offset & IPF_MF;
 
 	payload = hdr->len - (hdr->hlen<<2);
 	/*
@@ -323,17 +359,30 @@ uint64_t ip_recv(struct net_dev *nd, struct net_proto *np,
 		return -1;
 	}
 
+	if(!(offset == 0 && hdr_mf == 0)) {
+		printf("ip_recv: fragment received\n");
+		return -1;
+	}
+
 	switch(hdr->proto)
 	{
 		case IPPROTO_ICMP:
 			icmp_recv(nd, hdr->src, hdr->dst, data + (hdr->hlen<<2), 
 					payload, hdr);
 			break;
+#ifdef WANT_TCP
 		case IPPROTO_TCP:
 			tcp_recv(nd, hdr->src, hdr->dst, data + (hdr->hlen<<2),
 					payload, hdr);
 			//dump_tcbs();
 			break;
+#endif
+#ifdef WANT_UDP
+		case IPPROTO_UDP:
+			udp_recv(nd, hdr->src, hdr->dst, data + (hdr->hlen<<2),
+					payload, hdr);
+			break;
+#endif
 		default:
 			printf("ip_recv: unknown protocol: %x\n", hdr->proto);
 			break;
@@ -342,7 +391,7 @@ uint64_t ip_recv(struct net_dev *nd, struct net_proto *np,
 	return 0;
 }
 
-uint64_t ip_ioctl(struct fileh *f, int cmd, void *arg)
+static uint64_t ip_ioctl(struct fileh *f, int cmd, void *arg)
 {
 	struct dev *d;
 	struct ifreq *req;
@@ -386,22 +435,13 @@ struct net_proto_ops ip_proto_ops = {
 	ip_ioctl
 };
 
-uint16_t checksum(uint16_t *data, uint32_t len)
-{
-	uint32_t sum;
+const struct {
+    uint16_t proto;
+    const char *const name;
+} ipprotos[] = {
+	{ IPPROTO_ICMP, "icmp" },
+	{ IPPROTO_TCP,  "tcp"  },
+	{ IPPROTO_UDP,  "udp"  },
 
-	//	printf("checksum: %x[%x]: ", data, len);
-
-	for(sum=0; len>1; len-=2)
-		sum += *data++;
-
-	if(len) sum += *(uint8_t*)data;
-
-	sum = (sum >> 16) + (sum & 0xffff);
-	sum += (sum >> 16);
-	sum = ~sum;
-
-	//	printf("r:%x\n", sum);
-
-	return (uint16_t)sum;
-}
+	{ 0, NULL }
+};

@@ -1,105 +1,68 @@
 #define _INIT_C
-#include "klibc.h"
-#include "mboot.h"
-#include "acpi.h"
-//#include "ppp.h"
-//#include "slip.h"
-#include "frame.h"
-#include "file.h"
-#include "mem.h"
-#include "intr.h"
-#include "page.h"
-#include "dev.h"
-#include "cpu.h"
-#include "proc.h"
-#include "pci.h"
-#include "ram.h"
-#include "ramfs.h"
-#include "failfs.h"
-#include "syscall.h"
-#include "net.h"
-#include "ip.h"
+#include <klibc.h>
+#include <mboot.h>
+#ifdef WANT_ACPI
+# include <acpi.h>
+#endif
+#include <frame.h>
+#include <file.h>
+#include <mem.h>
+#include <intr.h>
+#include <page.h>
+#include <dev.h>
+#include <cpu.h>
+#include <proc.h>
+#ifdef WANT_PCI
+# include <pci.h>
+#endif
+#ifdef WANT_RAMDISK
+# include <ram.h>
+#endif
+#ifdef WANT_RAMFS
+# include <ramfs.h>
+#endif
+#ifdef WANT_FAILFS
+# include <failfs.h>
+#endif
+#include <syscall.h>
+#ifdef WANT_NET
+# include <net.h>
+# ifdef WANT_IP
+#  include <ip.h>
+# endif
+#endif
+#include <pit.h>
+#include <pic.h>
 
-extern unsigned long firsttask, tick, task_lock, frames_lock;
-extern volatile short *vga;
-extern struct phys_mem_slot phys_mem_list[MAX_PHYS_MEM_SLOTS];
-extern bool memdebug;
-extern unsigned long high_mem_start, top_of_mem, free_page_size, total_frames;
-extern unsigned long kernel_ds_end, nosched;
-extern unsigned long *pagebm;
-extern const struct task **taskbm;
-extern pt_t *kernel_pd;
 extern unsigned long mb_magic;
 extern multiboot_info_t *mb_struct;
-extern uint64_t num_kern_pools, pool_page_num;
-extern bool mem_init;
-extern struct mount *root;
+
+
+/* script.ld */
+extern uintptr_t phys_text;
+extern uintptr_t mcode, mdata_end;
+extern uintptr_t virt_text;
+extern uintptr_t code, kernel_start, code_end;
+extern uintptr_t data, data_end;
+extern uintptr_t data_ro, data_ro_end;
+extern uintptr_t bss, bss_end;
+extern uintptr_t kernel_final;
+extern uintptr_t kernel_phys_end;
 
 extern void task1(void);
-extern void sysenter(void);
-extern noreturn void gousermode(uint64_t,uint64_t,uint64_t,uint64_t,uint64_t);
 extern void task2(void);
-extern void syscall_init(void);
 
 bool boot_done = false;
+uintptr_t kern_heap_top;
+uintptr_t kern_mem_start, kern_mem_end;
 
-
+#ifdef WANT_VGA
 void setup_vga(void)
 {
-	vga = (short *)0xb8000;
+	vga = (void *)(uintptr_t)0xb8000UL;
 	cls();
 }
-
-union {
-	struct {
-		unsigned icw4:1;
-		unsigned single_pic:1;
-		unsigned address_interval:1;
-		unsigned level_triggered_int_mode:1;
-		unsigned always1:1;
-		unsigned isr_low:3;
-	} __attribute__((packed));
-	uint8_t a;
-} PIC_ICW1;
-
-union {
-	struct {
-		unsigned mode8086:1;
-		unsigned auto_end_int:1;
-		/* master+buf:
-		 * 0?: nonbuffered
-		 * 10: buffered slave
-		 * 11: buffered master
-		 */
-		unsigned master:1;
-		unsigned buf:1;
-		unsigned special_nested_mode:1;
-		unsigned zero:3;
-	} __attribute__((packed));
-	uint8_t a;
-} PIC_ICW4;
-
-/* ICW1 - Initialisation Command Word One 
- * ICW2 - Higher byte of ISR address (e.g. int 20 - 27)
- * ICW3 - Master Mode: bit denotes slave
- *      - Slave Mode:  bit 0-2 denote ID  
- * ICW4 - Initialisation Command Word Four
- */
-
-#define PIC_ICW1_IC4	(1<<0)
-#define PIC_ICW1_SNGL	(1<<1)
-#define PIC_ICW1_ADI	(1<<2)
-#define PIC_ICW1_LTIM	(1<<3)
-#define PIC_ICW1_ALW1	(1<<4)
-
-#define PIC_ICW4_MODE	(1<<0)
-#define PIC_ICW4_AEOI	(1<<1)
-#define PIC_ICW4_MS		(1<<2)
-
-#define PICA_CMD	0x20
-#define	PICA_DATA	0x21
-#define	PICB_CMD	0xa0
-#define	PICB_DATA	0xa1
+#endif
 
 static void setup_pic(void)
 {
@@ -116,20 +79,7 @@ static void setup_pic(void)
 	outportb(PICB_DATA, 0x00);          /* OCW1: 0x00 unmask all IR  */
 }
 
-/*
-uint64_t crap_gdt[] = {
-	0x0,
-	0x008f9a000000ffff,
-	0x00af9a000000ffff,
-	0x00cf92000000ffff,
-	0x00cffe000000ffff,
-	0x00cff2000000ffff,
-	0x00cff2000000ffff,
-	0x00CF9a000000ffff
-};
-*/
-
-static inline void setup_gdt(void)
+static void setup_gdt(void)
 {
 	unsigned long tss_p;
 
@@ -158,7 +108,7 @@ static inline void setup_gdt(void)
 
 //extern void int_0x20 (void *frame);
 
-static inline void setup_ldt(void)
+static void setup_ldt(void)
 {
 	idtp.limit = (uint16_t)(sizeof(idt)-1);
 	idtp.base = (unsigned long)&idt;
@@ -220,12 +170,7 @@ static inline void setup_ldt(void)
 	idt_flush();
 }
 
-
-// FIXME
-
-uint8_t	kernel_stack[STACK_SIZE*2];
-
-static inline void setup_tss(void)
+static void setup_tss(void)
 {
 	memset((char *)&global_tss, 0, sizeof(global_tss));
 	tss_flush(_TSS_CS);
@@ -241,14 +186,42 @@ static const char *const mb_mem_types[] = {
 	NULL
 };
 
-static const int mb_mem_types_size = sizeof(mb_mem_types) / sizeof(mb_mem_types[0]);
+static const unsigned int mb_mem_types_size = sizeof(mb_mem_types) / sizeof(mb_mem_types[0]);
 
-__attribute__((nonnull)) static void setup_mem(const unsigned long magic, const multiboot_info_t *restrict const mbi)
+__attribute__((nonnull))
+static void setup_mem(const unsigned long magic, const multiboot_info_t *const mbi)
 {
-	uint64_t i=0,j=0;
+	uint64_t i=0;//,j=0;
 	unsigned long tmp;
 	struct phys_mem_slot *pm = NULL;
 	mem_init = false;
+
+	/* mboot.S has set:
+	 * CR4.PAE=1
+	 * IA32_EFER.LME=1 "IA-32e mode"
+	 *
+	 * Therefore we operating with "4-level paging":
+	 *
+	 * CR0.PG=1, CR4.PAE=1, IA32_EFER.LME=1, CR4.LA57=0
+	 * Linear addr width:      48b
+	 * Physical addr width: <= 52b
+	 * Page sizes: 4KiB/2MiB/1GiB
+	 * NX is supported (if IA32_EFER.NXE=1)
+	 * PCIDs and protection keys are supported
+	 *
+	 * Other flags:
+	 *
+	 * CR0.WP =0	Supervisor can write anything it can read
+	 * CR4.PGE=1	Enable global pages
+	 * CR4.SMEP=1	Prevent supervisor executing user pages
+	 *
+	 * in 4-level paging: heac paging structure composes 512 (2**9) entries
+	 *
+	 * PML4 table is located in phys CR3. PS must be 0. It contains PML4Es
+	 * PDPT is located at PML4E. PS=1 means 1-GByte page else contains PDPTE
+	 * PD is located at PDPTE. PS=1 means 2-MByte page else contains PDE
+	 * PT is located at PDE. Contains PTE.
+	 */
 
 	set_cr0(get_cr0() & ~CR0_EM); // clear CR0.EM
 	set_cr0(get_cr0() |  CR0_MP); // set   CR0.MP
@@ -263,13 +236,13 @@ __attribute__((nonnull)) static void setup_mem(const unsigned long magic, const 
 	printf("MB: flags=%0x\n", mbi->flags);
 
 	if(mbi->flags & MULTIBOOT_INFO_MEMORY)
-		printf( "MB: low mem:   %0lx\n"
-				"MB: upper mem: %0lx\n",
+		printf( "MB: low mem:   0x%0lx\n"
+				"MB: upper mem: 0x%0lx\n",
 				(uint64_t)mbi->mem_lower * 1024,
 				(uint64_t)mbi->mem_upper * 1024);
 	
 	if(mbi->flags & MULTIBOOT_INFO_BOOTDEV)
-		printf("MB: boot_device=%0x [drive=%x, part1=%x, part2=%x, part3=%x]\n", 
+		printf("MB: boot_device=%0x [drive=%02x, part1=%02x, part2=%02x, part3=%02x]\n", 
 				mbi->boot_device,
 				(mbi->boot_device >> 24) & 0xff,
 				(mbi->boot_device >> 16) & 0xff,
@@ -278,7 +251,7 @@ __attribute__((nonnull)) static void setup_mem(const unsigned long magic, const 
 				);
 
 	if(mbi->flags & MULTIBOOT_INFO_CMDLINE)
-		printf("MB: cmd_line=%s\n", (char *)((uint64_t)mbi->cmdline));
+		printf("MB: cmd_line=<%s>\n", (char *)((uint64_t)mbi->cmdline));
 
 	if(mbi->flags & MULTIBOOT_INFO_CONFIG_TABLE)
 		printf("MB: config_table=%0x\n", mbi->config_table);
@@ -287,23 +260,23 @@ __attribute__((nonnull)) static void setup_mem(const unsigned long magic, const 
 		printf("MB: drives=%0x[%x]\n", mbi->drives_addr, mbi->drives_length);
 
 	if(mbi->flags & MULTIBOOT_INFO_BOOT_LOADER_NAME)
-		printf("MB: name=%s\n", (char *)(uint64_t)mbi->boot_loader_name);
+		printf("MB: name=<%s>\n", (char *)(uint64_t)mbi->boot_loader_name);
 
 	if(mbi->flags & MULTIBOOT_INFO_APM_TABLE)
 		printf("MB: apm_table=%0x\n", mbi->apm_table);
 
 	if(mbi->flags & MULTIBOOT_INFO_MEM_MAP) {
 		memory_map_t *mm;
-		for( mm = (memory_map_t *)(uint64_t)mbi->mmap_addr;
-				(unsigned long)mm < mbi->mmap_addr + mbi->mmap_length;
-				mm = (memory_map_t *)((unsigned long)mm + mm->size + 
-					sizeof(mm->size)) )
+		for(    mm = (void *)(uintptr_t)mbi->mmap_addr;
+				(uintptr_t)mm < (mbi->mmap_addr + mbi->mmap_length);
+				mm = (void *)((uintptr_t)mm + mm->size + sizeof(mm->size)) 
+				)
 		{
-			uint64_t base = mm->base_addr_high;
+			uintptr_t base = mm->base_addr_high;
 			base <<= 32;
 			base |= mm->base_addr_low;
 
-			uint64_t len = mm->length_high;
+			size_t len = mm->length_high;
 			len <<= 32;
 			len |= mm->length_low;
 
@@ -323,15 +296,14 @@ __attribute__((nonnull)) static void setup_mem(const unsigned long magic, const 
 	}
 
 	i = 0;
-	pm = (struct phys_mem_slot *)&phys_mem_list[i];
+	pm = &phys_mem_list[i];
+
+	kern_mem_start = (uintptr_t)&kernel_final;// - 0xc0000000;
+	kern_mem_end   = kern_mem_start;
 
 	while( pm->len )
 	{
 		printf("RAM: phys: %0lx to %0lx\n", (uint64_t)pm->from, (uint64_t)pm->to);
-
-		if(pm->from < &end_of_kernel && pm->to > &end_of_kernel) { 
-			high_mem_start = (uint64_t)&end_of_kernel; 
-		}
 
 		if((uint64_t)pm->to > top_of_mem)
 			top_of_mem = (uint64_t)pm->to;
@@ -344,119 +316,273 @@ __attribute__((nonnull)) static void setup_mem(const unsigned long magic, const 
 		}
 	}
 
-	high_mem_start  += (high_mem_start + (PAGE_SIZE - 1)) & ~(PAGE_SIZE - 1);
-	kernel_ds_end    = high_mem_start;
-	free_page_size   = (total_frames   = top_of_mem/PAGE_SIZE) / (sizeof(uint64_t)*8);
+	pagebm_max  = (total_frames   = top_of_mem/PAGE_SIZE) / (sizeof(uint64_t)*8);
 
-	printf("RAM: high_mem_start: %0lx\n", high_mem_start);
-	printf("RAM: top_of_mem:     %0lx\n", top_of_mem);
+	printf("RAM: pagebm_max:      0x%lx\n", pagebm_max);
+	printf("RAM: total_frames:    0x%lx\n", total_frames);
 
-	printf("RAM: free_page_size: %0lx\n", free_page_size);
-	printf("RAM: total_frames:   %0lx\n", total_frames);
-	printf("RAM: end_of_kernel:  %0lx\n", (uint64_t)&end_of_kernel);
+	printf("RAM: top_of_mem:      0x%lx\n", top_of_mem);
 
-	taskbm = NULL;
+	printf("RAM: mcode:           0x%p\n", (void *)&mcode);
+	printf("RAM: mdata_end:       0x%p\n", (void *)&mdata_end);
+	printf("RAM: kernel_phys_end: 0x%p\n", (void *)&kernel_phys_end);
+	printf("RAM: kernel_start:    0x%p\n", (void *)&kernel_start);
+	printf("RAM: code:            0x%p\n", (void *)&code);
+	printf("RAM: code_end:        0x%p\n", (void *)&code_end);
+	printf("RAM: data:            0x%p\n", (void *)&data);
+	printf("RAM: data_end:        0x%p\n", (void *)&data_end);
+	printf("RAM: data_ro:         0x%p\n", (void *)&data_ro);
+	printf("RAM: data_ro_end:     0x%p\n", (void *)&data_ro_end);
+	printf("RAM: bss:             0x%p\n", (void *)&bss);
+	printf("RAM: bss_end:         0x%p\n", (void *)&bss_end);
+	printf("RAM: kernel_final:    0x%p\n", (void *)&kernel_final);
+
+	//taskbm = NULL;
+    lockbm = NULL;
 	pagebm = NULL;
 	num_kern_pools = 0;
 
-    /* set-up the kernel page descriptor table */
-	if((kernel_pd = kmalloc_align(sizeof(pt_t),"kernel_pd",NULL,KMF_ZERO)) == NULL) {
-		printf("PANIC: failed to allocate kernel_pd\n");
-		while(true) hlt(); 
-	} 
+	/* setup the frame allocation bitmap */
+	const size_t pagebm_bytes = pagebm_max * sizeof(uint64_t);
 
-	printf("RAM: kernel_pd created at 0x%p len 0x%lx\n", 
-			(void *)kernel_pd, 
-			sizeof(pt_t));
-
-	for(j = 0; j <= top_of_mem; j += PGSIZE_1G)
-		if(!create_page_entry_1g(kernel_pd, j, j, PEF_P|PEF_W|PEF_G, NULL)) {
-			printf("PANIC: unable to map 1g pages\n");
-			while(1) hlt();
-		}
-
-	set_cr3(kernel_pd);
-	printf("RAM: kernel_pd installed\n");
-
-    /* setup the frame allocation bitmap */
-	const uint64_t pagebm_len = free_page_size * sizeof(uint64_t);
-
-	if((pagebm = (unsigned long *) kmalloc(pagebm_len, "pagebm", NULL, KMF_ZERO)) == NULL) {
+	if((pagebm = (uint64_t *)kmalloc_align(pagebm_bytes, "pagebm", NULL, 2)) == NULL) {
 		printf("PANIC: failed to allocate pagebm\n");
 		while(true) hlt();
 	}
-
 	printf("RAM: pagebm at 0x%p with 0x%lx entries using 0x%lx bytes\n", 
-			(void *)pagebm, free_page_size, pagebm_len);
+			(void *)pagebm, pagebm_max, pagebm_bytes);
+	memset(pagebm, 0, pagebm_bytes);
+    pagebm_chksum = _check_pagebm_chksum(__FILE__,__func__,__LINE__);
+	
 
-    /* setup the task to frame allocation */
-	const uint64_t taskbm_len = total_frames * sizeof(struct task *);
+	/* mark from 0 to the end of init memory as allocate frames */
+	printf("RAM: marking unuseable frames\n");
+	kern_mem_end = (kern_mem_end + (PGSIZE_4K-1)) & ~(PGSIZE_4K-1);
+	printf("RAM: kern_mem_end:    0x%p\n", (void *)kern_mem_end);
+	tmp = kern_mem_end - (uintptr_t)&virt_text;
+	printf("RAM: kern_mem_end(py):0x%p\n", (void *)tmp);
 
-	taskbm = (const struct task **) kmalloc(taskbm_len, "taskbm",NULL,0);
+	set_n_frames((void *)(uintptr_t)&mcode, (tmp - (uintptr_t)&mcode)/PAGE_SIZE);
+    pagebm_chksum = calc_pagebm_chksum();
+	set_n_frames(0, 0x100000/PAGE_SIZE);
+    pagebm_chksum = calc_pagebm_chksum();
+
+	for (uintptr_t ii = 0x100000; ii < top_of_mem; ii += PAGE_SIZE) {
+		if( !is_useable((void *)ii) ) {
+			set_frame((void *)ii);
+		}
+	}
+    /* set-up the kernel page descriptor table */
+	if ((kernel_pd = alloc_pd(NULL)) == NULL) {
+		printf("PANIC: failed to allocate kernel_pd\n");
+		while(true) hlt(); 
+	} 
+	printf("RAM: kernel_pd created at 0x%p len 0x%lx\n", (void *)kernel_pd, sizeof(pt_t));
+
+#define KERN_PD_FRAMES 3
+	/* PDPT, PD, PT (kernel_pd is PML4) */
+    pt_t (*const frames)[KERN_PD_FRAMES] = find_n_frames(KERN_PD_FRAMES, 0, false);
+
+    if (frames == NULL) {
+        printf("PANIC: unable to find frames for kernel_pd\n");
+        while(true) hlt();
+    }
+	memset(frames, 0, KERN_PD_FRAMES * PGSIZE_4K);
+
+	pt_t *pdpt = &(*frames)[0];
+	pt_t *pd0  = &(*frames)[1];
+	pt_t *pd3  = &(*frames)[3];
+
+	/* set the PML4E in the PML4, pointing to the PDPT */
+	kernel_pd->table_u64[0] = (uintptr_t)pdpt;
+	kernel_pd->table_pe[0].present = 1;
+
+	/* set the 1st GiB PDPTE in the PDPT, for identity mapping */
+	pdpt->table_u64[0] = (uintptr_t)pd0;
+	pdpt->table_pe[0].present = 1;
+	pdpt->table_pe[0].write   = 1;
+
+	/* set the 4th GiB PDPTE, pointing to a PD, for kernel quarter */
+	pdpt->table_u64[3] = (uintptr_t)pd3;
+	pdpt->table_pe[3].present = 1;
+	pdpt->table_pe[3].write   = 1;
+
+	/* identity map the first 2MiB via a PDE in the PD, for use by CR3 */
+
+    /* FIXME this is not right, it just moves the problem that find_frame eventually
+     * gives a frame not identity mapped so CR3 related functions explode */
+    for (int jj = 0; jj < (int)(PGSIZE_4K/sizeof(uint64_t)); jj++) {
+        pd0->table_u64[jj] = (uint64_t)jj * PGSIZE_2M;
+        pd0->table_pe[jj].present = 1;
+        pd0->table_pe[jj].write   = 1;
+        pd0->table_pe[jj].global  = 1;
+        pd0->table_pe[jj].last    = 1;
+    }
+
+    int pages = (((kern_mem_end - (uintptr_t)&virt_text) + (PGSIZE_2M-1)) & ~(PGSIZE_2M-1))/PGSIZE_2M;
+
+    /* set up each PDE for 2MiB virtual mapping in the PD, for kernel quarter */
+	for (int jj = 0; jj < pages; jj++) {
+		pd3->table_u64[jj] = (uint64_t)jj * PGSIZE_2M;
+		pd3->table_pe[jj].present = 1;
+		pd3->table_pe[jj].last    = 1;
+		pd3->table_pe[jj].write   = 1;
+		pd3->table_pe[jj].global  = 1;
+	}
+
+	printf("RAM: map done\n");
+
+	/* TODO do we need to map these additional memory areas yet, or wait
+	 * for device initialisation */
+#if 0
+	if(mbi->flags & MULTIBOOT_INFO_MEM_MAP) {
+		memory_map_t *mm;
+		for( mm = (memory_map_t *)(uint64_t)mbi->mmap_addr;
+				(unsigned long)mm < mbi->mmap_addr + mbi->mmap_length;
+				mm = (memory_map_t *)((unsigned long)mm + mm->size +
+					sizeof(mm->size)) )
+		{
+			uintptr_t base = mm->base_addr_high;
+			base <<= 32;
+			base |= mm->base_addr_low;
+
+			uintptr_t len = mm->length_high;
+			len <<= 32;
+			len |= mm->length_low;
+
+			int64_t pgsize;
+
+			if (mm->type == MULTIBOOT_MEMORY_RESERVED && base < (uintptr_t)&kernel_start && base > (uintptr_t)&kernel_end)
+				for (uintptr_t from = base; from < base + len;) {
+					if ((pgsize = get_pe_size(kernel_pd, from)) != 0) {
+						from += pgsize;
+						continue;
+					}
+					if ( ((from % PGSIZE_2M) == 0) && (from + PGSIZE_2M) < (base + len) ) {
+						create_page_entry_2m(kernel_pd, from, from, PEF_P|PEF_W|PEF_G, NULL);
+						from += PGSIZE_2M;
+					} else {
+						create_page_entry_4k(kernel_pd, from, from, PEF_P|PEF_W|PEF_G, NULL);
+						from += PGSIZE_4K;
+					}
+				}
+		}
+	}
+#endif
+
+	//kern_mem_end = end;
+
+	/* repare the kernel memory allocator */
+	memset(&kern_pool, 0, sizeof(kern_pool));
+	pool_page_num = 4;
+
+	printf("RAM: about to set kernel_pd\n");
+	set_cr3(kernel_pd);
+	printf("RAM: kernel_pd installed\n");
+
+	kern_heap_top = kern_mem_end;
+	kern_heap_top = (kern_heap_top + (PGSIZE_2M - 1)) & ~(PGSIZE_2M - 1);
+
+	printf("RAM: kern_heap_top set to 0x%lx\n", kern_heap_top);
+	//print_mm(kernel_pd);
+
+	/* initialise the kernel memory pools */
+	for(i = 0; i < KERN_POOLS; i++)
+		do_one_pool();
+	
+	mem_init = true;
+	printf("RAM: mem_init = true\n");
+	/* *** kmalloc will now work properly *** */
+
+    /* TODO - make this work as better way of storing PD/PT 
+     * currently this is unused */
+
+    /*
+	vpt_t *kernel_vpt = new_vpt(kernel_pd, NULL);
+	kernel_vpt->entries[0] = new_vpt(&frames[0], kernel_vpt);
+	kernel_vpt->entries[0]->entries[0] = new_vpt(&frames[1], kernel_vpt->entries[0]);
+	kernel_vpt->entries[0]->entries[3] = new_vpt(&frames[2], kernel_vpt->entries[0]);
+    */
+
+	/* setup the task to frame allocation */
+	//const size_t taskbm_len = total_frames * sizeof(pid_t);
+	const size_t lockbm_len = total_frames * sizeof(unsigned char);
+
+    /*
+	printf("RAM: about to alloc taskbm\n");
+	taskbm = kmalloc(taskbm_len, "taskbm",NULL,0);
 	if(!taskbm) {
 		printf("PANIC: failed to allocate taskbm\n");
 		while(true) hlt();
 	}
 
-	memset((char *)taskbm, -1, taskbm_len);
 	printf("RAM: taskbm at 0x%p with 0x%lx entries using 0x%lx bytes\n", 
 			(void *)taskbm, 
 			total_frames, 
 			taskbm_len);
+	memset((char *)taskbm, -1, taskbm_len);
+    */
 
-    /* mark from 0 to the end of init memory as allocate frames */
-	tmp = taskbm ? (uint64_t)(taskbm + taskbm_len) : (uint64_t)(pagebm + pagebm_len);
+    lockbm = kmalloc(lockbm_len, "lockbm", NULL, 0);
+    printf("RAM: lockbm at 0x%p with 0x%lx entries using 0x%lx bytes\n",
+            (void *)lockbm,
+            total_frames,
+            lockbm_len);
+    memset(lockbm, 0, lockbm_len);
 
-	for(i = 0; i < top_of_mem; i += PAGE_SIZE)
-		if(!is_useable((void *)i) || i <= tmp )
-			set_frame((void *)i);
+	//print_mm(kernel_pd);
+    
+#ifdef BACKUP_PD
+    if ((backup_kernel_pd = alloc_pd(NULL)) == NULL) {
+        printf("PANIC: unable to allocate backup_kernel_pd");
+        while(true) hlt();
+    }
 
-    /* repare the kernel memory allocator */
-	memset(&kern_pool, 0, sizeof(kern_pool));
+    pt_t *dr_frames = find_n_frames(KERN_PD_FRAMES, 0, false);
+    memset(dr_frames, 0, KERN_PD_FRAMES * PGSIZE_4K);
+#undef KERN_PD_FRAMES
 
-	printf("RAM: kern_pool cleared\n");
-	pool_page_num = 16;
+    pdpt = &dr_frames[0];
+    pd0  = &dr_frames[1];
+    pd3  = &dr_frames[2];
 
-    /* initialise the kernel memory pools */
-	for(i=0;i<KERN_POOLS;i++)
-		do_one_pool(NULL);
+    backup_kernel_pd->table_u64[0] = (uintptr_t)pdpt;
+    backup_kernel_pd->table_pe[0].present = 1;
 
-	mem_init = true;
-	printf("RAM: mem_init = true\n");
+    pdpt->table_u64[0] = (uintptr_t)pd0;
+    pdpt->table_pe[0].present = 1;
+    pdpt->table_pe[0].write = 1;
+
+	pdpt->table_u64[3] = (uintptr_t)pd3;
+	pdpt->table_pe[3].present = 1;
+	pdpt->table_pe[3].write   = 1;
+
+    for (int jj = 0; jj < 4; jj++) {
+        pd0->table_u64[jj] = (uint64_t)jj * PGSIZE_2M;
+        pd0->table_pe[jj].present = 1;
+        pd0->table_pe[jj].write   = 1;
+        pd0->table_pe[jj].global  = 1;
+        pd0->table_pe[jj].last    = 1;
+    }
+
+    for (int jj = 0; jj < pages + 1; jj++) {
+        pd3->table_u64[jj] = (uint64_t)jj * PGSIZE_2M;
+        pd3->table_pe[jj].present = 1;
+		pd3->table_pe[jj].last    = 1;
+		pd3->table_pe[jj].write   = 1;
+		pd3->table_pe[jj].global  = 1;
+    }
+#endif
+
+    //print_mm(kernel_pd);
+    //print_mm(backup_kernel_pd);
 }
-
-#define PIT_CH0 0x40
-#define PIT_CH1 0x41
-#define PIT_CH2 0x42
-#define PIT_CMD 0x43
-
-#define PIT_MODE_CH0	(0x00)
-#define PIT_MODE_CH1	(0x40)
-#define PIT_MODE_CH2	(0x80)
-#define PIT_MODE_READ	(0xc0)
-
-#define PIT_MODE_LATCH  (0x00)
-#define PIT_MODE_LO		(0x10)
-#define PIT_MODE_HI		(0x20)
-#define PIT_MODE_LOHI	(0x30)
-
-#define PIT_OP_M0		(0x00)
-#define PIT_OP_M1		(0x02)
-#define PIT_OP_M2		(0x04)
-#define PIT_OP_M3		(0x06)
-#define PIT_OP_M4		(0x08)
-#define PIT_OP_M5		(0x0a)
-#define PIT_OP_M2B		(0x0c)
-#define PIT_OP_M3B		(0x0e)
-
-#define PIT_BCD			(0x1)
-#define PIT_BINARY		(0x0)
 
 static void setup_pit(const uint32_t freq)
 {
 	// 1.193182 MHz
 
-	const uint32_t req = (1193180 / freq);
+	const uint32_t req = (PIT_FREQ / freq);
 	const unsigned char l = (unsigned char)(req & 0xff);
 	const unsigned char h = (unsigned char)((req>>8) & 0xff);
 
@@ -468,6 +594,7 @@ static void setup_pit(const uint32_t freq)
 	outportb(0x40, h);
 }
 
+#ifdef WANT_SERIAL
 static void setup_serial(const uint16_t port, const uint32_t speed)
 {
 	const uint32_t div = 115200/speed;
@@ -486,166 +613,96 @@ static void setup_serial(const uint16_t port, const uint32_t speed)
 	//	printf("ser: port %x set to %d\n", port, speed);
 	
 }
-
-//extern uint64_t task1_end,task2_end;
+#endif
 
 static const unsigned char idle_task_code[] = {
-	0xF4, // HLT
-	0xE9, 0xFA, 0xFF, 0xFF, 0xFF // JMP
+	0xfb,
+	0xf3, 0x90,		// PAUSE 
+	0xeb, 0xfb		// JMP -4
 };
-
-
-//#define KERN_MEM	(64ULL*0x1000000ULL)
 
 static void create_tasks(bool has_root)
 {
 	uint8_t *tmp,*tmp2;
-	uint64_t vaddr, offset, daddr;
-	uint8_t *code, *data;
-	uint64_t clen, dlen;
-	pt_t *idle_pd = NULL, *pd = NULL;
+	//pt_t *idle_pd = NULL;//, *pd = NULL;
 	struct task *idle_task, *init_task;
 
 	memset(tasks, 0, sizeof(struct task) * NUM_TASKS);
 
-	/* set-up idle task */
 	idle_task = &tasks[0];
+    init_task = &tasks[1];
 
-	if((idle_pd = kmalloc_align(sizeof(pt_t),"idle.pml4", idle_task, KMF_ZERO)) == NULL) {
-		printf("PANIC: cannot kmalloc idle task pd\n");
-		while(1) hlt();
-	}
+	/* set-up idle task */
 
-	/* idle task runs in kernel mode so is special and doesn't have user pt*/
-	clone_mm(kernel_pd, idle_pd, idle_task, false);
+    idle_task->pid = 0;
+	idle_task->pd = kernel_pd;
 
-	idle_task->pd = idle_pd;
-
-	/*
-	for(offset = 0; offset < KERN_MEM; offset += PGSIZE_1G)
-		if(!create_page_entry_1g(idle_pd,offset,offset,PEF_W|PEF_P|PEF_G, &tasks[0])) {
-			printf("PANIC: cannot alloc kern pages for idle task\n");
-			while(1) hlt();
-		}
-		*/
-
-	if((tmp = find_frame(&tasks[0])) == NULL) {
+	if ((tmp = kmalloc(sizeof(idle_task_code), "idle_task_code", idle_task, 0)) == NULL) {
 		printf("PANIC: no pages for idle task\n");
 		while(1) hlt();
 	}
-
-	memcpy(tmp, &idle_task_code, sizeof(idle_task_code)); 
-	if((tmp2 = find_frame(idle_task)) == NULL) {
+    memcpy(tmp, &idle_task_code, sizeof(idle_task_code));
+    
+	if ((tmp2 = kmalloc_align(STACK_SIZE, "idle_task_stack", idle_task, KMF_ZERO)) == NULL) {
 		printf("PANIC: no pages for whatever this is\n");
 		while(1) hlt();
 	}
 
-	setup_task(idle_task, (uint64_t)tmp, KERNEL_TASK, idle_pd, "idle", (uint64_t)tmp2, 0);
-	idle_task->state = STATE_RUNNING;
+	setup_task(idle_task, (uint64_t)tmp, KERNEL_TASK, kernel_pd, "idle", ((uint64_t)tmp2) + STACK_SIZE - 8, 0);
+	set_task_state(idle_task,  STATE_RUNNING);
+	idle_task->tss.rflags |= F_IF;
 
-	if(!has_root)
+	if(!has_root) {
+		printf("init: no root\n");
+		kfree(tmp2);
+		kfree(tmp);
 		return;
+	}
 
 	/* Set up init task */
-	init_task = &tasks[1];
 
-	if((pd = kmalloc_align(sizeof(pt_t),"task1.pml4", init_task,KMF_ZERO)) == NULL) {
-		printf("PANIC: cannot kmalloc task1 pd\n");
+    init_task->pid = 1;
+
+	if ((init_task->pd = alloc_pd(init_task)) == NULL) {
+		printf("PANIC: cannot kmalloc init_task PT\n");
 		while(1) hlt();
 	}
-	clone_mm(kernel_pd, pd, init_task, false);
 
-	code = data = NULL;
-	clen = dlen = 0;
-	vaddr = 0;
+	if (clone_mm(kernel_pd, init_task->pd, init_task->pid, true)) {
+        printf("PANIC: unable to clone_mm kernel_pd\n");
+        while(1) hlt();
+    }
 
-	init_task->pd = pd;
+	char *cmd = strdup("/bin/sh");
+	char **argv = kmalloc(sizeof(char *) * 2, "init_argv", init_task, KMF_ZERO);
+	char **envp = kmalloc(sizeof(char *) * 2, "init_envp", init_task, KMF_ZERO);
 
-	/*
-	for(offset = 0; offset < KERN_MEM; offset += PGSIZE_1G)
-		if(!create_page_entry_1g(pd, offset, offset, PEF_P|PEF_G|PEF_W, init_task)) {
-			printf("PANIC: cannot create page for task1\n");
-			while(1) hlt();
-		}*/
+	if (!argv || !envp || !cmd) {
+		printf("init: unable to kmalloc argv/envp\n");
+		return;
+	}
 
-	//printf("create_tasks: calling do_exec for tasks[1] ");
-	if(do_exec(init_task, "/init", &code, &clen, &data, &dlen, &vaddr, &daddr) == -1) {
-		printf("PANIC: do_exec failed\n");
+	argv[0] = strdup("/bin/sh");
+	envp[0] = strdup("SHLVL=0");
+
+	if (!argv[0] || !envp[0]) {
+		printf("init: unable to kmalloc argv[0]/envp[0]\n");
+        kfree(cmd); kfree(argv); kfree(envp);
+		return;
+	}
+
+	curtask = 1;
+	init_task->pgid = init_task->pid;
+
+	/* broken as we've not switched to user space? */
+	int rc;
+	if ((rc = sys_execve(cmd, argv, envp)) < 0) {
+		printf("init: failed to execute init: error %d\n", GET_ERR(rc));
 		while(1) hlt();
 	}
-	//printf("done\n");
-	//printf("create_tasks: /init : code=%p[%lx], data=%p[%lx], vaddr=%lx\n", (void *)code, clen, (void *)data, dlen, vaddr);
 
-	init_task->code_start = (uint8_t *)vaddr;
-	init_task->code_end = (uint8_t *)vaddr + clen;
-	init_task->data_start = (uint8_t *)daddr;
-	init_task->data_end = (uint8_t *)daddr + dlen;
-	init_task->stack_end = (uint8_t *)0xc0000000UL;
-	init_task->stack_start = (uint8_t *)((uint64_t)init_task->stack_end - STACK_SIZE);
-	init_task->heap_end = init_task->heap_start = (init_task->data_end == NULL ? init_task->code_end : 
-			init_task->data_end);
-
-	for(offset = 0; offset < STACK_SIZE; offset += PGSIZE_4K) {
-		tmp = (void *)find_frame(init_task);
-		if(!tmp || !create_page_entry_4k(pd, offset + (uint64_t)init_task->stack_start, 
-					(uint64_t)tmp, PEF_P|PEF_U|PEF_W, init_task)) {
-			printf("PANIC: cannot alloc page for task1\n");
-			while(1) hlt();
-		}
-	}
-
-	setup_task(init_task, vaddr, USER_TASK, pd, "/init", (uint64_t)init_task->stack_end - 8, 1);
-
-	/* Set up the other idle task */
-	init_task = &tasks[2];
-
-	if((pd = kmalloc_align(sizeof(pt_t),"task2.pml4", init_task,KMF_ZERO)) == NULL) {
-		printf("PANIC cannot kmalloc task2 pd\n");
-		while(1) hlt();
-	}
-	clone_mm(kernel_pd, pd, init_task, false);
-
-	code = data = NULL;
-	clen = dlen = 0;
-	vaddr = 0;
-
-	init_task->pd = pd;
-
-	/*
-	for(offset = 0; offset < KERN_MEM; offset += PGSIZE_1G)
-		if(!create_page_entry_1g(pd, offset, offset, PEF_P|PEF_G|PEF_W, init_task)) {
-			printf("PANIC: cannot create page for task2\n");
-			while(1) hlt();
-		}*/
-
-	//printf("create_tasks: calling do_exec for tasks[2] ");
-	if(do_exec(init_task, "/init", &code, &clen, &data, &dlen, &vaddr, &daddr) == -1) {
-		printf("PANIC: do_exec failed\n");
-		while(1) hlt();
-	}
-	//printf("done\n");
-
-	//printf("create_tasks: /init : code=%p[%lx], data=%p[%lx], vaddr=%lx\n", (void *)code, clen, (void *)data, dlen, vaddr);
-
-	init_task->code_start = (uint8_t *)vaddr;
-	init_task->code_end = (uint8_t *)vaddr + clen;
-	init_task->data_start = (uint8_t *)daddr;
-	init_task->data_end = (uint8_t *)daddr + dlen;
-	init_task->stack_end = (uint8_t *)0xc0000000UL;
-	init_task->stack_start = (uint8_t *)((uint64_t)init_task->stack_end - STACK_SIZE);
-	init_task->heap_end = init_task->heap_start = (init_task->data_end == NULL ? init_task->code_end : 
-			init_task->data_end);
-
-	for(offset = 0; offset < STACK_SIZE; offset += PGSIZE_4K) {
-		tmp = (void *)find_frame(init_task);
-		if(!tmp || !create_page_entry_4k(pd, offset + (uint64_t)init_task->stack_start, 
-					(uint64_t)tmp, PEF_P|PEF_U|PEF_W, init_task)) {
-			printf("PANIC: cannot alloc page for task2\n");
-			while(1) hlt();
-		}
-	}
-
-	setup_task(init_task, vaddr, USER_TASK, pd, "/init.2", (uint64_t)init_task->stack_end - 8, 2);
+	//printf("init: init [heap=%p:%p]\n", init_task->heap_start, init_task->heap_end);
+	printf("init: create_tasks: done\n");
 }
 
 
@@ -667,7 +724,7 @@ static void create_tasks(bool has_root)
  * 31-00:	Reserved
  */
 
-static inline void setup_msr(void)
+static void setup_msr(void)
 {
 	STAR star;
 
@@ -683,73 +740,158 @@ static inline void setup_msr(void)
 }
 
 
-#define	_cpuid(func,ax,bx,cx,dx) \
-	__asm__ volatile("cpuid":"=a"(ax),"=b"(bx),"=c"(cx),"=d"(dx):"a"(func));
+#define	_cpuid(func1,func2,ax,bx,cx,dx) \
+	__asm__ volatile("cpuid":"=a"(ax),"=b"(bx),"=c"(cx),"=d"(dx):"a"(func1),"c"(func2));
 
-#define CPUID_1GBPG	0x04000000
-
-__attribute__((nonnull)) static void init_lapic(volatile struct lapic *l)
+/*
+__attribute__((nonnull))
+static void init_lapic(volatile struct lapic *l)
 {
 	printf("lapic: address:%p\n", (void *)l);
+	if (!get_pe_size(kernel_pd, (uintptr_t)l))
+		if (!create_page_entry_4k(kernel_pd, (uintptr_t)l, (uintptr_t)l, PEF_P|PEF_W|PEF_G, NULL)) {
+			printf("lapic: unable to map\n");
+			return;
+		}
+	printf("lapic: mapping 4k %0lx to %0lx\n", (uintptr_t)l, (uintptr_t)l);
 	printf("lapic: ver:%x\n", l->ver_reg & 0xff);
 }
+*/
+
+#define RAX 0
+#define RBX 1
+#define RCX 2
+#define RDX 3
 
 static void cpu_init(void)
 {
 	uint32_t ret[4];
 	unsigned char id[13];
 	struct cpu *cpu = &cpus[0];
+#ifdef WANT_APIC
 	APICbar ab;
+#endif
 
-	_cpuid(0x0, ret[0], ret[1], ret[2], ret[3]);
+	_cpuid(0x0, 0x0, ret[0], ret[1], ret[2], ret[3]);
 
 	memcpy(&id[0], &ret[1], 4);
 	memcpy(&id[4], &ret[3], 4);
 	memcpy(&id[8], &ret[2], 4);
 	id[12] = '\0';
 
-	printf("cpu_init: cpu[0]: \"%s\" max:0x%x\n", id, ret[0]);
+	printf("cpu_init: cpu[0]: \"%s\" max:0x%02x\n", id, ret[RAX]);
 
-	const uint32_t max = ret[0];
+	const uint32_t max = ret[RAX];
 	const uint32_t platform_info = read_msr(MSR_PLATFORM_INFO);
 
 	printf("cpu_init: platform_info:%x\n", platform_info);
 
 	if(max >= 0x15) {
-		_cpuid(0x15, ret[0], ret[1], ret[2], ret[3]);
+		_cpuid(0x15, 0x0, ret[0], ret[1], ret[2], ret[3]);
 		printf("cpu0: TSC: %x %x %x %x\n",
 				ret[0], ret[1], ret[2], ret[3]);
 	}
 
+#ifdef WANT_APIC
 	ab.b = read_msr(MSR_APIC_BASE);
 	printf("cpu0: MSR_APIC_BAR: cpu_is_bsp?:%x, apic_enable:%x, ", 
-			ab.processor_is_bsp, ab.apic_enable);
+			ab.a.processor_is_bsp, ab.a.apic_enable);
 	printf("apic_base:%lx\n", APIC_BASE(ab));
-	create_page_entry_4k(kernel_pd, APIC_BASE(ab), APIC_BASE(ab), PEF_P|PEF_W|PEF_G, NULL);
+	if (!get_pe_size(kernel_pd, APIC_BASE(ab))) {
+		if (!create_page_entry_4k(kernel_pd, APIC_BASE(ab), APIC_BASE(ab), PEF_P|PEF_W|PEF_G, NULL))
+			printf("cpu0: valid to map APIC_BASE(%lx)\n", APIC_BASE(ab));
+#ifdef BACKUP_PD
+		if (!create_page_entry_4k(backup_kernel_pd, APIC_BASE(ab), APIC_BASE(ab), PEF_P|PEF_W|PEF_G, NULL))
+			printf("cpu0: valid to map APIC_BASE(%lx)\n", APIC_BASE(ab));
+#endif
+    }
 	cpu->lapic = (volatile struct lapic *)APIC_BASE(ab);
 
-	ab.apic_enable = 1;
+	ab.a.apic_enable = 1;
 	write_msr(MSR_APIC_BASE, ab.b);
 
 	init_lapic(cpu->lapic);
+#endif
 
-	_cpuid(0x1, ret[0], ret[1], ret[2], ret[3]);
-	num_cpus = ((ret[1] & 0x00ff0000)>>16);
-	if(!num_cpus) num_cpus++;
-	printf("cpu0: CPU Count:%x\n",num_cpus); 
-	printf("cpu0: ");
-	printf("stp:%x,", (cpu->stepping = (ret[0] & 0x0000000f)));
-	printf("mod:%x,", (cpu->model = (((ret[0] & 0x000000f0)>>4)|
-					((ret[0] & 0x000f0000)>>16))));
-	printf("fam:%x,", (cpu->family = ((((ret[0] & 0x00000f00)>>8)|
-						((ret[0] & 0x00f00000)>>20)))));
-	printf("id:%x,", (cpu->apic_id = ((ret[1] & 0xff000000)>>24)));
-	printf("APIC:%x\n", ((ret[3] & (1<<9)))?1:0);
+	_cpuid(0x1, 0x0, ret[0], ret[1], ret[2], ret[3]);
+	printf("cpu0.1.EAX: 0x%08x:", ret[RAX]);
+	printf("\n");
+	printf("cpu0.1.EBX: 0x%08x:", ret[RBX]);
+	printf("\n");
+	printf("cpu0.1.ECX: 0x%08x:", ret[RCX]);
+	printf("\n");
+	printf("cpu0.1.EDX: 0x%08x:", ret[RDX]);
+	printf("\n");
 
-	_cpuid(0x80000001, ret[0], ret[1], ret[2], ret[3]);
+	num_cpus = ((ret[RAX] & 0x00ff0000)>>16);
+
+	if(!num_cpus) 
+		num_cpus=1;
+
+	printf("cpu: num_cpus:%x\n",num_cpus); 
+	printf("cpu0.1: ");
+	printf("stepping:%x ", 
+			(cpu->stepping = (ret[RAX] & 0x0000000f)));
+	printf("model:%x ", 
+			(cpu->model    = (((ret[RAX] & 0x000000f0)>>4)|((ret[RAX] & 0x000f0000)>>16))));
+	printf("family:%x ", 
+			(cpu->family   = ((((ret[RAX] & 0x00000f00)>>8)|((ret[RAX] & 0x00f00000)>>20)))));
+	printf("id:%x ", 
+			(cpu->apic_id  = ((ret[RBX] & 0xff000000)>>24)));
+	printf("type:%x ",
+			(ret[RAX] & 0x3000) >> 12);
+	printf("\n");
+
+	printf("cpu0.1.EBX: 0x%08x:", ret[RBX]);
+	const char *const feat_edx[32] = {
+		"fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce", "cx8", "apic",
+		NULL, "sep", "mtrr", "pge", "mca", "cmov", "pat", "pse36", "psn",
+		"clfsh", NULL, "ds", "acpi", "mmx", "fxsr", "sse", "sse", "ss",
+		"htt", "tm", "ia64", "pbe"
+	};
+	for (int i = 0; i < 32; i++)
+		if (feat_edx[i] != NULL && (ret[RDX] & (1<<i)))
+			printf(" %s", feat_edx[i]);
+	printf("\n");
+
+
+	_cpuid(0x7, 0x0, ret[0], ret[1], ret[2], ret[3]);
+	printf("cpu0.7.EBX: 0x%08x:", ret[RBX]);
+	const char *const ext_feat[32] = {
+		"fsgsbase", "IA32_TSC_ADJUST", "sgx", "bmi1", "hle", "avx2",
+		"FDP_EXCPTN_ONLY", "smep", "bmi2", "erms", "invpcid",
+		"rtm", "pqm", "FPU CS&DS depn", "mpx", "pqe", "avx512_f",
+		"avx512_dq", "rdseed", "adx", "smap", "avx512_ifma", "pcommit",
+		"clfushopt", "clwb", "intel_pt", "avx512_pf", "avx512_er",
+		"avx512_cd", "sha", "avx512_bw", "avx512_vl" };
+	for (int i = 0; i < 32; i++)
+		if (ext_feat[i] != NULL && (ret[RBX] & (1<<i)))
+			printf(" %s", ext_feat[i]);
+	printf("\n");
+	printf("cpu0.7.ECX: 0x%08x:", ret[RCX]);
+	printf("\n");
+
+	_cpuid(0x80000001, 0x0, ret[0], ret[1], ret[2], ret[3]);
+	printf("cpu0.AMD1.EDX: 0x%08x", ret[RDX]);
+	const char *const ext_proc[32] = {
+		"fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce", "cx8", "apic",
+		NULL, "syscall", "mtrr", "pge", "mca", "cmov", "pat", "pse36", NULL,
+		"mp", "nx", NULL, "mmxext", "mmx", "fxsr", "fxsr_opt", "pdpe1gb",
+		"rdtscp", NULL, "lm", "3dnowext", "3dnow"
+	};
+	for (int i = 0; i < 32; i++)
+		if (ext_proc[i] != NULL && (ret[RDX] & (1<<i)))
+			printf(" %s", ext_proc[i]);
+	printf("\n");
 }
 
-static inline void pci_init(void)
+#undef RAX
+#undef RBX
+#undef RCX
+#undef RDX
+
+#ifdef WANT_PCI
+static void pci_init(void)
 {
 	unsigned int i,j,z;
 	uint32_t vend, dev;
@@ -778,39 +920,46 @@ static inline void pci_init(void)
 	}
 	printf("pci_init: probing complete\n");
 }
+#endif
 
-static inline void dev_init(void)
+static void dev_init(void)
 {
-	//uint64_t i;
-
 	printf("dev_init: ");
 	add_dev(DEV_ID(CON_MAJOR,CON_MINOR), DEV_CHAR, 
 			&console_char_ops, "con", NULL);
 	printf("con ");
+	add_dev(DEV_ID(TTY_MAJOR,NUL_MINOR), DEV_CHAR,
+			&char_special_ops, "tty_null", NULL);
+	printf("tty_null ");
+#ifdef WANT_RAMDISK
 	for(int i=0;i<NUM_RD;i++) 
 	{
 		add_dev(DEV_ID(RD_MAJOR,RD_0_MINOR+i), DEV_BLOCK, 
 				&ram_block_ops, "ram", NULL);
 		printf("ram(%x) ", i);
 	}
+#endif
+#ifdef WANT_SERIAL
 	add_dev(DEV_ID(SER_MAJOR,SER_0_MINOR), DEV_CHAR,
 			&serial_char_ops, "ser", NULL);
 	printf("ser(0) ");
+#endif
 	printf("\n");
 }
 
+#ifdef WANT_NET
 static inline void proto_init(void)
 {
 	printf("proto_init: ");
+#ifdef WANT_IP
 	add_dev(NETPROTO_IP, DEV_PROTO, &ip_proto_ops, "ip", NULL);
 	printf("ip ");
+#endif
 	printf("\n");
 }
 
 static void net_init(void)
 {
-	//return;
-
 	printf("net_init: ");
 	//	add_dev(NETDEV_PPP, DEV_NET, &ppp_net_ops, "ppp");
 	//	printf("ppp ");
@@ -818,31 +967,37 @@ static void net_init(void)
 	//	printf("slip ");
 	printf("\n");
 }
+#endif
 
 static void fs_init(void)
 {
 	printf("fs_init: ");
-	add_dev(0, DEV_FS, &ramfs_ops, "ramfs", NULL);
+#ifdef WANT_RAMFS
 	printf("ramfs ");
+	add_dev(0, DEV_FS, &ramfs_ops, "ramfs", NULL);
+#endif
+#ifdef WANT_FAILFS
+	printf("failfs ");
+	add_dev(0, DEV_FS, &failfs_ops, "failfs", NULL);
+#endif
 	printf("\n");
 }
 
-__attribute__((nonnull)) void kernmain(const unsigned long magic, const multiboot_info_t *const restrict mbd)
+__attribute__((nonnull,noreturn))
+void kernmain(const unsigned long magic, const multiboot_info_t *const mbd)
 {
-	//int i;
-	//struct net_dev *nd;
-	//struct char_dev *cd;
-	//struct net_proto *np;
-
-	//memdebug = true;
-
-	nosched = tick = curtask = 0;
+    __asm__ volatile ("":::"memory");
+	nosched = false;
+    tick = curtask = 0;
 	firsttask = 1;
 	devs = NULL;
-	//	netdevs = NULL;
 
-	//setup_vga();
+#ifdef WANT_SERIAL
 	setup_serial(COM1, 115200);
+#endif
+#ifdef WANT_VGA
+	setup_vga();
+#endif
 	//setup_serial(COM2, 115200);
 	printf("FailOS\n");
 	setup_mem(magic, mbd);
@@ -861,63 +1016,92 @@ __attribute__((nonnull)) void kernmain(const unsigned long magic, const multiboo
 	printf("done.\n");
 
 	cpu_init();
+#ifdef WANT_ACPI
 	acpi_probe();
+#endif
+#ifdef WANT_NET
 	proto_init();
+#endif
+#ifdef WANT_PCI
 	pci_init();
+#endif
 	file_init();
 	dev_init();
 	fs_init();
+#ifdef WANT_NET
 	net_init();
+#endif
 	syscall_init();
 
 	root_mnt = NULL;
 	root_fsent = NULL;
 
-	struct block_dev *hd;
+	struct block_dev *hd = NULL;
+	struct fileh *fh1 = NULL, *fh2 = NULL;
+
+#ifdef WANT_RAMDISK
 	if((hd = find_dev(DEV_ID(RD_MAJOR, RD_0_MINOR), DEV_BLOCK)) == NULL) {
 		printf("init: unable to find root device (%d,%d)\n", RD_MAJOR, RD_0_MINOR);
 		goto no_root;
 	}
+#endif
 
+#ifdef WANT_RAMFS
 	if((root_mnt = do_mount(hd, NULL, &ramfs_ops)) == NULL) {
 		printf("init: unable to mount %s filesystem on /\n", ramfs_ops.name);
 		goto no_root;
 	}
+#endif
 	
 	root_fsent = root_mnt->root;
-	struct fileh *fh1, *fh2;
 
+#ifdef WANT_IDE
 	hd = find_dev(DEV_ID(IDE_MAJOR, 0), DEV_BLOCK);
+#endif
 	if(hd) {
-		struct mount *fail_mnt;
-		int rc;
+		//struct mount *fail_mnt;
+		//int rc;
 
 //		dump_fsents();
-		printf("\n\ntrying to mount /mnt\n\n");
-		if((fail_mnt = do_mount(hd, resolve_file("/mnt", root_fsent, &rc), &failfs_ops)) == NULL)
-			goto no_root;
+	//	printf("\ninit: trying to mount /mnt\n");
+	//	void *tmp = resolve_file("/mnt", root_fsent, &rc);
+	//	if (!tmp) {
+	//		printf("init: cannot find /mnt\n");
+	//		goto no_root;
+	//	}
+	//	if ((fail_mnt = do_mount(hd, tmp, &failfs_ops)) == NULL) {
+	//		printf("init: failed\n");
+	//		goto no_root;
+	//	}
+	//	printf("init: /mnt mounted OK\n");
 //		dump_fsents();
 //		printf("\n\n");
 //		while(1) hlt();
 
+	
+	//	printf("init: open newfile\n");
+	//	if((fh1 = do_open("/mnt/newfile.txt", NULL, O_CREAT|O_RDWR, 0755, &rc)) == NULL)
+	//		printf("init: can't open file: %d: %s\n", rc, strerror(rc));
 
-		if((fh1 = do_open("/mnt/newfile.txt", NULL, O_CREAT|O_RDWR, 0755, &rc)) == NULL)
-			printf("init: can't open file: %d: %s\n", rc, strerror(rc));
+		//whie(1) hlt();
 //		dump_fsents();
 //		printf("\n\n");
 
-		if((fh2 = do_open("/mnt/newfile2.txt", NULL, O_CREAT|O_RDWR, 0755, &rc)) == NULL)
-			printf("init: can't open file: %d: %s\n", rc, strerror(rc));
+	//	printf("init: open newfile2\n");
+	//	if((fh2 = do_open("/mnt/newfile2.txt", NULL, O_CREAT|O_RDWR, 0755, &rc)) == NULL)
+	//		printf("init: can't open file: %d: %s\n", rc, strerror(rc));
 //		dump_fsents();
 //		printf("\n\n");
 
-		if((do_mkdir(NULL, "/mnt/tmp", 0755)) < 0)
-			printf("init: can't mkdir: %d: %s\n", rc, strerror(rc));
+	//	printf("init: mkdir tmp\n");
+	//	if((do_mkdir(NULL, "/mnt/tmp", 0755)) < 0)
+	//		printf("init: can't mkdir: %d: %s\n", rc, strerror(rc));
 //		dump_fsents();
 //		printf("\n\n");
 
-		if((do_mkdir(NULL, "/mnt/tmp2", 0755)) < 0)
-			printf("init: can't mkdir: %d: %s\n", rc, strerror(rc));
+		//printf("init: mkdir tmp2\n");
+		//if((do_mkdir(NULL, "/mnt/tmp2", 0755)) < 0)
+	//		printf("init: can't mkdir: %d: %s\n", rc, strerror(rc));
 //		printf("\n\n");
 
 //		dump_fsents();
@@ -933,11 +1117,9 @@ __attribute__((nonnull)) void kernmain(const unsigned long magic, const multiboo
 	//init_netdev(nd, cd, DEV_CHAR, np);
 
 no_root:
-//	while(1) hlt();
+	printf("init: creating initial tasks\n");
 	create_tasks((root_mnt != NULL));
-	curtask = firsttask = root_mnt == NULL ? 0 : 1;
-
-	kscan();
+	curtask = firsttask = 0;
 
 	/* enable rd/wr fs/gs base instructions for usermode */
 	//set_cr4(get_cr4()|(1<<16));
@@ -948,31 +1130,31 @@ no_root:
 	global_tss.rsp0 = (uint64_t)tasks[firsttask].kernelsptr;
 	global_tss.ist1 = (uint64_t)kmalloc_align(STACK_SIZE, "#DF stack", NULL,KMF_ZERO);
 
-	tasks[firsttask].state = STATE_RUNNING;
-	set_cr3(tasks[firsttask].pd);
-
 	if(root_mnt)
-		for(int i = 1; i <= 2; i++) {
-			if( (tasks[i].fps[0] = do_open("/dev/tty", &tasks[i], O_RDONLY, 0, NULL)) == NULL )
+		for(int i = 1; i <= 1; i++) {
+			printf("init: fd[0] for task %i\n", i);
+			if( (tasks[i].fps[0] = do_open("/dev/tty", &tasks[i], O_RDONLY, 0, NULL, 0)) == NULL )
 				printf("init: unable to open stdin\n");
-			if( (tasks[i].fps[1] = do_open("/dev/tty", &tasks[i], O_WRONLY, 0, NULL)) == NULL )
+			printf("init: fd[1] for task %i\n", i);
+			if( (tasks[i].fps[1] = do_open("/dev/tty", &tasks[i], O_WRONLY, 0, NULL, 0)) == NULL )
 				printf("init: unable to open stdout\n");
-			if( (tasks[i].fps[2] = do_open("/dev/tty", &tasks[i], O_WRONLY, 0, NULL)) == NULL )
+			printf("init: fd[2] for task %i\n", i);
+			if( (tasks[i].fps[2] = do_open("/dev/tty", &tasks[i], O_WRONLY, 0, NULL, 0)) == NULL )
 				printf("init: unable to open stderr\n");
 		}
 
-//	dump_fsents();
-	do_close(fh1, NULL);
-	do_close(fh2, NULL);
+	if(fh1)
+		do_close(fh1, NULL);
+	if(fh2)
+		do_close(fh2, NULL);
 	flush_fsents();
-//	dump_fsents();
-//	while(1) hlt();
+
 	printf("init: DONE\n");
-	boot_done = true;
 
 	/* printf("init: gousermode rip=%lx cs=%lx rflags=%lx rsp=%lx ss=%lx\n", tasks[firsttask].tss.rip, tasks[firsttask].tss.cs, tasks[firsttask].tss.rflags, tasks[firsttask].tss.rsp, tasks[firsttask].tss.ss); */
 
-	printf("init: switching to CPL3 and PID %lx\n", firsttask);
+	printf("init: switching to CPL3 and PID %d\n", firsttask);
+	boot_done = true;
 	gousermode(
 			tasks[firsttask].tss.rip,
 			tasks[firsttask].tss.cs,

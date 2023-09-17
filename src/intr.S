@@ -2,6 +2,7 @@
 	bits	64
 	align	16
 	cpu	x64
+	default	rel
 
 %macro	SAVE_ALL 0
 	push	rax	;	1
@@ -226,8 +227,9 @@ ENDSTRUC
 
 	global	sysenter
 	extern	sc_tbl
+	default rel
 
-	MAX_SYSCALL equ 202
+	MAX_SYSCALL equ 1024
 
 	align	16
 
@@ -247,8 +249,14 @@ sysenter:
 	jmp	.error
 
 .ok_max_syscall:
-	mov	r15, [sc_tbl+rax*0x8]	; get syscall entry
-	cmp	r15, 0			; check if null
+;	mov	r15, [sc_tbl+rax*0x8]	; get syscall entry
+	lea	r15, [sc_tbl]
+	mov	r14, rax
+	imul	r14, 8
+	add	r15, r14
+	mov	r14, [r15]
+
+	cmp	r14, 0			; check if null
 	jne	.ok_syscall_not_null	; ... not null
 
 	mov	rax, qword -1		; ... null, return -1
@@ -256,7 +264,7 @@ sysenter:
 
 .ok_syscall_not_null:
 	mov	rcx, r10		; fixup rcx being used by syscall
-	call	r15			; [sc_tbl+rax*0x8]
+	call	r14			; [sc_tbl+rax*0x8]
 
 .error:
 

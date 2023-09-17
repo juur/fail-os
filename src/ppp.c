@@ -3,8 +3,6 @@
 #include "mem.h"
 #include "ppp.h"
 
-extern bool memdebug;
-
 uint8_t ppp_byte(struct char_dev *cd);
 
 uint64_t ppp_init(struct net_dev *nd, void *phys, int type, struct net_proto *up)

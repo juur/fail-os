@@ -18,7 +18,7 @@ int main(void)
 //	int status;
 //	pid_t pid;
 
-	printf("\nFailOS: pid=%x\n# ", getpid());
+	printf("\nFailOS\n");
 
 	//uint64 fsbase, gsbase, fsreg;
 
@@ -50,21 +50,21 @@ int main(void)
 
 	int children = 0;
 	
-	syscall(100);
+	//syscall(100);
 
 	//int i = 0;
 
 	//while(i++ < 1000000) __asm__ volatile ("pause;");
 
-	if(getpid()==1)
-		syscall(60);
-	else
-		exit(0);
+//	if(getpid()==1)
+//		syscall(60);
+//	else
+//		exit(0);
 
 	if(getpid() != 1)
 	{
 
-#define DO_FORK
+//#define DO_FORK
 #ifdef DO_FORK
 		while(getpid() < 5) {
 			printf("%d: forking\n", getpid());
@@ -98,6 +98,7 @@ int main(void)
 		}
 		while(1) __asm__ volatile( "pause" );
 #else
+		/*
 		int a = 0;
 		while(1) {
 			a++;
@@ -107,7 +108,7 @@ int main(void)
 				//__asm__ volatile("rdfsbase %0":"=r"(fsbase));
 				//printf("2:gsbase = %lx, fsbase = %lx\n", gsbase, fsbase);
 			}
-		}
+		}*/
 #endif
 	}
 	//printf("%d: pausing\n", getpid());
@@ -119,6 +120,8 @@ int main(void)
 	unsigned long pos = 0;
 	char buf[50];
 	memset(buf, 0, sizeof(buf));
+
+	printf("\n%d # ", getpid());
 
 	while(1)
 	{
@@ -146,10 +149,12 @@ int main(void)
 
 			} else if(buf[0] == 'e') {
 				exit(EXIT_SUCCESS);
+			} else {
+				system(buf);
 			}
 			memset(buf, 0, sizeof(buf));
 
-			printf("\n%d# ", getpid());
+			printf("\n%d # ", getpid());
 		} else {
 			if(pos < (sizeof(buf)-1)) {
 				buf[pos++] = (char)c;

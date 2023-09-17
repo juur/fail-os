@@ -87,14 +87,14 @@ struct tcb *find_tcbs(uint32_t src, uint32_t dst, uint16_t src_port, uint16_t ds
    (uint8_t *)hdr, sizeof(struct tcp_hdr), 0, 0);
    }
    */
-uint64_t tcp_listen(struct tcb *tcb)
+ssize_t tcp_listen(struct tcb *tcb)
 {
-	if(!tcb) return -1;
+	if(!tcb) return -EBADF;
 	tcb->state = LISTEN;
 	return 0;
 }
 
-uint64_t tcp_accept(struct tcb *tcb, struct tcb *new_tcb,
+ssize_t tcp_accept(struct tcb *tcb, struct tcb *new_tcb,
 		struct sockaddr_in *src_in, struct sockaddr_in *dst_in)
 {
 	//struct fileh *f;
@@ -255,7 +255,7 @@ kfree(phdr);
 return 0;
 }
 */
-uint64_t tcp_send(struct tcb *tcb, int8_t *data, uint64_t len, uint64_t flags)
+ssize_t tcp_send(struct tcb *tcb, const void *data, size_t len, uint64_t flags)
 {
 	struct tcp_phdr *phdr;
 	struct tcp_hdr *hdr;
@@ -264,7 +264,7 @@ uint64_t tcp_send(struct tcb *tcb, int8_t *data, uint64_t len, uint64_t flags)
 
 	if(!phdr) {
 		printf("tcp_send: unable to allocate memory\n");
-		return -1;
+		return -ENOMEM;
 	}
 
 	hdr = &phdr->hdr;
@@ -301,7 +301,7 @@ uint64_t tcp_send(struct tcb *tcb, int8_t *data, uint64_t len, uint64_t flags)
 	}
 
 	phdr->tcp_length = htons((hdr->data_offset + len) << 2);
-	hdr->chksum = checksum((uint16_t *)phdr, sizeof(struct tcp_phdr) + len);
+	hdr->chksum = ipv4_checksum((uint16_t *)phdr, sizeof(struct tcp_phdr) + len);
 
 	printf("tcp_send: %x:%u -> %x:%u seq:%x ack:%x %s%s%s%s\n",
 			tcb->src, tcb->src_port, tcb->dst, tcb->dst_port,
@@ -318,7 +318,7 @@ uint64_t tcp_send(struct tcb *tcb, int8_t *data, uint64_t len, uint64_t flags)
 
 	kfree(phdr);
 
-	return 0;
+	return len;
 }
 
 void tcp_init_socket(struct fileh *f)
@@ -339,8 +339,8 @@ void tcp_init_socket(struct fileh *f)
 }
 
 
-uint64_t tcp_recv(struct net_dev *nd, uint32_t src, uint32_t dst,
-		int8_t *data, uint64_t len, struct ip_hdr *iph)
+ssize_t tcp_recv(struct net_dev *nd, uint32_t src, uint32_t dst,
+		void *data, size_t len, struct ip_hdr *iph)
 {
 	//void *tcp_data;
 	struct tcp_hdr *hdr = (struct tcp_hdr *)data;
@@ -386,14 +386,14 @@ uint64_t tcp_recv(struct net_dev *nd, uint32_t src, uint32_t dst,
 				if(!listen) {
 					tcp_send(tcb, NULL, 0, TCP_RST);
 					printf("tcp_recv: SYN: can't find a listen\n");
-					return -1;
+					return -EBADF;
 				}
 			}
 			ips = (struct ip_sock *)listen->priv;
 			if(!ips || ips->pending[0].sin_family) {
 				printf("tcp_recv: SYN: listen full\n");
 				tcp_send(tcb, NULL, 0, TCP_RST);
-				return -1;
+				return -EBADF;
 			}
 			/*
 			   tcb = ips->s.tcp;
@@ -417,7 +417,7 @@ uint64_t tcp_recv(struct net_dev *nd, uint32_t src, uint32_t dst,
 			   tcp_rst(iph->dst, hdr->dst_port, iph->src,
 			   hdr->src_port, hdr->seq_num, hdr->ack_num);
 			   */
-			return -1;
+			return -EBADF;
 		}
 	} else {
 		/*

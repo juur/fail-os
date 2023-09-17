@@ -1,16 +1,20 @@
 #define _DEV_C
-#include "dev.h"
-#include "klibc.h"
-#include "mem.h"
-#include "net.h"
-#include "block.h"
-#include "char.h"
+#include <dev.h>
+#include <klibc.h>
+#include <mem.h>
+#include <net.h>
+#include <block.h>
+#include <char.h>
+#include <ioctls.h>
 
-unsigned short *vga;
+#ifdef WANT_VGA
+volatile uint16_t *vga;
 static uint16_t attrib = 0x07;
 static uint8_t cur_x = 0;
 static uint8_t cur_y = 0;
+#endif
 
+#ifdef WANT_KEYBOARD
 #define MAX_KEYS	0x48
 
 #define KEY_SHIFT	0x2a
@@ -34,32 +38,57 @@ const char keymap_shift[MAX_KEYS] =
 	"\0|ZXCVBNM<>?"
 	"\0\0\0 "				// 0x39
 	"\0\0\0\0\0\0\0\0";		// 0x47
-
-
-const struct char_ops console_char_ops = {
-	"console",
-	con_read,
-	con_write,
-	con_init,
-	con_pending
-};
+#endif
 
 // race
 
 struct char_dev *con_dev = NULL;
 
-ssize_t con_read(struct char_dev *_dev, char *dest, size_t len)
+ssize_t cs_read(struct char_dev *dev, char *dest, size_t len)
+{
+	switch(DEV_MINOR(dev->devid))
+	{
+		case NUL_MINOR:
+			memset(dest, 0, len);
+			return len;
+	}
+	return 0;
+}
+
+ssize_t cs_pending(struct char_dev *dev)
+{
+	return 0;
+}
+
+ssize_t cs_write(struct char_dev *dev, const char *src, size_t len)
+{
+	return 0;
+}
+
+int cs_ioctl(struct char_dev *dev, struct task *task, unsigned long request, unsigned long cmd)
+{
+	return -EINVAL;
+}
+
+int cs_init(struct char_dev *dev)
+{
+	return 0;
+}
+
+static ssize_t con_read(struct char_dev *_dev, char *dest, size_t len)
 {
 	//if(!dev) return -1;
 	size_t cnt = 0;
 	uint8_t *dst_ptr = (uint8_t *)dest;
 	struct con_private *p = (struct con_private *)con_dev->priv;
-	//printf("con read\n");
-	while(len-- && ring_read(p->rh,dst_ptr++)) cnt++;
+	while(len-- && ring_read(p->rh,dst_ptr++)) {
+		cnt++;
+	}
+	//printf("con read: %ld\n", cnt);
 	return cnt;
 }
 
-ssize_t con_pending(struct char_dev *dev)
+static ssize_t con_pending(struct char_dev *dev)
 {
 	//if(!dev) return -1;
 	struct con_private *p = (struct con_private *)con_dev->priv;
@@ -74,7 +103,9 @@ ssize_t con_write(struct char_dev *const _dev, const char *const src, const size
 	{
 		if(!src[i]) return i;
 		//putch(src[i]);
+#ifdef WANT_SERIAL
 		putch_s(COM1, src[i]);
+#endif
 	}
 	return i;
 }
@@ -94,6 +125,7 @@ inline uint64_t rdtsc(void)
 	return ((uint64_t)a|((uint64_t)b)<<32);
 }
 
+#ifdef WANT_SERIAL
 __attribute__((nonnull)) static ssize_t ser_read(struct char_dev *const dev, char *const dest, const size_t len)
 {
 	size_t cnt = 0;
@@ -102,18 +134,20 @@ __attribute__((nonnull)) static ssize_t ser_read(struct char_dev *const dev, cha
 	struct ser_private *p = (struct ser_private *)dev->priv;
 	uint8_t *dst = (uint8_t *)dest;
 
-	//printf("ser_read: port:0x%x dest:%p len:0x%lx\n",
+	//printf("ser_read: port:0x%x dest:%p len:0x%lx rh:0x%p rh->data:%d\n",
 	//		p->port,
-	//		(void *)dest,
-	//		len);
+	//	    (void *)dest,
+	//		len,
+	//		(void *)p->rh,
+	//		p->rh->data);
 
 	sti();
 	while(rem) {
 		while(!p->rh->data) {
 			pause();
 		}
-		//printf("ser_read: port:0x%x has data: cnt:%lx rem:%lx\n", 
-		//		p->port, cnt, rem);
+		//printf("ser_read: unpausing\n");
+		//printf("ser_read: port:0x%x has data: cnt:%lx rem:%lx\n", p->port, cnt, rem);
 		while(rem && ring_read(p->rh,dst++)) { 
 			cnt++;
 			rem--;
@@ -143,6 +177,7 @@ __attribute__((nonnull)) static ssize_t ser_write(struct char_dev *dev, const ch
 	}
 	return len;
 }
+#endif
 
 int con_init(struct char_dev *dev)
 {
@@ -164,7 +199,15 @@ int con_init(struct char_dev *dev)
 	return 0;
 }
 
-__attribute__((nonnull)) static int ser_init(struct char_dev *dev)
+int con_ioctl(struct char_dev *dev, struct task *task, unsigned long request, unsigned long cmd)
+{
+	printf("con_ioctl\n");
+	return -EINVAL;
+}
+
+#ifdef WANT_SERIAL
+__attribute__((nonnull))
+static int ser_init(struct char_dev *dev)
 {
 	struct ser_private *cp;
 	uint16_t port;
@@ -207,13 +250,53 @@ fail:
 	return -1;
 }
 
+static int ser_ioctl(struct char_dev *dev, struct task *task, unsigned long cmd, unsigned long arg)
+{
+	switch(cmd)
+	{
+		case TCGETS:
+			{
+				struct termios *tios = (void *)arg;
+				tios->c_ispeed = B38400;
+				tios->c_ospeed = B38400;
+				tios->c_cflag  = CS8|CREAD;
+				tios->c_lflag  = ECHO|ECHOE|ECHOK|ECHOK|ISIG|ICANON|IEXTEN;
+				tios->c_iflag  = ICRNL|IXON;
+				tios->c_oflag  = OPOST|ONLCR;
+				return 0;
+			}
+			break;
+		case TCSETS:
+			{
+				struct termios *tios = (void *)arg;
+				printf("ser_ioctl: TCSETS: c_cflag: %x c_lflag: %x c_iflag: %x c_oflag: %x\n",
+						tios->c_cflag,
+						tios->c_lflag,
+						tios->c_iflag,
+						tios->c_oflag);
+				return 0;
+			}
+			break;
+		case TIOCNOTTY:
+			/* TODO give up controlling terminal. SIGHUP and SIGCONT to all foreground process groups if
+			 * this process was the session leader */
+			return 0;
+			break;
+		default:
+			printf("ser_ioctl: unsupported ioctl %lx\n", cmd);
+			return -EINVAL;
+	}
+}
+
 const struct char_ops serial_char_ops = {
-	"serial",
+	"serial_char_ops",
 	ser_read,
 	ser_write,
 	ser_init,
-	ser_pending
+	ser_pending,
+	ser_ioctl
 };
+#endif
 
 
 struct dev *devs;
@@ -224,7 +307,7 @@ void free_dev(struct dev *const d)
 		return;
 }
 
-struct dev *add_dev(uint64_t id, uint64_t type, const void *ops, char *name, 
+struct dev *add_dev(uint64_t id, uint64_t type, const void *ops, const char *name, 
 		void *priv)
 {
 	struct dev *ret = NULL;
@@ -247,6 +330,7 @@ struct dev *add_dev(uint64_t id, uint64_t type, const void *ops, char *name,
 			ret->op.bl_dev->ops = ops;
 			ret->op.bl_dev->devid = id;
 			ret->op.bl_dev->priv = priv;
+			//printf("add_dev: adding: ops=%s\n", ret->op.bl_dev->ops->name);
 			((struct block_ops *)ops)->init(ret->op.bl_dev);
 			break;
 		case DEV_CHAR:
@@ -255,21 +339,27 @@ struct dev *add_dev(uint64_t id, uint64_t type, const void *ops, char *name,
 			ret->op.ch_dev->ops = ops;
 			ret->op.ch_dev->devid = id;
 			ret->op.ch_dev->priv = priv;
+			//printf("add_dev: adding: ops=%s\n", ret->op.ch_dev->ops->name);
 			((struct char_ops *)ops)->init(ret->op.ch_dev);
+			break;
+		case DEV_FS:
 			break;
 		case DEV_NET:
 			if((ret->op.net_dev = kmalloc(sizeof(struct net_dev),"net_dev", NULL, 0)) == NULL)
 				goto fail;
-			ret->op.net_dev->ops = ops;
+			ret->op.net_dev->ops = ops; /* e.g. struct eth_ops */
+			//printf("add_dev: adding: ops=%s\n", ret->op.net_dev->ops->name);
 			// net_init() does init;
 			break;
 		case DEV_PROTO:
 			if((ret->op.net_proto =  kmalloc(sizeof(struct net_proto),"net_proto", NULL, 0)) == NULL)
 				goto fail;
 			ret->op.net_proto->ops = ops;
+			//printf("add_dev: adding: ops=%s\n", ret->op.net_proto->ops->name);
 			// net_init() does init;
 			break;
 		default:
+			printf("add_dev: attempting to add unknown device type 0x%lx\n", type);
 			break;
 	}
 
@@ -319,12 +409,14 @@ struct dev *find_dev_name(const char *name, uint64_t type)
 	return NULL;
 }
 
-bool shift = false, alt = false, ctrl = false;
 
 void process_key()
 {
+#ifdef WANT_KEYBOARD
+
 	if(!(inportb(KBD_STAT) & KBD_SR_OUTB)) return;
 
+    bool shift = false, alt = false, ctrl = false;
 	uint8_t raw=0, oldraw, running=1;
 	struct char_dev *tty;
 	struct con_private *ttyp;
@@ -350,6 +442,8 @@ void process_key()
 //					printf("c=%x",ctrl);
 					if(raw < MAX_KEYS && keymap[raw]) {
 						tty = find_dev(DEV_ID(CON_MAJOR,CON_MINOR), DEV_CHAR);
+						if (!tty)
+							break;
 						ttyp = (struct con_private *)tty->priv;
 						if(shift && !ctrl && !alt) {
 							ring_write(ttyp->rh, keymap_shift[raw]);
@@ -367,12 +461,13 @@ void process_key()
 							ring_write(ttyp->rh, keymap[raw]);
 						}
 					} else {
-//						printf("[%x]", raw);	
+						//printf("[%x]", raw);	
 					}
 					break;
 			}
 		}
 	} while(running);
+#endif
 }
 	
 
@@ -412,8 +507,24 @@ void outportl (uint16_t _port, uint32_t _data)
 	__asm__ volatile ("outl %1, %0" :: "dN" (_port), "a" (_data):"memory");
 }
 
+#ifdef WANT_VGA
 #define SCREEN_COLS 80U
 #define SCREEN_ROWS 25U
+
+__attribute__((nonnull))
+uint16_t volatile *memsetw(uint16_t volatile *dest, uint16_t val, size_t count)
+{
+	uint16_t volatile *temp = dest;
+	size_t cnt;
+
+    if (!count)
+        return NULL;
+
+	for(cnt = count; cnt; count--) 
+        *(temp++) = val;
+
+    return dest;
+}
 
 void scroll(void)
 {
@@ -423,8 +534,8 @@ void scroll(void)
 	{
 		const uint16_t offset = cur_y - SCREEN_ROWS + 1;
 
-		uint16_t *dp = vga;
-		const uint16_t *sp = (const uint16_t *)(vga + (offset * SCREEN_COLS));
+		volatile uint16_t *dp = vga;
+		const volatile uint16_t *sp = (vga + (offset * SCREEN_COLS));
 
 		size_t count = (SCREEN_ROWS - offset) * SCREEN_COLS;
 
@@ -460,7 +571,9 @@ void cls(void)
 	cur_y = 0;
 	move_csr();
 }
+#endif
 
+#ifdef WANT_SERIAL
 void putch_s(const uint16_t port, const unsigned char c)
 {
 	while( (inportb(port+SER_LSR) & SER_LSR_THR) == 0) {
@@ -525,7 +638,11 @@ void ser_status(uint16_t port)
 	while((st & SER_LSR_DR) == SER_LSR_DR) 
 	{
 		ch = inportb(sp->port + SER_DATA);
-		//printf("read %x\n", ch);
+		//if (ch < 0x20)
+		//	printf("serial: read 0x%2x\n", ch);
+		/* epic kludge */
+		if (ch == 0xd)
+			ch = 0xa;
 		ring_write(sp->rh, ch);
 		st = inportb(sp->port + SER_LSR);
 	}
@@ -533,10 +650,12 @@ void ser_status(uint16_t port)
 	//printf("\n");
 	//print_ring(sp->rh);
 }
+#endif
 
+#ifdef WANT_VGA
 void putch(unsigned char c)
 {
-	uint16_t *where;
+	volatile uint16_t *where;
 	const short att = (attrib << 8);
 
 	if (c == 0x08) {  // Backspace
@@ -564,3 +683,22 @@ void putch(unsigned char c)
 	move_csr(); // optimise a little
 
 }
+#endif
+
+const struct char_ops console_char_ops = {
+	"console_char_ops",
+	con_read,
+	con_write,
+	con_init,
+	con_pending,
+	con_ioctl
+};
+
+const struct char_ops char_special_ops = {
+	"char_special_ops",
+	cs_read,
+	cs_write,
+	cs_init,
+	cs_pending,
+	cs_ioctl
+};

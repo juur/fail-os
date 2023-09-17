@@ -44,15 +44,6 @@ struct eth_frame {
 	uint8_t	data[1500];
 } __attribute__((packed));
 
-void print_mac(uint8_t t[6])
-{
-	int i,max=6;
-	for(i=0;i<max;i++) {
-		printf("%x", (uint32_t)(0 + (t[i] & 0xff)));
-		if(i<max-1) printf(":");
-	}
-}
-
 __attribute__((nonnull)) void send_frame(struct pcnet_tx_32 *b, uint8_t src[6], uint8_t dst[6],
 		const char *d, uint16_t len)
 {
@@ -159,7 +150,7 @@ __attribute__((nonnull)) uint64_t pcnet_poll(struct eth_dev *e, struct net_dev *
 }
 
 const struct eth_ops pcnet_ops = {
-	"pcnet",
+	"pcnet_ops",
 	pcnet_open,
 	pcnet_close,
 	pcnet_poll,
@@ -200,35 +191,38 @@ __attribute__((nonnull)) uint64_t init_nic_pcnet(struct pci_dev *d)
 	struct pcnet_private *priv = NULL;
 	struct eth_dev *eth;
 
+	printf("init_nic_pcnet: starting\n");
+
 	priv = (struct pcnet_private *)kmalloc_align(sizeof(struct pcnet_private), "pcnet_private", NULL, 0);
 	if(priv == NULL) {
-		printf("init_nic: cannot allocate pcnet_private\n");
+		printf("init_nic_pcnet: cannot allocate pcnet_private\n");
 		goto fail;
 	}
 
 	priv->dev = d;
+	d->priv = priv;
 
 	priv->init = (struct pcnet_init_32 *)kmalloc_align(sizeof(struct pcnet_init_32), "pcnet_init", NULL, 0);
 	if(priv->init == NULL) {
-		printf("init_nic: cannot allocate pcnet_init\n");
+		printf("init_nic_pcnet: cannot allocate pcnet_init\n");
 		goto fail_free_private;
 	}
 
 	priv->rx = (struct pcnet_rx_32 *)kmalloc_align(sizeof(struct pcnet_rx_32) * DRE_COUNT, "pcnet_rx", NULL, 0);
 	if(priv->rx == NULL) {
-		printf("init_nic: cannot allocate pcnet_rx\n");
+		printf("init_nic_pcnet: cannot allocate pcnet_rx\n");
 		goto fail_free_init;
 	}
 
 	priv->tx = (struct pcnet_tx_32 *)kmalloc_align(sizeof(struct pcnet_tx_32) * DRE_COUNT, "pcnet_tx", NULL, 0);
 	if(priv->tx == NULL) {
-		printf("init_nic: cannot allocate pcnet_tx\n");
+		printf("init_nic_pcnet: cannot allocate pcnet_tx\n");
 		goto fail_free_rx;
 	}
 
 	eth = eth_alloc(priv, &pcnet_ops);
 	if(eth == NULL) {
-		printf("init_nic: failed to allocate eth\n");
+		printf("init_nic_pcnet: failed to allocate eth\n");
 		goto fail_free_tx;
 	}
 	priv->eth = eth;
@@ -238,11 +232,11 @@ __attribute__((nonnull)) uint64_t init_nic_pcnet(struct pci_dev *d)
 		t16 |= PCI_CMD_MASTER|PCI_CMD_IO|PCI_CMD_MEMORY;
 		pci_write_conf16(d->bus, d->dev, d->func, PCI_CMD_REG, t16);
 		t16 = pci_read_conf16(d->bus, d->dev, d->func, PCI_CMD_REG);
-		printf("init_nic: enabling PCI master bit\n");
+		printf("init_nic_pcnet: enabling PCI master bit\n");
 	}
 
 	//writeCSR(io, 0, 0x04); // this switches to 32bit too early
-	printf("init_nic: eth%x mac_addr=", eth->unit);
+	printf("init_nic_pcnet: eth%x mac_addr=", eth->unit);
 	for (i=0;i<6;i++) {
 		printf("%x", eth->addr[i] = priv->init->PADR[i] = inportb(io+i));
 		if(i!=5) printf(":");
@@ -270,11 +264,14 @@ __attribute__((nonnull)) uint64_t init_nic_pcnet(struct pci_dev *d)
 	priv->init->RLEN = TX_TLEN;
 	priv->init->TLEN = RX_RLEN;
 	priv->init->LADRF = 0x0;
-	priv->init->RDRA = (uint32_t)(uint64_t)priv->rx;
-	priv->init->TDRA = (uint32_t)(uint64_t)priv->tx;
+
+	extern pt_t *kernel_pd;
+
+	priv->init->RDRA = (uint32_t)get_phys_address(kernel_pd, (uint64_t)priv->rx);
+	priv->init->TDRA = (uint32_t)get_phys_address(kernel_pd, (uint64_t)priv->tx);
 
 	for(i=0;i<DRE_COUNT;i++) {
-		priv->rx[i].RBADR = (uint32_t)(uint64_t)kmalloc_align(BUF_SIZE, "pcnet rx", NULL, 0);
+		priv->rx[i].RBADR = (uint32_t)get_phys_address(kernel_pd, (uint64_t)kmalloc_align(BUF_SIZE, "pcnet RBADR", NULL, 0));
 		priv->rx[i].BCNT = (0x7FF & SECOND_COMP(BUF_SIZE)); /* bit truncation warning */
 		priv->rx[i].ones = 0xf;
 		priv->rx[i].OWN = 1;
@@ -283,8 +280,8 @@ __attribute__((nonnull)) uint64_t init_nic_pcnet(struct pci_dev *d)
 	}
 
 	// Tell the NIC where the init block is
-	writeCSR(io, 1, ((uint32_t)(uint64_t)priv->init) & 0x0000ffff);
-	writeCSR(io, 2, (((uint32_t)(uint64_t)priv->init) & 0xffff0000) >> 16);
+	writeCSR(io, 1, ((uint32_t)get_phys_address(kernel_pd,(uint64_t)priv->init)) & 0x0000ffff);
+	writeCSR(io, 2, (((uint32_t)get_phys_address(kernel_pd,(uint64_t)priv->init)) & 0xffff0000) >> 16);
 	// Switch NIC state to INIT
 	writeCSR(io, 0, (readCSR(io, 0) | CSR0_INIT) & ~ CSR0_STOP);
 	printf(" INIT");
@@ -299,6 +296,7 @@ __attribute__((nonnull)) uint64_t init_nic_pcnet(struct pci_dev *d)
 	writeCSR(io, 0, (readCSR(io, 0)|CSR0_STRT|/*CSR0_IENA|*/CSR0_RXON|CSR0_TXON) & ~CSR0_STOP);
 
 	printf(" STRT\n");
+	printf("init_nic_pcnet: done\n");
 	return 0;
 
 	//fail_free_eth:

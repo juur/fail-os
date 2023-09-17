@@ -1,18 +1,21 @@
 #!/bin/sh
-
-# requires qemu-system-x86_64 on your $PATH
-# disk.raw should be formatted with mkfs.failfs
-
-qemu-system-x86_64 \
-	-nodefaults \
-	-serial mon:stdio \
+/opt/qemu/bin/qemu-system-x86_64 \
 	-display none \
 	-vga none \
-	-cpu host \
-	-accel kvm \
-	-m 256 \
+	-serial mon:stdio \
+	-nodefaults \
+	-m 512 \
 	-machine pc \
-	-kernel src/kernel \
-	-hda disk.raw \
+	-kernel ./kernel.small \
+	-machine type=pc-i440fx-3.1 \
 	-no-user-config \
+	-pidfile fail-os.pid \
+	-net nic,model=pcnet \
+	-hda disk.raw \
 	$*
+
+exit 0
+
+	#-accel kvm \
+	#-cpu host \
+	-runas $(whoami) \

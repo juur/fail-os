@@ -1,6 +1,7 @@
-#include "acpi.h"
-#include "hpet.h"
-#include "page.h"
+#include <acpi.h>
+#include <hpet.h>
+#include <page.h>
+#include <stddef.h>
 
 //static const char acpi_ident[] = "RSD PTR \0";
 static const uint64_t acpi_id = 0x2052545020445352;
@@ -9,41 +10,87 @@ static volatile const struct RSDPDescriptor20 *RSDP;
 static volatile const struct ACPIRSDT *RSDT;
 static volatile const struct ACPIXSDT *XSDT;
 
-extern pt_t *kernel_pd;
+volatile struct hpet *global_hpet;
+uint64_t hpet_clk_period = 0L;
 
-__attribute__((nonnull)) static void decode_hpet(struct ACPIHPET *const h)
+uint64_t read_hpet(void)
 {
-	printf("hpet%u: rev=%u comp=%u pci_vendor_id=%x addr=0x%lx[%s]\n",
+	if (global_hpet) {
+		return global_hpet->main;
+	}
+	return 0L;
+}
+
+__attribute__((nonnull)) 
+static void decode_hpet(struct ACPIHPET *const h)
+{
+	printf("acpi: hpet%u: base=0x%lx rev=%u comp=%u pci_vendor_id=%x addr=0x%lx[%s] min_tick=%x pageprot=%x\n",
 			h->hpet_number,
+			(uintptr_t)h,
 			h->hardware_rev_id,
 			h->comparator_count,
 			h->pci_vendor_id,
 			h->address.address,
-			h->address.address_space_id ? "system IO" : "system memory"
+			h->address.address_space_id ? "system IO" : "system memory",
+			h->minimum_tick,
+			h->page_protection
 			);
 
-	struct hpet *hpet = (void *)h->address.address;
+	struct hpet *hpet = (void *)(uintptr_t)h->address.address;
 
-	create_page_entry_4k(kernel_pd, (uint64_t)hpet, (uint64_t)hpet, PEF_P|PEF_W|PEF_G, NULL);
+	if (!get_pe_size(kernel_pd, hpet))
+		if (!create_page_entry_4k(kernel_pd, hpet, hpet, PEF_P|PEF_W|PEF_G, 0)) {
+			printf("acpi: hpet%u: unable to map 0x%p\n", h->hpet_number, (void *)hpet);
+			return;
+		}
 
-	hpet->conf |= 0x1|0x2;
 
-	printf("hpet%u: rev_id=%u num_tim_cap=%u clk=%u conf=%lx\n",
+	/* These cause misaligned reads of 1 byte so need fixing FIXME */
+
+	cap_reg_t cap_reg;
+	conf_reg_t conf_reg;
+
+	cap_reg.cap_id = hpet->cap_reg.cap_id;
+	conf_reg.conf  = hpet->conf_reg.conf;
+
+	printf("acpi: hpet%u: rev_id=%u num_tim_cap=%u clk=%u [%lu] conf=%x\n",
 			h->hpet_number,
-			hpet->rev_id,
-			hpet->num_tim_cap,
-			hpet->counter_clk,
-			hpet->conf);
+			cap_reg.a.rev_id,
+			cap_reg.a.num_tim_cap,
+			hpet->cap_clk_period,
+			hpet->main,
+			conf_reg.conf);
 
-	for(int i = 0; i < hpet->num_tim_cap + 1; i++)
+	if (h->hpet_number == 0) {
+		global_hpet = hpet;
+		hpet_clk_period = hpet->cap_clk_period;
+	}
+
+	/* FIXME why is this an invalid read & write at 0x24? */
+	//hpet->intr     = 0x0;
+	conf_reg.conf |= 0x1;
+
+	hpet->conf_reg.conf = conf_reg.conf;
+	cap_reg.cap_id = hpet->cap_reg.cap_id;
+	conf_reg.conf  = hpet->conf_reg.conf;
+
+	printf("acpi: hpet%u: rev_id=%u num_tim_cap=%u clk=%u [%lu] conf=%x\n",
+			h->hpet_number,
+			cap_reg.a.rev_id,
+			cap_reg.a.num_tim_cap,
+			hpet->cap_clk_period,
+			hpet->main,
+			conf_reg.conf);
+
+	for(int i = 0; i < cap_reg.a.num_tim_cap + 1; i++)
 	{
-		printf("hpet%u.%u: conf:%lx comp:%lx intr:%lx\n",
-				h->hpet_number,
-				i,
-				hpet->timers[i].conf,
+		printf("acpi: hpet%u.%u: conf:%x comp:%lx intr:%lx\n",
+				h->hpet_number, i,
+				hpet->timers[i].conf.conf,
 				hpet->timers[i].comp,
 				hpet->timers[i].intr);
 	}
+	printf("acpi: hpet%u: done\n", h->hpet_number);
 }
 
 
@@ -84,39 +131,39 @@ __attribute__((nonnull)) static void decode_madt(struct ACPIMADT *const h)
 			case 0:
 				{
 					printf("acpi: MADT: LAPIC:   cpu_id:%x id:%x flags:%x\n",
-							ent->lapic.acpi_cpu_id,
-							ent->lapic.apic_id,
-							ent->lapic.flags);
+							ent->a.lapic.acpi_cpu_id,
+							ent->a.lapic.apic_id,
+							ent->a.lapic.flags);
 				}
 				break;
 			case 1:
 				{
 					printf("acpi: MADT: IO APIC: id:%x addr:0x%0x int base:0x%0x\n",
-							ent->ioapic.id,
-							ent->ioapic.addr,
-							ent->ioapic.global);
+							ent->a.ioapic.id,
+							ent->a.ioapic.addr,
+							ent->a.ioapic.global);
 				}
 				break;
 			case 2:
 				{
 					printf("acpi: MADT: INT src: bus:%x irq:%x gsi:%0x flags:%x active %s, %s triggered\n",
-							ent->src.bus,
-							ent->src.irq,
-							ent->src.gsi,
-							ent->src.flags,
-							ent->nmi.flags & 2 ? "low "   : "high",
-							ent->nmi.flags & 8 ? "level" : "edge "
+							ent->a.src.bus,
+							ent->a.src.irq,
+							ent->a.src.gsi,
+							ent->a.src.flags,
+							ent->a.nmi.flags & 2 ? "low "   : "high",
+							ent->a.nmi.flags & 8 ? "level" : "edge "
 							);
 				}
 				break;
 			case 4:
 				{
 					printf("acpi: MADT: NMI:     cpu_id:%x lint:%x flags:%x active %s, %s triggered\n",
-							ent->nmi.acpi_cpu_id,
-							ent->nmi.lint_num,
-							ent->nmi.flags,
-							ent->nmi.flags & 2 ? "low"  : "high",
-							ent->nmi.flags & 8 ? "level" : "edge"
+							ent->a.nmi.acpi_cpu_id,
+							ent->a.nmi.lint_num,
+							ent->a.nmi.flags,
+							ent->a.nmi.flags & 2 ? "low"  : "high",
+							ent->a.nmi.flags & 8 ? "level" : "edge"
 							);
 				}
 				break;
@@ -199,12 +246,35 @@ __attribute__((nonnull)) static void decode_facp(struct ACPIFADT *h)
 
 }
 
-__attribute__((nonnull)) static void decode_sdt(const struct ACPISDTHeader *const h)
+__attribute__((nonnull))
+static void decode_mcfg(const struct ACPIMCFG *h)
+{
+	int num_ent = (h->h.Length - sizeof(h->h)) / sizeof(h->config[0]);
+
+	printf("acpi: MCFG: entries=%d\n", num_ent);
+
+	for (int i = 0; i < num_ent; i++)
+	{
+		printf("acpi: mcfg%d: base:0x%lx segment=0x%x bus=%d:%d\n",
+				i,
+				h->config[i].base,
+				h->config[i].segment,
+				h->config[i].start_bus,
+				h->config[i].end_bus);
+	}
+}
+
+__attribute__((nonnull))
+static void decode_sdt(const struct ACPISDTHeader *const h)
 {
 	uint32_t sig;
 	sig = *(uint32_t*)h->Signature;
 
-	printf("acpi: %c%c%c%c: 0x%0x %x ver=%x (%c%c%c%c%c%c) (%c%c%c%c%c%c%c%c) %x %x %x\n",
+	/* Is a NULL sig an actual thing or an error? */
+	if (!sig) return;
+
+	printf("acpi: %c%c%c%c: at 0x%0x len=%x ver=%x OEM=(%c%c%c%c%c%c) OEMTable=(%c%c%c%c%c%c%c%c) "
+			"rev=%x creator=(%c%c%c%c) creator_rev=%x\n",
 			h->Signature[0],
 			h->Signature[1],
 			h->Signature[2],
@@ -227,7 +297,10 @@ __attribute__((nonnull)) static void decode_sdt(const struct ACPISDTHeader *cons
 			h->OEMTableID[6],
 			h->OEMTableID[7],
 			h->OEMRevision,
-			h->CreatorID,
+			h->CreatorID[0],
+			h->CreatorID[1],
+			h->CreatorID[2],
+			h->CreatorID[3],
 			h->CreatorRevision
 			);
 
@@ -242,6 +315,11 @@ __attribute__((nonnull)) static void decode_sdt(const struct ACPISDTHeader *cons
 		case 0x54455048: /* HPET */
 			decode_hpet((struct ACPIHPET *)h);
 			break;
+		case 0x4746434d: /* MCFG */
+			decode_mcfg((struct ACPIMCFG *)h);
+			break;
+        case 0x54454157: /* WAET - Ignored */
+            break;
 		default:
 			printf("acpi_probe: unknown sig %x '%c%c%c%c'\n", 
 					sig,
@@ -302,17 +380,34 @@ int acpi_probe(void)
 	int XSDT_ent;
 
 	RSDT = (struct ACPIRSDT *)(uint64_t)RSDP->RsdtAddress;
+	char *addr = (void *)((uintptr_t)RSDP->RsdtAddress & ~0xfffUL);
+	if (!map_region(NULL, addr, addr, PGSIZE_4K, PEF_P|PEF_W|PEF_G, kernel_pd)) {
+		printf("acpi: failed to map RSDT header\n");
+		return -1;
+	}
+	if (RSDT->h.Length > PGSIZE_4K)
+		if (!map_region(NULL, addr + PGSIZE_4K, addr + PGSIZE_4K, RSDT->h.Length - PGSIZE_4K, PEF_P|PEF_W|PEF_G, kernel_pd)) {
+			printf("acpi: failed to map RSDT\n");
+			return -1;
+		}
 	RSDT_ent = (RSDT->h.Length - sizeof(RSDT->h)) / sizeof(uint32_t);
 
-	printf("acpi: %c%c%c%c: len=%x oemrev=%x cID=%x crev=%x rsdt[%u]=0x%p\n", 
+	printf("acpi: %c%c%c%c: len=%x oemrev=%x crev=%x rsdt[%u]=0x%p\n", 
 			RSDT->h.Signature[0], RSDT->h.Signature[1],
 			RSDT->h.Signature[2], RSDT->h.Signature[3],
-			RSDT->h.Length, RSDT->h.OEMRevision, RSDT->h.CreatorID, 
+			RSDT->h.Length, RSDT->h.OEMRevision,
 			RSDT->h.CreatorRevision,
 			RSDT_ent,
 			(void *)RSDT);
 
+
 	for(int i = 0; i < RSDT_ent; i++) {
+		struct ACPISDTHeader *hdr = (struct ACPISDTHeader *)(uintptr_t)RSDT->otherSDT[i];
+		if (!get_pe_size(kernel_pd, (void *)((uintptr_t)hdr & ~(PGSIZE_4K-1))))
+			map_region(NULL, 
+					(void *)((uintptr_t)hdr & ~(PGSIZE_4K-1)), 
+					(void *)(((uintptr_t)hdr & ~(PGSIZE_4K-1)) + PGSIZE_4K), 
+					PGSIZE_4K, PEF_P|PEF_W|PEF_G, kernel_pd);
 		decode_sdt((struct ACPISDTHeader *)(uint64_t)RSDT->otherSDT[i]);
 	}
 

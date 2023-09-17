@@ -18,7 +18,7 @@ struct bio_req {
 	struct sector       *sectors;
 	void                *sector_data;
 	struct block_dev 	*dev;
-	struct task 		*owner;
+	pid_t		         owner;
 	uint64_t			 flags;
 	ssize_t  			 len;
 	ssize_t				 processed;
@@ -34,8 +34,6 @@ struct bio_req {
 #define BIO_BIGSEC	(1 << 4)
 #define BIO_DONE	(1 << 5)
 #define BIO_ERROR	(1 << 6)
-
-extern struct dev *devs;
 
 void bio_signal_done(struct bio_req *const req)
 {
@@ -90,9 +88,12 @@ ssize_t bio_proc_write(struct bio_req *const req)
 
 int bio_proc_one(struct bio_req *const req)
 {
+	if (!req)
+		return -1;
+
 	printf("bio_proc_one: req=%p\n", (void *)req);
 
-	if(req->flags & BIO_CLEAN) {
+	if (req->flags & BIO_CLEAN) {
 		if(req->sector_data && (req->flags & BIO_BIGBUF)) kfree(req->sector_data);
 		if(req->sectors     && (req->flags & BIO_BIGSEC)) kfree(req->sectors);
 		if(req->dev->req == req) req->dev->req = req->next;
@@ -158,13 +159,13 @@ struct bio_req *bio_do_req(struct block_dev *const dev,
 
 	if((ret = kmalloc(sizeof(struct bio_req), "bio_req", owner, 0)) == NULL) {
 		printf("bio_do_req: unable to kmalloc bio_req\n");
-		return NULL;
+		goto fail;
 	}
 
 	bsize = dev->bsize;
 	bcnt = (len+bsize-1)/bsize;
 
-	ret->owner = owner;
+	ret->owner = owner->pid;
 	ret->flags = req|flags;
 	ret->len = len;
 	ret->offset = offset;
@@ -177,7 +178,12 @@ struct bio_req *bio_do_req(struct block_dev *const dev,
 			printf("bio_do_req: read\n");
 			ret->flags |= BIO_BIGBUF|BIO_BIGSEC;
 			ret->sector_data = buffer = kmalloc(bsize * bcnt, "sectordata[]", owner, 0);
+			if (buffer == NULL)
+				goto fail;
+
 			ret->sectors     = tmp    = kmalloc(sizeof(struct sector) * bcnt, "sector[]", owner, 0);
+			if (tmp == NULL)
+				goto fail;
 
 			for(i=0;i<bcnt;i++) {
 				if(i<bcnt-1) tmp[i].next = &tmp[i+1];
@@ -196,6 +202,8 @@ struct bio_req *bio_do_req(struct block_dev *const dev,
 			printf("bio_do_req: write\n");
 			ret->flags |= BIO_BIGSEC;
 			ret->sectors = tmp = kmalloc(sizeof(struct sector) * bcnt, "sector[]", owner, 0);
+			if (tmp == NULL)
+				goto fail;
 
 			for(i=0;i<bcnt;i++) {
 				if(i<bcnt-1) tmp[i].next = &tmp[i+1];
@@ -212,7 +220,15 @@ struct bio_req *bio_do_req(struct block_dev *const dev,
 
 		default:
 			printf("do_req: unknown req=%lx\n", req);
-			kfree(ret);
+fail:		
+			if (ret) {
+				if (ret->sectors)
+					kfree(ret->sectors);
+				if (ret->sector_data)
+					kfree(ret->sector_data);
+
+				kfree(ret);
+			}
 			return NULL;
 	}
 
@@ -243,7 +259,9 @@ ssize_t block_read(struct block_dev *dev, char *dst, size_t len, off_t off)
 
 	printf("block_read: dev=%p, dst=%p, len=%lx, off=%lx\n", (void *)dev, (void *)dst, len, off);
 
-	req = bio_do_req(dev, &tasks[curtask], BIO_READ, 0, len, off, dst);
+	req = bio_do_req(dev, get_current_task(), BIO_READ, 0, len, off, dst);
+	if (!req)
+		return 0;
 	req->next = dev->req;
 	dev->req = req;
 
@@ -265,7 +283,10 @@ ssize_t block_write(struct block_dev *dev, const char *src, size_t len, off_t of
 	if(len == 0)
 		return 0;
 
-	req = bio_do_req(dev, &tasks[curtask], BIO_WRITE, 0, len, off, (char *)src);
+	req = bio_do_req(dev, get_current_task(), BIO_WRITE, 0, len, off, (char *)src);
+	if (!req)
+		return 0;
+
 	req->next = dev->req;
 	dev->req = req;
 
