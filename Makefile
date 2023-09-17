@@ -178,11 +178,7 @@ $(objdir)/native.bin/%:	$(objdir)/native.bin/%.o
 	@strip -R .eh_frame_hdr $@
 
 
-$(objdir)/busybox.h: $(objdir)/busybox
-	xxd  -i $< > $@
-	sed -i 's,^unsigned,const unsigned,g' $@
-
-$(objdir)/%.h: $(objdir)/native.bin/%
+$(objdir)/native.bin/%.h: $(objdir)/native.bin/%
 	xxd -i $< > $@
 	sed -i 's,^unsigned,const unsigned,g' $@
 

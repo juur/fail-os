@@ -1,24 +1,23 @@
-#include "klibc.h"
-#include "ramfs.h"
-#include "dev.h"
-#include "cpu.h"
-#include "mem.h"
-#include "proc.h"
-#include "task2.h"
-#include "fail-jvm-failos.h"
-#include "busybox.h"
-#include "fail-sh.h"
-#include "ls.h"
-#include "fail-init.h"
-#include "cat.h"
-#include "dd.h"
-#include "date.h"
-#include "head.h"
-#include "tail.h"
-#include "echo.h"
-#include "sed.h"
-#include "cp.h"
-#include "busybox-x86_64.h"
+#include <klibc.h>
+#include <ramfs.h>
+#include <dev.h>
+#include <cpu.h>
+#include <mem.h>
+#include <proc.h>
+
+#include "native.bin/fail-jvm-failos.h"
+#include "native.bin/fail-sh.h"
+#include "native.bin/ls.h"
+#include "native.bin/fail-init.h"
+#include "native.bin/cat.h"
+#include "native.bin/dd.h"
+#include "native.bin/date.h"
+#include "native.bin/head.h"
+#include "native.bin/tail.h"
+#include "native.bin/echo.h"
+#include "native.bin/sed.h"
+#include "native.bin/cp.h"
+#include "native.bin/busybox-x86_64.h"
 
 #define TTY	DEV_ID(SER_MAJOR,SER_0_MINOR)
 #define HD0	DEV_ID(IDE_MAJOR,0)
